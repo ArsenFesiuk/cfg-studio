@@ -1,0 +1,27 @@
+{
+    "appBarTitle": "Normalising context-free grammar",
+    "repository": "Repository",
+    "documentation": "Documentation",
+    "contacts": "Contacts",
+
+    "input": "Input",
+    "output": "Output",
+    "explanation": "Explanation",
+    "removeEpsilon": "Remove Epsilon",
+    "removeUnitRules": "Remove Unit Rules",
+    "removeUselessSymbols": "Remove Useless Symbols",
+    "removeLeftRecursion": "Remove Left Recursion",
+    "convertToCNF": "CFG to CNF",
+
+    "guideTitle": "The application guide",
+    "guideExample1": "All tokens must be separated by space characters",
+    "guideExample2": "If you need an arrow, write ->",
+    "guideExample3": "If you need an epsilon, write \\eps",
+
+    "examples": "Examples",
+    "testForEpsilon" : "Test for epsilon rules",
+    "testForUnit" : "Test for unit rules",
+    "testForUseless" : "Test for useless symbols",
+    "testForLeftRecursion" : "Test for left recursion",
+    "testForCNF" : "Test for CFG to CNF"
+}

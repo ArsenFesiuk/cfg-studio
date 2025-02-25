@@ -1,0 +1,27 @@
+{
+    "appBarTitle": "Нормалізація безконтекстових граматик",
+    "repository": "Репозиторій",
+    "documentation": "Документація",
+    "contacts": "Контакти",
+
+    "input": "Вхідні дані",
+    "output": "Результат",
+    "explanation": "Пояснення",
+    "removeEpsilon": "Видалити епсілон-правила",
+    "removeUnitRules": "Видалити одиничні правила",
+    "removeUselessSymbols": "Видалити непотрібні символи",
+    "removeLeftRecursion": "Видалити ліву рекурсію",
+    "convertToCNF": "Перетворити у ХНФ",
+
+    "guideTitle": "Інструкція із застосування",
+    "guideExample1": "Всі токени повинні бути розділені пробілами",
+    "guideExample2": "Якщо вам потрібна стрілка, напишіть ->",
+    "guideExample3": "Якщо вам потрібен епсілон, напишіть \\eps",
+
+    "examples": "Приклади",
+    "testForEpsilon" : "Тест для епсілон правил",
+    "testForUnit" : "Тест для одиничних правил",
+    "testForUseless" : "Тест для непотрібних символів",
+    "testForLeftRecursion" : "Тест для лівої рекурсії",
+    "testForCNF" : "Тест для CFG to CNF"
+  }

@@ -1,0 +1,27 @@
+{
+    "appBarTitle": "Normalizácia bezkontextových gramatík",
+    "repository": "Repozitár",
+    "documentation": "Dokumentácia",
+    "contacts": "Kontakty",
+
+    "input": "Vstup",
+    "output": "Výstup",
+    "explanation": "Vysvetlenie",
+    "removeEpsilon": "Odstrániť epsilon pravidlá",
+    "removeUnitRules": "Odstrániť jednotkové pravidlá",
+    "removeUselessSymbols": "Odstrániť nadbytočné symboly",
+    "removeLeftRecursion": "Odstrániť ľavú rekurziu",
+    "convertToCNF": "Prevod na CNF",
+
+    "guideTitle": "Používateľská príručka",
+    "guideExample1": "Všetky tokeny musia byť oddelené medzerami",
+    "guideExample2": "Ak potrebujete šípku, napíšte ->",
+    "guideExample3": "Ak potrebujete epsilon, napíšte \\eps",
+
+    "examples": "Príklady",
+    "testForEpsilon": "Test na epsilon pravidlá",
+    "testForUnit": "Test na jednoduche pravidlá",
+    "testForUseless": "Test na nadbytočné symboly",
+    "testForLeftRecursion": "Test na ľavú rekurziu",
+    "testForCNF": "Test na prevod do CNF"
+}
