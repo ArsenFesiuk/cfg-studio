@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 const Examples = () => {
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return(
   <Paper elevation={2} style={{ padding: "10px", whiteSpace: "pre-wrap" }}>
@@ -26,8 +26,8 @@ const Examples = () => {
       </div>
 
       <div style={{ width: "20%" }}>
-        <Typography variant="h6" gutterBottom>
-        {t("testForUnit")}
+        <Typography  variant="h6" gutterBottom sx={{ fontSize: i18n.language === "sk" ? "18.5px" : "20px" }}>
+          {t("testForUnit")}
         </Typography>
         <Typography variant="body1">
             bexpr → bexpr or bterm | bterm{"\n"}
@@ -37,8 +37,8 @@ const Examples = () => {
       </div>
 
       <div style={{ width: "20%" }}>
-        <Typography variant="h6" gutterBottom>
-        {t("testForUseless")}
+        <Typography variant="h6" gutterBottom sx={{ fontSize: i18n.language === "sk" ? "18.5px" : "20px" }}>
+          {t("testForUseless")}
         </Typography>
         <Typography variant="body1">
             S → A B | a{"\n"}
@@ -48,8 +48,8 @@ const Examples = () => {
       </div>
 
       <div style={{ width: "20%" }}>
-        <Typography variant="h6" gutterBottom>
-        {t("testForLeftRecursion")}
+        <Typography variant="h6" gutterBottomsx={{ fontSize: i18n.language === "sk" ? "18.5px" : "20px" }}>
+          {t("testForLeftRecursion")}
         </Typography>
         <Typography variant="body1">
             A → B a | A a | c{"\n"}
@@ -58,8 +58,8 @@ const Examples = () => {
       </div>
 
       <div style={{ width: "20%" }}>
-        <Typography variant="h6" gutterBottom>
-        {t("testForCNF")}
+        <Typography variant="h6" gutterBottom sx={{ fontSize: i18n.language === "sk" ? "18.5px" : "20px" }}>
+          {t("testForCNF")}
         </Typography>
         <Typography variant="body1">
           S → A B A{"\n"}

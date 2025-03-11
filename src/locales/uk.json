@@ -7,8 +7,8 @@
     "input": "Вхідні дані",
     "output": "Результат",
     "explanation": "Пояснення",
-    "removeEpsilon": "Видалити епсілон-правила",
-    "removeUnitRules": "Видалити одиничні правила",
+    "removeEpsilon": "Видалити епсілон",
+    "removeUnitRules": "Видалити прості правила",
     "removeUselessSymbols": "Видалити непотрібні символи",
     "removeLeftRecursion": "Видалити ліву рекурсію",
     "convertToCNF": "Перетворити у ХНФ",
@@ -20,8 +20,23 @@
 
     "examples": "Приклади",
     "testForEpsilon" : "Тест для епсілон правил",
-    "testForUnit" : "Тест для одиничних правил",
+    "testForUnit" : "Тест для простих правил",
     "testForUseless" : "Тест для непотрібних символів",
     "testForLeftRecursion" : "Тест для лівої рекурсії",
-    "testForCNF" : "Тест для CFG to CNF"
+    "testForCNF" : "Тест для CFG to CNF",
+
+    "Row1ForLeftRecursion" : "1.Починаємо обробку правила для i = {{i}} ({{rule}})",
+    "Row2ForLeftRecursion" : "2.Обробка попередніх правил для j = {{j}} ({{rule}})",
+    "Row3ForLeftRecursion" : "3.Заміна правила для Aᵢ → Aⱼα на нові альтернативи: {{currentRule}} замінемо на {{previousRule}}\ni = {{i}}\nj = {{j}}",
+    "Row4ForLeftRecursion" : "4.{{leftSide}} → {{newRightSide}}\ni = {{i}}\nj = {{j}}",
+    "Row5ForLeftRecursion" : "5.І так потрібно змінити всі правила",
+    "Row6ForLeftRecursion" : "6.Поточний стан правил після обробки j = {{j}} ({{rule}})\n{{rules}}",
+    "Row7ForLeftRecursion" : "7.Правило після видалення прямої лівої рекурсії:\n{{rules}}\nСтворено нове правило:\n{{newRule}}\ni = {{i}}",
+    "Row8ForLeftRecursion" : "8.Поточний стан правил після обробки i = {{i}} ({{rule}})\n{{rules}}",
+
+    "Row1ForRemoveEpsilon": "1. Створюємо Nε: {{nullableSet}}",
+    "Row2ForRemoveEpsilon": "2. Копіюємо Nε у N̂ε\nNε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
+    "Row3ForRemoveEpsilon": "3. {{leftSide}} додано в Nε, бо має ε.",
+    "Row3ForRemoveEpsilon2": "3. {{leftSide}} додано в Nε, бо бо всі нетермінали в альтернативі {{alternative}} є N̂ε.",
+    "Row4ForRemoveEpsilon": "4. Nε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}"
   }

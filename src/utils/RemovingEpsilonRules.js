@@ -1,5 +1,6 @@
 export class RemovingEpsilonRules {
-  constructor(rules) {
+  constructor(rules,t) {
+    this.t = t;
     this.rules = rules;
     this.explanations = [];
     this.history = [];
@@ -8,49 +9,76 @@ export class RemovingEpsilonRules {
   findNullableNonTerminals() {
     let nullableSet = new Set();
     let previousNullableSet;
-    this.explanations.push(this.toString());
-    this.explanations.push(`Крок 1: Шукаємо nullable нетермінали...`);
+    this.explanations.push({
+      line: 0,
+      message: this.t("Row1ForRemoveEpsilon", { nullableSet: [...nullableSet].join(", ") }),
+    });
+
+    previousNullableSet = new Set(nullableSet);
+    this.explanations.push({
+      line: 1,
+      message: this.t("Row2ForRemoveEpsilon", { nullableSet: [...nullableSet].join(", "), previousNullableSet: [...previousNullableSet].join(", ") }),
+    });
+
     for (const rule of this.rules) {
       for (const alternative of rule.rightSide) {
         if (alternative.includes("ε")) {
           nullableSet.add(rule.leftSide);
-          this.explanations.push(`${rule.leftSide} додано в nullable, бо має ε.`);
+          this.explanations.push({
+            line: 2,
+            message: this.t("Row3ForRemoveEpsilon", { leftSide: rule.leftSide }),
+          });
           break;
         }
       }
     }
-    
-    //this.removeEpsilonAlternatives();
+
+    this.explanations.push({
+      line: 3,
+      message: this.t("Row4ForRemoveEpsilon", { nullableSet: [...nullableSet].join(", "), previousNullableSet: [...previousNullableSet].join(", ") }),
+    });
 
     do {
       previousNullableSet = new Set(nullableSet);
+      this.explanations.push({
+        line: 1,
+        message: this.t("Row2ForRemoveEpsilon", { nullableSet: [...nullableSet].join(", "), previousNullableSet: [...previousNullableSet].join(", ") }),
+      });
+
       for (const rule of this.rules) {
         for (const alternative of rule.rightSide) {
           if (alternative.every(symbol => nullableSet.has(symbol))) {
             nullableSet.add(rule.leftSide);
-            this.explanations.push(`${rule.leftSide} додано в nullable, бо всі нетермінальні символи в альтернативі "${alternative.join(" ")}" є nullable.`);
+            this.explanations.push({
+              line: 2,
+              message: this.t("Row3ForRemoveEpsilon2", { leftSide: rule.leftSide, alternative: alternative.join(" ") }),
+            });
             break;
           }
         }
       }
-    } while (nullableSet.size !== previousNullableSet.size); 
 
-    this.explanations.push(`Nullable нетермінали: ${[...nullableSet]}.`);
+      this.explanations.push({
+        line: 3,
+        message: this.t("Row4ForRemoveEpsilon", { nullableSet: [...nullableSet].join(", "), previousNullableSet: [...previousNullableSet].join(", ") }),
+      });
+
+    } while (nullableSet.size !== previousNullableSet.size);
 
     this.removeEpsilonAlternatives();
-
     return nullableSet;
   }
+  
 
   removeEpsilonAlternatives() {
-    this.explanations.push("Крок 2: Видаляємо всі ε-альтернативи..");
+    //this.explanations.push("Крок 2: Видаляємо всі ε-альтернативи..");
     
     for (const rule of this.rules) {
       const originalLength = rule.rightSide.length;
       rule.rightSide = rule.rightSide.filter(alt => !alt.includes("ε"));
       
       if (rule.rightSide.length < originalLength) {
-        this.explanations.push(`Видалено ε з ${rule.leftSide}.`);
+        //this.explanations.push(`Видалено ε з ${rule.leftSide}.`);
       }
     }
 
@@ -58,7 +86,7 @@ export class RemovingEpsilonRules {
   }
 
   addNullableCombinations(nullableSet) {
-    this.explanations.push("Крок 3: Генеруємо нові альтернативи без nullable-нетерміналів...");
+    //this.explanations.push("Крок 3: Генеруємо нові альтернативи без nullable-нетерміналів...");
     
     for (const rule of this.rules) {
       let existingAlternatives = new Set(rule.rightSide.map(alt => alt.join(" ")));
@@ -69,12 +97,12 @@ export class RemovingEpsilonRules {
           if (!existingAlternatives.has(newAlt.join(" ")) && !newAlt.includes(rule.leftSide)) {
             existingAlternatives.add(newAlt.join(" "));
             rule.rightSide.push(newAlt);
-            this.explanations.push(`Додано нову альтернативу: ${rule.leftSide} → ${newAlt.join(" ")}`);
+            //this.explanations.push(`Додано нову альтернативу: ${rule.leftSide} → ${newAlt.join(" ")}`);
           }
         }
       }
     }
-   this.explanations.push(this.toString()); 
+   //this.explanations.push(this.toString()); 
   }
   
   generateCombinations(alternative, nullableSet) {
@@ -88,6 +116,10 @@ export class RemovingEpsilonRules {
       }
     }
     return result;
+  }
+
+  addExplanation(line, message) {
+    this.explanations.push({ line, message });
   }
   
   toString() {

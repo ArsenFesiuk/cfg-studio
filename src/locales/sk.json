@@ -7,8 +7,8 @@
     "input": "Vstup",
     "output": "Výstup",
     "explanation": "Vysvetlenie",
-    "removeEpsilon": "Odstrániť epsilon pravidlá",
-    "removeUnitRules": "Odstrániť jednotkové pravidlá",
+    "removeEpsilon": "Odstrániť epsilon",
+    "removeUnitRules": "Odstrániť jednoduché pravidlá",
     "removeUselessSymbols": "Odstrániť nadbytočné symboly",
     "removeLeftRecursion": "Odstrániť ľavú rekurziu",
     "convertToCNF": "Prevod na CNF",
@@ -23,5 +23,20 @@
     "testForUnit": "Test na jednoduche pravidlá",
     "testForUseless": "Test na nadbytočné symboly",
     "testForLeftRecursion": "Test na ľavú rekurziu",
-    "testForCNF": "Test na prevod do CNF"
+    "testForCNF": "Test na prevod do CNF",
+
+    "Row1ForLeftRecursion" : "1.Spustiť spracovanie pravidla pre i = {{i}} ({{rule}})",
+    "Row2ForLeftRecursion" : "2.Spracovanie predchádzajúcich pravidiel pre j = {{j}} ({{rule}})",
+    "Row3ForLeftRecursion" : "3.Nahradenie pravidla pre Aᵢ → Aⱼα novými alternatívami: {{currentRule}} sa nahradí {{previousRule}}\ni = {{i}}\nj = {{j}}",
+    "Row4ForLeftRecursion" : "4.{{leftSide}} → {{newRightSide}}\ni = {{i}}\nj = {{j}}",
+    "Row5ForLeftRecursion" : "5.A tak je potrebné zmeniť všetky pravidlá",
+    "Row6ForLeftRecursion" : "6.Aktuálny stav pravidiel po spracovaní j = {{j}} ({{rule}})\n{{rules}}",
+    "Row7ForLeftRecursion" : "7.Pravidlo po odstránení ľavej pravej rekurzie:\n{{rules}}\nNové vytvorené pravidlo:\n{{newRule}}\ni = {{i}}",
+    "Row8ForLeftRecursion" : "8.Aktuálny stav pravidiel po spracovaní i = {{i}} ({{rule}})\n{{rules}}",
+
+    "Row1ForRemoveEpsilon": "1. Vytvoriť Nε: {{nullableSet}}",
+    "Row2ForRemoveEpsilon": "2. Skopírujte Nε do N̂ε\nNε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
+    "Row3ForRemoveEpsilon": "3. {{leftSide}} je pridaný do Nε, pretože má ε.",
+    "Row3ForRemoveEpsilon2": "3. {{leftSide}} sa pridáva k Nε, pretože všetky neterminály v alternatíve {{alternative}} sú N̂ε.",
+    "Row4ForRemoveEpsilon": "4. Nε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}"
 }

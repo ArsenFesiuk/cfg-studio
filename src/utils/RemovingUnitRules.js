@@ -59,7 +59,6 @@ export class RemovingUnitRules {
           this.explanations.push(`Pravidlo ${rule.leftSide} → ${target} je jednoduche pravidlo, nahrádzame ho jeho alternatívami: ${replacements.join(" | ")}.`);
           this.explanations.push(this.toString());
         });
-
         // Додаємо поточний стан граматики після кожного важливого кроку
       });
     } while (updated);

@@ -10,7 +10,8 @@ import SupportedGrammars from "./SupportedGrammars";
 import Examples from "./Examples";
 import { TextField, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { PseudoCodeFindNullableNotTerminals} from "./PseudoCodeSimulator"
+import { PseudoCodeRemoveEpsilonRules } from "./PseudoCodeRemoveEpsilonRules";
+import { PseudoCodeRemoveLeftRecursion } from "./PseudocodeRemoveLeftRecursion";
 
 const GrammarInput = () => {
   const { t, i18n } = useTranslation();
@@ -18,14 +19,21 @@ const GrammarInput = () => {
   const [output, setOutput] = useState("");
   const [errors, setErrors] = useState([]);
   const [explanation, setExplanation] = useState("");
-  const [showPseudocode, setShowPseudocode] = useState(false); // Стан для показу PseudocodeSimulator
+  const [showPseudocodeForRemoveEpsilonRules, setshowPseudocodeForRemoveEpsilonRules] = useState(false); 
+  const [showPseudocodeForRemoveLeftRecursion, setShowPseudocodeForRemoveLeftRecursion] = useState(false); 
+  const fontSize = ["uk", "sk"].includes(i18n.language) ? "10px" : "14px";
 
 
   const handleInputChange = (e) => {
-    const replacedInput = replaceEscapes(e.target.value); // Автоматична заміна
+    const replacedInput = replaceEscapes(e.target.value);
     setInput(replacedInput);
+    setOutput(""); // Очищаємо аутпут при зміні інпуту
+    setExplanation(""); // Очищаємо пояснення при зміні інпуту
+    setshowPseudocodeForRemoveEpsilonRules(false); // Ховаємо псевдокод при зміні інпуту
+    setShowPseudocodeForRemoveLeftRecursion(false);
+  
     const { errors } = parseGrammar(replacedInput);
-    setErrors(errors.length > 0 ? errors : []); // Очищаємо помилки, якщо їх немає
+    setErrors(errors.length > 0 ? errors : []);
   };
 
   const replaceEscapes = (text) => {
@@ -50,11 +58,11 @@ const GrammarInput = () => {
       return;
     }
   
-    const transformer = new RemovingEpsilonRules(rules);
+    const transformer = new RemovingEpsilonRules(rules, t);
     transformer.executeEpsilonRuleRemoval();
     setOutput(formatGrammarOutput(rules));
-    setExplanation(transformer.explanations.join("\n"));
-    setShowPseudocode(true);
+    setExplanation(transformer.explanations.map(exp => `${exp.message}`).join("\n"));
+    setshowPseudocodeForRemoveEpsilonRules(true);
   };
   
   const handleRemoveUnitRules = () => {
@@ -97,10 +105,17 @@ const GrammarInput = () => {
       return;
     }
   
-    const removeLeftRecursion = new RemovingLeftRecursion();
-    const explanations = removeLeftRecursion.eliminateLeftRecursion(rules);  // Зберігаємо пояснення у змінній
+    const removeLeftRecursion = new RemovingLeftRecursion(t);
+    const explanations = removeLeftRecursion.eliminateLeftRecursion(rules); // Отримуємо масив об'єктів {line, message}
+  
+    // Формуємо текст з пояснень
+    const formattedExplanation = explanations
+      .map((exp) => exp.message)  // Доступ до тексту пояснення
+      .join("\n");
+  
     setOutput(formatGrammarOutput(rules));
-    setExplanation(explanations.join("\n"));  // Виводимо пояснення
+    setExplanation(formattedExplanation); // Встановлюємо пояснення як рядок
+    setShowPseudocodeForRemoveLeftRecursion(true);
   };
   
   
@@ -114,7 +129,7 @@ const GrammarInput = () => {
     const cnfConversion = new CNFConversion();
     cnfConversion.addNewStartSymbol(rules);
 
-    const removeEpsilonRules = new RemovingEpsilonRules(rules);
+    const removeEpsilonRules = new RemovingEpsilonRules(rules, t);
     removeEpsilonRules.executeEpsilonRuleRemoval();
     setExplanation(removeEpsilonRules.explanations.join("\n"));
 
@@ -139,13 +154,6 @@ const GrammarInput = () => {
   
   return (
     <div style={{ paddingTop: "64px" }}>
-
-      <div style={{ display: "flex", justifyContent: "space-between", padding: "10px" }}>
-        <Button variant="outlined" onClick={() => i18n.changeLanguage("en")}>En</Button>
-        <Button variant="outlined" onClick={() => i18n.changeLanguage("uk")}>Ukr</Button>
-        <Button variant="outlined" onClick={() => i18n.changeLanguage("sk")}>Sk</Button>
-      </div>
-
       <div id="MyAppBar" style={{ width: "100%" }}>
         <MyAppBar />
       </div>
@@ -177,19 +185,19 @@ const GrammarInput = () => {
   
           {/* Кнопки між input і output */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginBottom: "20px" }}>
-            <Button variant="contained" onClick={() => { handleRemoveEpsilon(); }} disabled={errors.length > 0 || input.trim() === ""}>
+            <Button variant="contained" onClick={handleRemoveEpsilon} disabled={errors.length > 0 || input.trim() === ""} style={{ width: "155px", maxWidth: "155px", whiteSpace: "nowrap", fontSize: fontSize}}>
               {t("removeEpsilon")}
             </Button>
-            <Button variant="contained" onClick={handleRemoveUnitRules} disabled={errors.length > 0 || input.trim() === ""}>
+            <Button variant="contained" onClick={handleRemoveUnitRules} disabled={errors.length > 0 || input.trim() === ""} style={{ width: "195px", maxWidth: "195px", whiteSpace: "nowrap", fontSize: fontSize}}>
               {t("removeUnitRules")}
             </Button>
-            <Button variant="contained" onClick={handleRemoveUselessSymbols} disabled={errors.length > 0 || input.trim() === ""}>
+            <Button variant="contained" onClick={handleRemoveUselessSymbols} disabled={errors.length > 0 || input.trim() === ""} style={{ width: "205px", maxWidth: "205px", whiteSpace: "nowrap", fontSize: fontSize}}>
               {t("removeUselessSymbols")}
             </Button>
-            <Button variant="contained" onClick={handleRemoveLeftRecursion} disabled={errors.length > 0 || input.trim() === ""}>
+            <Button variant="contained" onClick={handleRemoveLeftRecursion} disabled={errors.length > 0 || input.trim() === ""} style={{ width: "185px", maxWidth: "185px", whiteSpace: "nowrap", fontSize: fontSize}}>
               {t("removeLeftRecursion")}
             </Button>
-            <Button variant="contained" onClick={handleToCNF} disabled={errors.length > 0 || input.trim() === ""}>
+            <Button variant="contained" onClick={handleToCNF} disabled={errors.length > 0 || input.trim() === ""} style={{ width: "145px", maxWidth: "145px", whiteSpace: "nowrap", fontSize: fontSize}}>
               {t("convertToCNF")}
             </Button>
           </div>
@@ -222,8 +230,13 @@ const GrammarInput = () => {
 
       {/* Інтегруємо PseudocodeSimulator, передаємо дані з граматики та поточний крок */}
       <div>
-        {showPseudocode && <PseudoCodeFindNullableNotTerminals inputText={input} />}
+        {showPseudocodeForRemoveEpsilonRules && <PseudoCodeRemoveEpsilonRules inputText={input} />}
       </div>
+
+      <div>
+        {showPseudocodeForRemoveLeftRecursion && < PseudoCodeRemoveLeftRecursion inputText={input} />}
+      </div>
+  
   
       <div style={{ color: "red" }}>
         {errors.map((error, index) => (
