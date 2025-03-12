@@ -1,23 +1,25 @@
 import { useState, useEffect } from "react";
 import { RemovingLeftRecursion } from "../utils/RemovingLeftRecursion";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
+import { MathJax } from "better-react-mathjax";
 
 const pseudoCodeRemoveLeftRecursion = [
-  "1. Pre všetky i ∈ {1,2,...,n} rob",
-  "2. Pre všetky j ∈ {1,...,i-1} rob",
-  "3. Nahrad každé pravidlo tvaru Aᵢ → Aⱼα pravidlami",
-  "4. Aᵢ → B₁α | B₂α | ... | Bₘα,",
-  "5. pričom ak Aⱼ → β₁ | β₂ | ... | βₘ, sú všetky Aⱼ-pravidlá",
-  "6. Koniec pre",
-  "7. Odstráň prípadnú priamu ľavú rekurziu v netermináli Aᵢ pomocou (2)",
-  "8. Koniec pre",
+  "1: pre všetky \\( i \\in \\{1,2,\\dots,n\\} \\) rob",
+  "2:   pre všetky \\( j \\in \\{1,\\dots,i-1\\} \\) rob",
+  "3:     nahrad každé pravidlo tvaru \\( A_i \\to A_j\\alpha \\) pravidlami",
+  "4:     \\( A_i \\to \\beta_1\\alpha \\mid \\beta_2\\alpha \\mid \\dots \\mid \\beta_m\\alpha \\),",
+  "5:     pričom ak \\( A_j \\to \\beta_1 \\mid \\beta_2 \\mid \\dots \\mid \\beta_m \\), sú všetky \\( A_j \\)-pravidlá",
+  "6:   koniec pre",
+  "7:   odstráň prípadnú priamu ľavú rekurziu v netermináli \\( A_i \\) pomocou (2)",
+  "8: koniec pre",
 ];
 
 export function PseudoCodeRemoveLeftRecursion({ inputText }) {
   const [currentLine, setCurrentLine] = useState(0);
   const [explanation, setExplanation] = useState("");
   const [steps, setSteps] = useState([]);
-  const [currentExplanation, setCurrentExplanation] = useState(0);  // використовуємо useState для currentExplanation
+  const [currentExplanation, setCurrentExplanation] = useState(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (inputText) {
@@ -36,43 +38,42 @@ export function PseudoCodeRemoveLeftRecursion({ inputText }) {
       setCurrentLine(0);
       setExplanation(stepwiseExplanations[0]?.message || "");
     }
-  }, [inputText]);
+  }, [inputText, t]);
 
   const handleNextStep = () => {
     if (currentExplanation < steps.length - 1) {
       const nextStep = steps[currentExplanation + 1];
-  
-      setCurrentLine(nextStep.line); 
+      setCurrentLine(nextStep.line);
       setCurrentExplanation(currentExplanation + 1);
-      setExplanation(nextStep.message); // Передаємо тільки текст
+      setExplanation(nextStep.message);
     }
   };
-  
-  
 
   return (
     <div style={{ padding: "16px", fontFamily: "Arial, sans-serif" }}>
-      <h2>Algoritmus na odstránenie ľavej rekurzie</h2>
+      <h2>{t("PseudocodeRemoveLeftRecursion")}</h2>
       <pre style={preStyle}>
-        {pseudoCodeRemoveLeftRecursion.map((line, index) => (
-          <div
-            key={index}
-            style={{
-              padding: "4px 8px",
-              borderRadius: "4px",
-              fontWeight: index === currentLine ? "bold" : "normal",
-              backgroundColor: index === currentLine ? "#FFD700" : "transparent",
-              transition: "background-color 0.3s ease-in-out",
-            }}
-          >
-            {line}
-          </div>
-        ))}
+        <MathJax>
+          {pseudoCodeRemoveLeftRecursion.map((line, index) => (
+            <div
+              key={index}
+              style={{
+                padding: "4px 8px",
+                borderRadius: "4px",
+                fontWeight: index === currentLine ? "bold" : "normal",
+                backgroundColor: index === currentLine ? "#FFD700" : "transparent",
+                transition: "background-color 0.3s ease-in-out",
+              }}
+            >
+              {line}
+            </div>
+          ))}
+        </MathJax>
       </pre>
       <button onClick={handleNextStep} disabled={currentLine >= steps.length - 1} style={buttonStyle}>
-        Next
+        {t("next")}
       </button>
-      <h3 style={{ marginTop: "16px" }}>Explanation:</h3>
+      <h3 style={{ marginTop: "16px" }}>{t("explanation")}:</h3>
       <p dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}></p>
     </div>
   );
@@ -95,4 +96,3 @@ const preStyle = {
   borderRadius: "8px",
   border: "1px solid #ccc",
 };
-

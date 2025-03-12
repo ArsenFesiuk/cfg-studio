@@ -38,5 +38,11 @@
     "Row2ForRemoveEpsilon": "2. Skopírujte Nε do N̂ε\nNε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
     "Row3ForRemoveEpsilon": "3. {{leftSide}} je pridaný do Nε, pretože má ε.",
     "Row3ForRemoveEpsilon2": "3. {{leftSide}} sa pridáva k Nε, pretože všetky neterminály v alternatíve {{alternative}} sú N̂ε.",
-    "Row4ForRemoveEpsilon": "4. Nε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}"
+    "Row4ForRemoveEpsilon": "4. Nε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
+
+    "PseudocodeRemoveLeftRecursion": "Algoritmus na odstránenie ľavej rekurzie",
+
+    "next": "Dalej"
+
+    
 }

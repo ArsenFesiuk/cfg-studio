@@ -38,5 +38,9 @@
     "Row2ForRemoveEpsilon": "2. Копіюємо Nε у N̂ε\nNε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
     "Row3ForRemoveEpsilon": "3. {{leftSide}} додано в Nε, бо має ε.",
     "Row3ForRemoveEpsilon2": "3. {{leftSide}} додано в Nε, бо бо всі нетермінали в альтернативі {{alternative}} є N̂ε.",
-    "Row4ForRemoveEpsilon": "4. Nε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}"
+    "Row4ForRemoveEpsilon": "4. Nε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
+
+    "PseudocodeRemoveLeftRecursion": "Алгоритм видалення лівої рекурсії",
+
+    "next": "Далі"
   }

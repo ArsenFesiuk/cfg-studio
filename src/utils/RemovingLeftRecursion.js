@@ -1,6 +1,6 @@
 export class RemovingLeftRecursion {
   constructor(t) {
-    this.t = t; // Зберігаємо функцію перекладу
+    this.t = t;
     this.rules = [];
     this.explanations = [];
   }
@@ -11,9 +11,11 @@ export class RemovingLeftRecursion {
 
     for (let i = 0; i < size; i++) {
       const currentRule = this.rules[i];
-
+      
+      // Додавання пояснень
       this.addExplanation(0, this.t("Row1ForLeftRecursion", { i: i + 1, rule: this.ruleToString(currentRule) }));
 
+      // Перевірка непрямої лівої рекурсії
       for (let j = 0; j < i; j++) {
         const previousRule = this.rules[j];
         const newRightSide = [];
@@ -21,24 +23,29 @@ export class RemovingLeftRecursion {
 
         this.addExplanation(1, this.t("Row2ForLeftRecursion", { j: j + 1, rule: this.ruleToString(previousRule) }));
 
+        // Перевірка всіх альтернатив для кожного правила
         for (const alternatives of currentRule.rightSide) {
-          if (previousRule.leftSide === alternatives[0]) { 
+          console.log("Previous rule:",previousRule.leftSide);
+          console.log("alternative:",alternatives[0]);
+          if (alternatives[0] && alternatives[0] === previousRule.leftSide){
+            console.log("aaa");
             changed = true;
-            this.addExplanation(2, this.t("Row3ForLeftRecursion", { 
-              currentRule: this.ruleToString(currentRule), 
-              previousRule: this.ruleToString(previousRule), 
-              i: currentRule.leftSide, 
-              j: previousRule.leftSide 
+            this.addExplanation(2, this.t("Row3ForLeftRecursion", {
+              currentRule: this.ruleToString(currentRule),
+              previousRule: this.ruleToString(previousRule),
+              i: currentRule.leftSide,
+              j: previousRule.leftSide
             }));
 
+            // Створення нових альтернатив на основі попередніх правил
             for (const alternativesPreviousRule of previousRule.rightSide) {
               const newAlternative = [...alternativesPreviousRule, ...alternatives.slice(1)];
               newRightSide.push(newAlternative);
             }
-            this.addExplanation(3, this.t("Row4ForLeftRecursion", { 
-              leftSide: currentRule.leftSide, 
+            this.addExplanation(3, this.t("Row4ForLeftRecursion", {
+              leftSide: currentRule.leftSide,
               newRightSide: this.rightSideToString(newRightSide),
-              i: currentRule.leftSide, 
+              i: currentRule.leftSide,
               j: previousRule.leftSide
             }));
           } else {
@@ -51,9 +58,11 @@ export class RemovingLeftRecursion {
           this.rules[i] = currentRule;
           this.addExplanation(4, this.t("Row5ForLeftRecursion"));
         }
+
         this.addExplanation(5, this.t("Row6ForLeftRecursion", { j: j + 1, rule: previousRule.leftSide, rules: this.toString() }));
       }
 
+      // Далі ми перевіряємо на пряму ліву рекурсію та її виправлення
       const newRightSide = [];
       const recursiveAlternatives = [];
       const newNonTerminal = currentRule.leftSide + "'";
@@ -72,22 +81,25 @@ export class RemovingLeftRecursion {
       }
 
       if (hasLeftRecursion) {
+        // Заміна правої частини для непрямої рекурсії
         for (const alternatives of currentRule.rightSide) {
           if (currentRule.leftSide !== alternatives[0]) {
             const newAlternativeWithNonTerminal = [...alternatives, newNonTerminal];
             newRightSide.push(newAlternativeWithNonTerminal);
           }
         }
+
         currentRule.rightSide = newRightSide;
         this.rules[i] = currentRule;
       }
 
+      // Додаємо нове правило для рекурсії
       if (recursiveAlternatives.length > 0) {
         const newRule = { leftSide: newNonTerminal, rightSide: recursiveAlternatives };
-        this.addExplanation(6, this.t("Row7ForLeftRecursion", { 
-          rules: this.toString(), 
-          newRule: this.ruleToString(newRule), 
-          i: currentRule.leftSide 
+        this.addExplanation(6, this.t("Row7ForLeftRecursion", {
+          rules: this.toString(),
+          newRule: this.ruleToString(newRule),
+          i: currentRule.leftSide
         }));
         rules.push(newRule);
         this.rules.push(newRule);

@@ -1,5 +1,5 @@
 import GrammarInput from "./components/GrammarInput";
-
+import { MathJaxContext } from "better-react-mathjax";
 export default function App() {
 
   const handleGrammarSubmit = (rules) => {
@@ -9,7 +9,9 @@ export default function App() {
 
   return (
     <div>
-      <GrammarInput onSubmit={handleGrammarSubmit} />
+      <MathJaxContext>
+        <GrammarInput onSubmit={handleGrammarSubmit} />
+      </MathJaxContext>
     </div>
   );
 }

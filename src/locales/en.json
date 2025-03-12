@@ -27,7 +27,7 @@
 
     "Row1ForLeftRecursion" : "1.Start processing the rule for i = {{i}} ({{rule}})",
     "Row2ForLeftRecursion" : "2.Processing of previous rules for j = {{j}} ({{rule}})",
-    "Row3ForLeftRecursion" : "3.Replacing the rule for Aᵢ → Aⱼα with new alternatives: {{currentRule}} is replaced by {{previousRule}\ni = {{i}}\nj = {{j}}",
+    "Row3ForLeftRecursion" : "3.Replacing the rule for Aᵢ → Aⱼα with new alternatives: {{currentRule}} is replaced by {{previousRule}}\ni = {{i}}\nj = {{j}}",
     "Row4ForLeftRecursion" : "4.{{leftSide}} → {{newRightSide}}\ni = {{i}}\nj = {{j}}",
     "Row5ForLeftRecursion" : "5.And so all the rules need to be changed",
     "Row6ForLeftRecursion" : "6.Current state of rules after processing j = {{j}} ({{rule}})\n{{rules}}",
@@ -38,5 +38,9 @@
     "Row2ForRemoveEpsilon": "2. Copy Nε to N̂ε\nNε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
     "Row3ForRemoveEpsilon": "3. {{leftSide}} is added to Nε because it has ε.",
     "Row3ForRemoveEpsilon2": "3. {{leftSide}} is added to Nε because all nonterminals in the alternative {{alternative}} are N̂ε.",
-    "Row4ForRemoveEpsilon": "4. Nε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}"
+    "Row4ForRemoveEpsilon": "4. Nε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
+
+    "PseudocodeRemoveLeftRecursion": "Algorithm to remove left recursion",
+
+    "next": "Next"
 }

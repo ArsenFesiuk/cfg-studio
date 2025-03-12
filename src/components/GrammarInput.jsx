@@ -21,7 +21,7 @@ const GrammarInput = () => {
   const [explanation, setExplanation] = useState("");
   const [showPseudocodeForRemoveEpsilonRules, setshowPseudocodeForRemoveEpsilonRules] = useState(false); 
   const [showPseudocodeForRemoveLeftRecursion, setShowPseudocodeForRemoveLeftRecursion] = useState(false); 
-  const fontSize = ["uk", "sk"].includes(i18n.language) ? "10px" : "14px";
+  const fontSize = ["uk", "sk"].includes(i18n.language) ? "13px" : "14px";
 
 
   const handleInputChange = (e) => {
@@ -185,19 +185,54 @@ const GrammarInput = () => {
   
           {/* Кнопки між input і output */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginBottom: "20px" }}>
-            <Button variant="contained" onClick={handleRemoveEpsilon} disabled={errors.length > 0 || input.trim() === ""} style={{ width: "155px", maxWidth: "155px", whiteSpace: "nowrap", fontSize: fontSize}}>
+            <Button variant="contained" onClick={handleRemoveEpsilon} disabled={errors.length > 0 || input.trim() === ""} sx={{
+              padding: "5px 10px",
+              minWidth: "auto",
+              maxWidth: "155px",
+              width: "155px",
+              fontSize: fontSize,
+              boxSizing: "border-box",
+            }}>
               {t("removeEpsilon")}
             </Button>
-            <Button variant="contained" onClick={handleRemoveUnitRules} disabled={errors.length > 0 || input.trim() === ""} style={{ width: "195px", maxWidth: "195px", whiteSpace: "nowrap", fontSize: fontSize}}>
+            <Button variant="contained" onClick={handleRemoveUnitRules} disabled={errors.length > 0 || input.trim() === ""} sx={{
+              padding: "5px 10px",
+              minWidth: "auto",
+              maxWidth: "195px",
+              width: "195px",
+              fontSize: fontSize,
+              boxSizing: "border-box",
+            }}>
               {t("removeUnitRules")}
             </Button>
-            <Button variant="contained" onClick={handleRemoveUselessSymbols} disabled={errors.length > 0 || input.trim() === ""} style={{ width: "205px", maxWidth: "205px", whiteSpace: "nowrap", fontSize: fontSize}}>
+            <Button variant="contained" onClick={handleRemoveUselessSymbols} disabled={errors.length > 0 || input.trim() === ""} sx={{
+            padding: "5px 10px",
+            minWidth: "auto",
+            maxWidth: "205px",
+            width: "205px",
+            fontSize: fontSize,
+            boxSizing: "border-box",
+          }}>
               {t("removeUselessSymbols")}
             </Button>
-            <Button variant="contained" onClick={handleRemoveLeftRecursion} disabled={errors.length > 0 || input.trim() === ""} style={{ width: "185px", maxWidth: "185px", whiteSpace: "nowrap", fontSize: fontSize}}>
+            <Button variant="contained" onClick={handleRemoveLeftRecursion} disabled={errors.length > 0 || input.trim() === ""} sx={{
+            padding: "5px 10px",
+            minWidth: "auto",
+            maxWidth: "185px",
+            width: "185px",
+            fontSize: fontSize,
+            boxSizing: "border-box",
+          }}>
               {t("removeLeftRecursion")}
             </Button>
-            <Button variant="contained" onClick={handleToCNF} disabled={errors.length > 0 || input.trim() === ""} style={{ width: "145px", maxWidth: "145px", whiteSpace: "nowrap", fontSize: fontSize}}>
+            <Button variant="contained" onClick={handleToCNF} disabled={errors.length > 0 || input.trim() === ""} sx={{
+            padding: "5px 10px",
+            minWidth: "auto",
+            maxWidth: "145px",
+            width: "145px",
+            fontSize: fontSize,
+            boxSizing: "border-box",
+          }}>
               {t("convertToCNF")}
             </Button>
           </div>
