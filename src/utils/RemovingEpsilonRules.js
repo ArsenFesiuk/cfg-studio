@@ -74,12 +74,12 @@ export class RemovingEpsilonRules {
     //this.explanations.push("Крок 2: Видаляємо всі ε-альтернативи..");
     
     for (const rule of this.rules) {
-      const originalLength = rule.rightSide.length;
+      //const originalLength = rule.rightSide.length;
       rule.rightSide = rule.rightSide.filter(alt => !alt.includes("ε"));
       
-      if (rule.rightSide.length < originalLength) {
-        //this.explanations.push(`Видалено ε з ${rule.leftSide}.`);
-      }
+      // if (rule.rightSide.length < originalLength) {
+      //   this.explanations.push(`Видалено ε з ${rule.leftSide}.`);
+      // }
     }
 
     this.explanations.push(this.toString());
@@ -87,22 +87,23 @@ export class RemovingEpsilonRules {
 
   addNullableCombinations(nullableSet) {
     //this.explanations.push("Крок 3: Генеруємо нові альтернативи без nullable-нетерміналів...");
-    
+    console.log("a");
     for (const rule of this.rules) {
       let existingAlternatives = new Set(rule.rightSide.map(alt => alt.join(" ")));
       for (const alternative of rule.rightSide) {
         const generated = this.generateCombinations(alternative, nullableSet);
-        
+        console.log("generated:", generated);
         for (const newAlt of generated) {
-          if (!existingAlternatives.has(newAlt.join(" ")) && !newAlt.includes(rule.leftSide)) {
-            existingAlternatives.add(newAlt.join(" "));
-            rule.rightSide.push(newAlt);
-            //this.explanations.push(`Додано нову альтернативу: ${rule.leftSide} → ${newAlt.join(" ")}`);
+          const newAltStr = newAlt.join(" ");
+          console.log("NewaltStr",newAltStr); // Перевірка альтернативи як рядка
+          if (!existingAlternatives.has(newAltStr) && newAltStr !== rule.leftSide) {
+            console.log("NewaltStr2",newAltStr);
+            existingAlternatives.add(newAltStr);
+            rule.rightSide.push(newAlt); // Додаємо нову альтернативу
           }
         }
       }
     }
-   //this.explanations.push(this.toString()); 
   }
   
   generateCombinations(alternative, nullableSet) {
@@ -127,7 +128,7 @@ export class RemovingEpsilonRules {
       const alternatives = rule.rightSide.map(alt => alt.join(" ")).join(" | ");
       return `${rule.leftSide} → ${alternatives}`;
     }).join("\n");
-  }
+  } 
 
   executeEpsilonRuleRemoval() {
     const nullableSet = this.findNullableNonTerminals();
