@@ -14,6 +14,11 @@
     "convertToCNF": "Prevod na CNF",
 
     "guideTitle": "Používateľská príručka",
+    "guideInput": "Ako správne zadať gramatiku",
+    "guideIntroduction": "Úvod",
+    "guideIntroduction2": "V tejto aplikácii môžete ľahko konvertovať bezkontextovú gramatiku na Chomského normálnu formu (CNF) pomocou tlačidla CFG na CNF a sledovať každý algoritmus samostatne. Vďaka tomu si môžete podrobne pozrieť každý krok transformácie a pochopiť, ako sa gramatika prevádza na normálnu formu.",
+    "guideExplanation": "Ako získať vysvetlenie",
+    "guideExplanation1": "Ak chcete získať vysvetlenie, musíte nastaviť správne vstupné údaje a kliknúť na tlačidlo určitého algoritmu, v tomto okamihu sa zobrazí pseudokód, v ktorom sa môžete pohybovať krok za krokom a získať vysvetlenie každého kroku.",
     "guideExample1": "Všetky tokeny musia byť oddelené medzerami",
     "guideExample2": "Ak potrebujete šípku, napíšte ->",
     "guideExample3": "Ak potrebujete epsilon, napíšte \\eps",

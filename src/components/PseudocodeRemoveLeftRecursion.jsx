@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import { MathJax } from "better-react-mathjax";
 
 const pseudoCodeRemoveLeftRecursion = [
-  "1: pre všetky \\( i \\in \\{1,2,\\dots,n\\} \\) rob",
-  "2:   pre všetky \\( j \\in \\{1,\\dots,i-1\\} \\) rob",
+  "1: pre všetky \\( i \\in \\{1,2,\\dots,n\\} \\) vykon",
+  "2:   pre všetky \\( j \\in \\{1,\\dots,i-1\\} \\) vykon",
   "3:     nahrad každé pravidlo tvaru \\( A_i \\to A_j\\alpha \\) pravidlami",
   "4:     \\( A_i \\to \\beta_1\\alpha \\mid \\beta_2\\alpha \\mid \\dots \\mid \\beta_m\\alpha \\),",
   "5:     pričom ak \\( A_j \\to \\beta_1 \\mid \\beta_2 \\mid \\dots \\mid \\beta_m \\), sú všetky \\( A_j \\)-pravidlá",
@@ -50,16 +50,15 @@ export function PseudoCodeRemoveLeftRecursion({ inputText }) {
   };
 
   return (
-    <div style={{ padding: "16px", fontFamily: "Arial, sans-serif" }}>
-      <h2>{t("PseudocodeRemoveLeftRecursion")}</h2>
-      <pre style={preStyle}>
+    <div>
+      {/* Контейнер для псевдокоду */}
+      <div style={{ padding: "16px", fontFamily: "Arial, sans-serif", border: "1px solid #ddd", backgroundColor: "#fafafa"}}>
         <MathJax>
           {pseudoCodeRemoveLeftRecursion.map((line, index) => (
             <div
               key={index}
               style={{
                 padding: "4px 8px",
-                borderRadius: "4px",
                 fontWeight: index === currentLine ? "bold" : "normal",
                 backgroundColor: index === currentLine ? "#FFD700" : "transparent",
                 transition: "background-color 0.3s ease-in-out",
@@ -69,14 +68,24 @@ export function PseudoCodeRemoveLeftRecursion({ inputText }) {
             </div>
           ))}
         </MathJax>
-      </pre>
-      <button onClick={handleNextStep} disabled={currentLine >= steps.length - 1} style={buttonStyle}>
-        {t("next")}
-      </button>
-      <h3 style={{ marginTop: "16px" }}>{t("explanation")}:</h3>
-      <p dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}></p>
+      </div>
+  
+      {/* Кнопка між блоками */}
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+        <button onClick={handleNextStep} disabled={currentLine >= steps.length - 1} style={buttonStyle}>
+          {t("next")}
+        </button>
+      </div>
+  
+      {/* Контейнер для пояснення */}
+      <div style={{ padding: "16px", fontFamily: "Arial, sans-serif", border: "1px solid #ddd", backgroundColor: "#fafafa"}}>
+        <h3 style={{ marginTop: "16px" }}>{t("explanation")}:</h3>
+        <p dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}></p>
+      </div>
     </div>
   );
+  
+  
 }
 
 const buttonStyle = {
@@ -88,11 +97,4 @@ const buttonStyle = {
   borderRadius: "4px",
   cursor: "pointer",
   fontSize: "16px",
-};
-
-const preStyle = {
-  backgroundColor: "#f5f5f5",
-  padding: "16px",
-  borderRadius: "8px",
-  border: "1px solid #ccc",
 };

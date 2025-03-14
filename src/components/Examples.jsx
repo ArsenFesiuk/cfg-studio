@@ -6,7 +6,7 @@ const Examples = () => {
   const { t, i18n } = useTranslation();
 
   return(
-  <Paper elevation={2} style={{ padding: "10px", whiteSpace: "pre-wrap" }}>
+  <Paper elevation={2} style={{ padding: "10px", whiteSpace: "pre-wrap", backgroundColor: "#fafafa" }}>
     <Typography variant="h6" gutterBottom>
       {t("examples")}
     </Typography>

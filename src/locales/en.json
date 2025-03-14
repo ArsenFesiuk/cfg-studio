@@ -14,6 +14,11 @@
     "convertToCNF": "CFG to CNF",
 
     "guideTitle": "The application guide",
+    "guideInput": "How to enter grammar correctly",
+    "guideExplanation": "How to get an explanation",
+    "guideExplanation1": "To get an explanation, you need to set the correct input data and click on the button of a certain algorithm, at this point a pseudo-code will appear, where you can move step by step and have an explanation for each step.",
+    "guideIntroduction": "Introduction",
+    "guideIntroduction2": "In this app, you can easily convert context-free grammar to Chomsky Normal Form (CNF) using the CFG to CNF button, and also perform each algorithm separately. This allows you to see each step of the transformation in detail and understand how the grammar is converted to normal form.",
     "guideExample1": "All tokens must be separated by space characters",
     "guideExample2": "If you need an arrow, write ->",
     "guideExample3": "If you need an epsilon, write \\eps",

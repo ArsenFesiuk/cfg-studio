@@ -12,6 +12,8 @@ import { TextField, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { PseudoCodeRemoveEpsilonRules } from "./PseudoCodeRemoveEpsilonRules";
 import { PseudoCodeRemoveLeftRecursion } from "./PseudocodeRemoveLeftRecursion";
+import { motion } from "framer-motion";
+import { Sparkles, FileInput } from "lucide-react";
 
 const GrammarInput = () => {
   const { t, i18n } = useTranslation();
@@ -159,11 +161,11 @@ const GrammarInput = () => {
       </div>
   
       <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", padding: "10px" }}>
-        <div id="SupportedGrammars" style={{ width: "30%", padding: "10px" }}>
+        {/* <div id="SupportedGrammars" style={{ width: "30%", padding: "10px" }}>
           <SupportedGrammars />
-        </div>
+        </div> */}
   
-        <div id="Examples" style={{ width: "70%", padding: "10px" }}>
+        <div id="Examples" style={{ width: "100%", padding: "10px"}}>
           <Examples />
         </div>
       </div>
@@ -180,7 +182,7 @@ const GrammarInput = () => {
             value={input}
             onChange={handleInputChange}
             fullWidth
-            style={{ marginBottom: "20px" }}
+            style={{ marginBottom: "20px", backgroundColor: "#fafafa"}}
           />
   
           {/* Кнопки між input і output */}
@@ -246,31 +248,24 @@ const GrammarInput = () => {
             value={output}
             fullWidth
             disabled
+            style={{ backgroundColor: "#fafafa"}}
           />
         </div>
   
         {/* Права частина: пояснення */}
-        <div id="explanation" style={{ width: "50%", padding: "10px" }}>
-          <TextField
-            label={t("explanation")}
-            multiline
-            rows={23}
-            variant="outlined"
-            value={explanation}
-            fullWidth
-            disabled
-          />
-        </div>
-      </div>
+        <div id="explanation" style={{ width: "50%", padding: "10px", fontSize: "16px", lineHeight: "1.5" }}>
+    
+        {showPseudocodeForRemoveLeftRecursion ? (
+          <PseudoCodeRemoveLeftRecursion inputText={input} />
+        ) : showPseudocodeForRemoveEpsilonRules ? (
+          <PseudoCodeRemoveEpsilonRules inputText={input} />
+        ) : (
+            <SupportedGrammars />
+        )}
+    </div>
+  </div>
 
       {/* Інтегруємо PseudocodeSimulator, передаємо дані з граматики та поточний крок */}
-      <div>
-        {showPseudocodeForRemoveEpsilonRules && <PseudoCodeRemoveEpsilonRules inputText={input} />}
-      </div>
-
-      <div>
-        {showPseudocodeForRemoveLeftRecursion && < PseudoCodeRemoveLeftRecursion inputText={input} />}
-      </div>
   
   
       <div style={{ color: "red" }}>
