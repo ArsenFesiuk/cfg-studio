@@ -47,5 +47,52 @@
 
     "PseudocodeRemoveLeftRecursion": "Алгоритм видалення лівої рекурсії",
 
-    "next": "Далі"
-  }
+    "next": "Далі",
+
+    "stepsForLeftRecursion": [
+      "1:   \\( \\text{ для всіх i } \\in \\{1,2,\\dots,n\\} \\text{ виконай }\\)",
+      "2:       \\( \\text{ для всіх j } \\in \\{1,\\dots,i-1\\} \\text{ виконай } \\)",
+      "3:           \\( \\text{ заміни кожне правило вигляду } A_i \\to A_j\\alpha  \\text{ правилами } \\)",
+      "4:           \\( A_i \\to \\beta_1\\alpha \\mid \\beta_2\\alpha \\mid \\dots \\mid \\beta_m\\alpha \\),",
+      "5:           \\( \\text{ де якщо }  A_j \\to \\beta_1 \\mid \\beta_2 \\mid \\dots \\mid \\beta_m, \\text{ то всі } A_j \\text{ - правила } \\)",
+      "6:        \\( \\text{ кінець для } \\)",
+      "7:        \\( \\text{ видали можливу пряму ліву рекурсію в нетерміналі } A_i \\text{ за допомогою (2) } \\)",
+      "8:   \\( \\text{ кінець для } \\)"
+    ],
+
+    "stepsForRemoveUnitRules": [
+      "1:         \\( \\text{для всіх } A_i \\in N \\text{ виконай наступне:} \\)",
+      "2:             \\( N_A \\gets \\emptyset \\)",
+      "3:             \\( N'_A \\gets N_A \\)",
+      "4:                 \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\text{ і } B \\in N'_A \\} \\)",
+      "5:             \\( N'_A \\neq N_A \\text{, перехід до кроку 3} \\)",
+      "6:             \\( \\text{замінити правила } A_i \\to A_j \\text{ всіма альтернативами з } N_A \\)",
+      "7:         \\( \\text{кінець для} \\)",
+      "8:   \\( \\text{кінець} \\)"
+    ],
+
+    "stepsForRemoveEpsilonRules": [
+      "1:   \\( N_\\epsilon \\gets \\emptyset; \\) ⊲ \\( \\text{Ініціалізація множини нульованих нетерміналів} \\)",
+      "2:       \\( N̂_\\epsilon \\gets N_\\epsilon; \\) ⊲ \\( \\text{Копіювання } N_\\epsilon \\text{ в } N̂_\\epsilon \\)",
+      "3:       \\( N_\\epsilon \\gets N̂_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in N̂_\\epsilon^* \\}; \\)",
+      "4:   \\(\\text{Поки } N_\\epsilon \\neq N̂_\\epsilon, \\text{ перехід до кроку 2.} \\)"
+    ],
+
+
+    "stepsForRemoveUselessSymbols": [
+      "1:   \\( N_T \\gets \\emptyset \\) ⊲ \\( \\text{Ініціалізація множини корисних нетерміналів} \\)",
+      "2:       \\( N'_T \\gets N_T \\)",
+      "3:       \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in (N'_T \\cup T)^* \\} \\)",
+      "4:   \\( \\text{Поки } N_T \\neq N'_T, \\text{ перехід до кроку 2} \\) ⊲ \\( \\text{Повторюємо, поки множина N_T змінюється} \\)",
+      "5:   \\( \\text{Якщо } S \\in N_T, \\text{ продовжити} \\) ⊲ \\( \\text{Якщо } S \\notin N_T, \\text{ то } L(G) = \\emptyset \\)",
+      "6:       \\( \\text{Видалити з граматики } G \\text{ всі нетермінали, які не належать до } N_T \\)",
+      "7:       \\( V_D \\gets \\{ S \\} \\) ⊲ \\( \\text{Ініціалізація множини досяжних символів} \\)",
+      "8:           \\( V'_D \\gets V_D \\)",
+      "9:           \\( V_D \\gets V'_D \\cup \\{ X \\mid A \\to \\alpha X \\beta \\in P, A \\in V'_D \\} \\)",
+      "10:      \\( \\text{Поки } V_D \\neq V'_D, \\text{ перехід до кроку 8} \\) ⊲ \\( \\text{Повторюємо, поки множина V_D змінюється} \\)",
+      "11:      \\( \\text{Видалити з граматики } G \\text{ всі символи, які не належать до } V_D \\)",
+      "12:  \\( \\text{Кінець} \\)"
+    ]
+
+
+}

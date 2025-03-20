@@ -3,23 +3,13 @@ import { RemovingLeftRecursion } from "../utils/RemovingLeftRecursion";
 import { useTranslation } from "react-i18next";
 import { MathJax } from "better-react-mathjax";
 
-const pseudoCodeRemoveLeftRecursion = [
-  "1: pre všetky \\( i \\in \\{1,2,\\dots,n\\} \\) vykon",
-  "2:   pre všetky \\( j \\in \\{1,\\dots,i-1\\} \\) vykon",
-  "3:     nahrad každé pravidlo tvaru \\( A_i \\to A_j\\alpha \\) pravidlami",
-  "4:     \\( A_i \\to \\beta_1\\alpha \\mid \\beta_2\\alpha \\mid \\dots \\mid \\beta_m\\alpha \\),",
-  "5:     pričom ak \\( A_j \\to \\beta_1 \\mid \\beta_2 \\mid \\dots \\mid \\beta_m \\), sú všetky \\( A_j \\)-pravidlá",
-  "6:   koniec pre",
-  "7:   odstráň prípadnú priamu ľavú rekurziu v netermináli \\( A_i \\) pomocou (2)",
-  "8: koniec pre",
-];
-
 export function PseudoCodeRemoveLeftRecursion({ inputText }) {
   const [currentLine, setCurrentLine] = useState(0);
   const [explanation, setExplanation] = useState("");
   const [steps, setSteps] = useState([]);
   const [currentExplanation, setCurrentExplanation] = useState(0);
   const { t } = useTranslation();
+  const pseudoCodeRemoveLeftRecursion = t("stepsForLeftRecursion", { returnObjects: true });
 
   useEffect(() => {
     if (inputText) {
@@ -62,6 +52,7 @@ export function PseudoCodeRemoveLeftRecursion({ inputText }) {
                 fontWeight: index === currentLine ? "bold" : "normal",
                 backgroundColor: index === currentLine ? "#FFD700" : "transparent",
                 transition: "background-color 0.3s ease-in-out",
+                whiteSpace: "pre-wrap"
               }}
             >
               {line}
@@ -78,13 +69,12 @@ export function PseudoCodeRemoveLeftRecursion({ inputText }) {
       </div>
   
       {/* Контейнер для пояснення */}
-      <div style={{ padding: "16px", fontFamily: "Arial, sans-serif", border: "1px solid #ddd", backgroundColor: "#fafafa"}}>
+      <div style={{ padding: "16px", fontFamily: "Arial, sans-serif", border: "1px solid #ddd", backgroundColor: "#fafafa" }}>
         <h3 style={{ marginTop: "16px" }}>{t("explanation")}:</h3>
         <p dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}></p>
       </div>
     </div>
   );
-  
   
 }
 

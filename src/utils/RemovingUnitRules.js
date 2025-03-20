@@ -8,64 +8,107 @@ export class RemovingUnitRules {
   removeUnitRules(rules) {
     this.rules = rules;
     this.initializeNonTerminals(rules);
+    let N_A = new Set();
 
-    // Карта для зберігання нетерміналів та їх альтернатив
     const alternativesMap = new Map();
 
-    // Ініціалізація карти ключ нетермінал значення альтернативи
+    // Створюємо мапу альтернатив для кожного нетермінала
     rules.forEach(rule => {
       alternativesMap.set(rule.leftSide, new Set(rule.rightSide.map(JSON.stringify)));
     });
 
-    let updated;
-    do {
-      updated = false;
-      rules.forEach(rule => {
-        const newRightSide = [];
-        let unitReplacements = new Map(); // Для збору альтернатив одиничних правил
-
-        rule.rightSide.forEach(alternative => {
-          // Перевірка одиничних правил
-          if (alternative.length === 1 && this.isNonTerminal(alternative[0])) { // чи є це одиничне правило
-            const target = alternative[0];
-            const targetAlternatives = alternativesMap.get(target);
-
-            if (targetAlternatives) { // перевіряєм чи є альтернативи для цього нетерміналу
-              targetAlternatives.forEach(targetAlternative => {
-                const parsedTargetAlternative = JSON.parse(targetAlternative); //  ми їх зберігали як рядки ["\c\"] і JSON.parse перетворить ["c"] у масив щоб працювати
-                if (!this.containsRightSide(rule.rightSide, parsedTargetAlternative)) { // перевіряєм чи є ця альтернатива в правій частині 
-                  newRightSide.push(parsedTargetAlternative);
-                  updated = true;
-
-                  // для пояснення
-                  if (!unitReplacements.has(target)) {
-                    unitReplacements.set(target, []);
-                  }
-
-                  unitReplacements.get(target).push(parsedTargetAlternative.join(" "));
-                }
-              });
-            }
-          } else {
-            newRightSide.push(alternative);
-          }
-        });
-
-        // Оновлюємо праву частину правила
-        rule.rightSide = newRightSide;
-        alternativesMap.set(rule.leftSide, new Set(newRightSide.map(JSON.stringify)));
-
-        unitReplacements.forEach((replacements, target) => {
-          this.explanations.push(`Pravidlo ${rule.leftSide} → ${target} je jednoduche pravidlo, nahrádzame ho jeho alternatívami: ${replacements.join(" | ")}.`);
-          this.explanations.push(this.toString());
-        });
-        // Додаємо поточний стан граматики після кожного важливого кроку
+    rules.forEach(rule => {
+      this.explanations.push({
+        line: 0,
+        message: `Ai = {${rule.leftSide}}`,
       });
-    } while (updated);
+
+      this.explanations.push({
+        line: 1,
+        message: `N_A = {${[...N_A]}}`,
+      });
+
+      const newRightSide = [];
+      const unitQueue = []; // Черга для обробки одиничних правил
+
+      rule.rightSide.forEach(alternative => {
+        if (alternative.length === 1 && this.isNonTerminal(alternative[0])) {
+          unitQueue.push(alternative[0]); // Додаємо одиничне правило в чергу
+        } else {
+          newRightSide.push(alternative); // Якщо не одиничне, залишаємо як є
+        }
+      });
+
+      let previousN_A;
+      // Обробка всіх одиничних правил для поточного нетермінала
+      do {
+        previousN_A = new Set(N_A);
+
+        this.explanations.push({
+          line: 2,
+          message: `N_A = {${[...N_A]}}\n N'_A = {${[...previousN_A]}}`,
+        });
+
+        N_A = new Set([...N_A].filter(item => !this.isNonTerminal(item)));
+
+        const target = unitQueue.shift();
+        const targetAlternatives = alternativesMap.get(target);
+
+        if (targetAlternatives && typeof targetAlternatives[Symbol.iterator] === 'function') {
+          targetAlternatives.forEach(unitAlternative => {
+            const parsedAlternative = JSON.parse(unitAlternative);
+
+            // Додаємо альтернативи одиничного правила в N_A
+            N_A.add(parsedAlternative.join(" "));  // Зберігаємо альтернативи в N_A
+
+            // Якщо нова альтернатива теж одиничне правило, додаємо в чергу
+            if (parsedAlternative.length === 1 && this.isNonTerminal(parsedAlternative[0])) {
+              unitQueue.push(parsedAlternative[0]);
+            }
+
+            // Якщо альтернатива не міститься у правій частині правила, додаємо її в newRightSide
+            if (!this.containsRightSide(rule.rightSide, parsedAlternative)) {
+              newRightSide.push(parsedAlternative);
+            }
+          });
+        }
+
+        this.explanations.push({
+          line: 3,
+          message: `N_A = {${[...N_A]}}`,
+        });
+
+        this.explanations.push({
+          line: 4,
+          message: `N_A = {${[...N_A]}}\n N'_A = {${[...previousN_A]}}`,
+        });
+
+      } while (unitQueue.length > 0 || previousN_A.size !== N_A.size);
+
+      if (newRightSide.length > 0) {
+        rule.rightSide = newRightSide.filter(alt => !(alt.length === 1 && this.isNonTerminal(alt[0])));
+        alternativesMap.set(rule.leftSide, new Set(newRightSide.map(JSON.stringify)));
+        this.explanations.push({
+          line: 5,
+          message: `A_i = {${rule.leftSide}} \nN_A = {${[...N_A]}} \n${rule.leftSide} → ${rule.rightSide.map(alt => alt.join(" ")).join(" | ")}`
+        });
+      }
+
+      this.explanations.push({
+        line: 6,
+        message: `A_i = {${rule.leftSide}} \n${this.toString()}`
+      });
+
+      N_A.clear();
+    });
+
+    this.explanations.push({
+      line: 7,
+      message: `Update grammar: \n${this.toString()}`
+    });
 
     this.removeEmptyRules(rules);
-}
-
+  }
 
   // Ініціалізація нетерміналів
   initializeNonTerminals(rules) {
@@ -95,5 +138,4 @@ export class RemovingUnitRules {
       return `${rule.leftSide} → ${alternatives}`;
     }).join("\n");
   }
-
 }

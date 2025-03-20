@@ -12,8 +12,8 @@ import { TextField, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { PseudoCodeRemoveEpsilonRules } from "./PseudoCodeRemoveEpsilonRules";
 import { PseudoCodeRemoveLeftRecursion } from "./PseudocodeRemoveLeftRecursion";
-import { motion } from "framer-motion";
-import { Sparkles, FileInput } from "lucide-react";
+import { PseudoCodeRemoveUselessSymbols } from "./PseudocodeRemoveUselessSymbols";
+import { PseudoCodeRemoveUnitRules } from "./PseudocodeRemoveUnitRule";
 
 const GrammarInput = () => {
   const { t, i18n } = useTranslation();
@@ -23,6 +23,8 @@ const GrammarInput = () => {
   const [explanation, setExplanation] = useState("");
   const [showPseudocodeForRemoveEpsilonRules, setshowPseudocodeForRemoveEpsilonRules] = useState(false); 
   const [showPseudocodeForRemoveLeftRecursion, setShowPseudocodeForRemoveLeftRecursion] = useState(false); 
+  const [showPseudocodeForRemoveUselessSymbols, setshowPseudocodeForRemoveUselessSymbols] = useState(false); 
+  const [showPseudocodeForRemoveUnitRules, setshowPseudocodeForRemoveUnitRules] = useState(false); 
   const fontSize = ["uk", "sk"].includes(i18n.language) ? "13px" : "14px";
 
 
@@ -78,6 +80,7 @@ const GrammarInput = () => {
     transformer.removeUnitRules(rules);
     setOutput(formatGrammarOutput(rules));
     setExplanation(transformer.explanations.join("\n"));
+    setshowPseudocodeForRemoveUnitRules(true);
   };
   
   const handleRemoveUselessSymbols = () => {
@@ -88,16 +91,12 @@ const GrammarInput = () => {
     }
   
     const transformer = new RemovingUselessSymbols();
-    
-    // Remove non-terminating symbols
-    rules = transformer.removeNotTerminatingSymbols(rules);
+  
+    // Викликаємо функцію, яка одночасно видаляє непотрібні символи
+    rules = transformer.executeRemovingUselessSymbols(rules);  // викликаємо комбіновану функцію
     setOutput(formatGrammarOutput(rules));
     setExplanation(transformer.explanations.join("\n"));
-    
-    // Remove unreachable symbols
-    rules = transformer.removeUnreachableSymbols(rules);
-    setOutput(formatGrammarOutput(rules));
-    setExplanation(transformer.explanations.join("\n"));
+    setshowPseudocodeForRemoveUselessSymbols(true);
   };
   
   const handleRemoveLeftRecursion = () => {
@@ -259,9 +258,13 @@ const GrammarInput = () => {
           <PseudoCodeRemoveLeftRecursion inputText={input} />
         ) : showPseudocodeForRemoveEpsilonRules ? (
           <PseudoCodeRemoveEpsilonRules inputText={input} />
-        ) : (
+        ) : showPseudocodeForRemoveUselessSymbols ? (
+            <PseudoCodeRemoveUselessSymbols inputText={input} />
+        ) : showPseudocodeForRemoveUnitRules ? (
+            <PseudoCodeRemoveUnitRules inputText={input} />
+        ) :
             <SupportedGrammars />
-        )}
+        }
     </div>
   </div>
 

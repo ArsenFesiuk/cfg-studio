@@ -47,7 +47,51 @@
 
     "PseudocodeRemoveLeftRecursion": "Algoritmus na odstránenie ľavej rekurzie",
 
-    "next": "Dalej"
+    "next": "Dalej",
 
-    
+    "stepsForLeftRecursion": [
+        "1:   \\( \\text{ pre všetky i } \\in \\{1,2,\\dots,n\\} \\text{ vykonaj }\\)",
+        "2:       \\( \\text{ pre všetky j } \\in \\{1,\\dots,i-1\\} \\text{ vykonaj } \\)",
+        "3:           \\( \\text{ nahraď každé pravidlo tvaru } A_i \\to A_j\\alpha  \\text{ pravidlami } \\)",
+        "4:           \\( A_i \\to \\beta_1\\alpha \\mid \\beta_2\\alpha \\mid \\dots \\mid \\beta_m\\alpha \\),",
+        "5:           \\( \\text{ pričom ak }  A_j \\to \\beta_1 \\mid \\beta_2 \\mid \\dots \\mid \\beta_m, \\text{ sú všetky } A_j \\text{ pravidlá zahrnuté } \\)",
+        "6:        \\( \\text{ koniec pre } \\)",
+        "7:        \\( \\text{ odstráň priamu ľavú rekurziu v netermináli } A_i \\text{ pomocou (2) } \\)",
+        "8:   \\( \\text{ koniec pre } \\)"
+    ],
+
+    "stepsForRemoveUnitRules": [
+        "1:         \\( \\text{pre všetky } A_i \\in N \\text{ vykonaj nasledovné:} \\)",
+        "2:             \\( N_A \\gets \\emptyset \\)",
+        "3:             \\( N'_A \\gets N_A \\)",
+        "4:                     \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\text{ a } B \\in N'_A \\} \\)",
+        "5:             \\( N'_A \\neq N_A \\text{, skok na krok 3} \\)",
+        "6:             \\( \\text{nahradíme pravidlá } A_i \\to A_j \\text{ všetkými alternatívami z } N_A \\)",
+        "7:         \\( \\text{koniec pre} \\)",
+        "8:   \\( \\text{koniec} \\)"
+    ],
+
+    "stepsForRemoveEpsilonRules": [
+        "1:     \\( N_\\epsilon \\gets \\emptyset; \\) ⊲ \\( \\text{Inicializácia množiny nulovateľných neterminálov} \\)",
+        "2:         \\( N̂_\\epsilon \\gets N_\\epsilon; \\) ⊲ \\( \\text{Kopírovanie } N_\\epsilon \\text{ do } N̂_\\epsilon \\)",
+        "3:         \\( N_\\epsilon \\gets N̂_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in N̂_\\epsilon^* \\}; \\)",
+        "4:     \\( \\text{Kým } N_\\epsilon \\neq N̂_\\epsilon, \\text{ prejdite na krok 2.} \\)"
+    ],
+
+
+    "stepsForRemoveUselessSymbols": [
+        "1:   \\( N_T \\gets \\emptyset \\) ⊲ \\( \\text{Inicializácia množiny užitočných neterminálov} \\)",
+        "2:       \\( N'_T \\gets N_T \\)",
+        "3:       \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in (N'_T \\cup T)^* \\} \\)",
+        "4:   \\( \\text{Pokiaľ } N_T \\neq N'_T, \\text{ prejdite na krok 2} \\) ⊲ \\( \\text{Opakujte, kým sa množina } N_T \\text{ mení} \\)",
+        "5:   \\( \\text{Ak } S \\in N_T, \\text{ pokračujte} \\) ⊲ \\( \\text{Ak } S \\notin N_T, \\text{ potom } L(G) = \\emptyset \\)",
+        "6:       \\( \\text{Odstráňte z gramatiky } G \\text{ všetky neterminály, ktoré nepatria do } N_T \\)",
+        "7:       \\( V_D \\gets \\{ S \\} \\) ⊲ \\( \\text{Inicializácia množiny dosiahnuteľných symbolov} \\)",
+        "8:           \\( V'_D \\gets V_D \\)",
+        "9:           \\( V_D \\gets V'_D \\cup \\{ X \\mid A \\to \\alpha X \\beta \\in P, A \\in V'_D \\} \\)",
+        "10:      \\( \\text{Pokiaľ } V_D \\neq V'_D, \\text{ prejdite na krok 8} \\) ⊲ \\( \\text{Opakujte, kým sa množina } V_D \\text{ mení} \\)",
+        "11:      \\( \\text{Odstráňte z gramatiky } G \\text{ všetky symboly, ktoré nepatria do } V_D \\)",
+        "12:  \\( \\text{Koniec} \\)"
+    ]
+
 }

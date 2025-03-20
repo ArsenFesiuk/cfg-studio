@@ -1,51 +1,51 @@
 import { useState, useEffect } from "react";
-import { RemovingEpsilonRules } from "../utils/RemovingEpsilonRules";
-import { useTranslation } from "react-i18next";
+import { RemovingUselessSymbols } from "../utils/RemovingUselessSymbols";
 import { MathJax } from "better-react-mathjax";
+import { useTranslation } from "react-i18next";
 
-export function PseudoCodeRemoveEpsilonRules({ inputText }) {
-  const [currentLine, setCurrentLine] = useState(0);
-  const [explanation, setExplanation] = useState("");
-  const [steps, setSteps] = useState([]);
-  const [currentExplanation, setCurrentExplanation] = useState(0);
-  const { t } = useTranslation();
-  const pseudoCodeRemoveEpsilonRules = t("stepsForRemoveEpsilonRules", { returnObjects: true });
-
-  useEffect(() => {
-    if (inputText) {
-      const rules = inputText.split("\n").map((line) => {
-        const [left, right] = line.split("→").map((part) => part.trim());
-        return {
-          leftSide: left,
-          rightSide: right.split("|").map((alt) => alt.trim().split(" ")),
-        };
-      });
+export function PseudoCodeRemoveUselessSymbols({ inputText }) {
+    const [currentLine, setCurrentLine] = useState(0);
+    const [explanation, setExplanation] = useState("");
+    const [steps, setSteps] = useState([]);
+    const [currentExplanation, setCurrentExplanation] = useState(0);
+    const { t } = useTranslation();
+    const pseudoCodeRemoveUselessSymbols = t("stepsForRemoveUselessSymbols", { returnObjects: true });
   
-      const newRemover = new RemovingEpsilonRules(rules, t);
-      newRemover.executeEpsilonRuleRemoval();
-      setSteps(newRemover.explanations);
-      setCurrentLine(0);
-      // Set explanation to the message directly
-      setExplanation(newRemover.explanations[0]?.message || "");
-    }
-  }, [inputText]);
+    useEffect(() => {
+      if (inputText) {
+        const rules = inputText.split("\n").map((line) => {
+          const [left, right] = line.split("→").map((part) => part.trim());
+          return {
+            leftSide: left,
+            rightSide: right.split("|").map((alt) => alt.trim().split(" ")),
+          };
+        });
+    
+        const newRemover = new RemovingUselessSymbols();
+        newRemover.executeRemovingUselessSymbols(rules);
+        setSteps(newRemover.explanations);
+        setCurrentLine(0);
+        // Set explanation to the message directly
+        setExplanation(newRemover.explanations[0]?.message || "");
+      }
+    }, [inputText]);
+    
+    const handleNextStep = () => {
+      if (currentExplanation < steps.length - 1) {
+        const nextStep = steps[currentExplanation + 1];
+        setCurrentLine(nextStep.line);
+        setCurrentExplanation(currentExplanation + 1);
+        // Access the message directly here
+        setExplanation(nextStep.message);
+      }
+    };
   
-  const handleNextStep = () => {
-    if (currentExplanation < steps.length - 1) {
-      const nextStep = steps[currentExplanation + 1];
-      setCurrentLine(nextStep.line);
-      setCurrentExplanation(currentExplanation + 1);
-      // Access the message directly here
-      setExplanation(nextStep.message);
-    }
-  };
-
-  return (
-    <div>
+    return (
+      <div>
             {/* Контейнер для псевдокоду */}
             <div style={{ padding: "16px", fontFamily: "Arial, sans-serif", border: "1px solid #ddd", backgroundColor: "#fafafa"}}>
               <MathJax>
-                {pseudoCodeRemoveEpsilonRules.map((line, index) => (
+                {pseudoCodeRemoveUselessSymbols.map((line, index) => (
                   <div
                     key={index}
                     style={{
@@ -77,7 +77,7 @@ export function PseudoCodeRemoveEpsilonRules({ inputText }) {
             </MathJax>
             </div>
           </div>
-  );
+    ); 
 }
 
 const buttonStyle = {
@@ -90,5 +90,3 @@ const buttonStyle = {
   cursor: "pointer",
   fontSize: "16px",
 };
-
-
