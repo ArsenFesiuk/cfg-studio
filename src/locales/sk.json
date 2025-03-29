@@ -29,69 +29,119 @@
     "testForUseless": "Test na nadbytočné symboly",
     "testForLeftRecursion": "Test na ľavú rekurziu",
     "testForCNF": "Test na prevod do CNF",
+    
+    "Row1ForRemoveEpsilon": "1. \\( \\text{Vytvoriť } N_\\varepsilon: \\{ {{nullableSet}} \\} \\)",
+    "Row2ForRemoveEpsilon": "2. \\( \\text{Skopírovať } N_\\varepsilon \\text{ do } \\hat{N}_\\varepsilon \\) \n \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",
+    "Row3ForRemoveEpsilon": "3. \\( {{leftSide}} \\text{ sa pridáva do } N_\\varepsilon, \\text{ pretože má } \\varepsilon. \\)",
+    "Row3ForRemoveEpsilon2": "3. \\( {{leftSide}} \\text{ sa pridáva k } N_\\varepsilon, \\text{ pretože všetky neterminály v alternatíve } \\{ {{alternative}} \\} \\text{ sú v } \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\}. \\) \n {{grammatik}}",
+    "Row4ForRemoveEpsilon": "4. \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",
+    "Row5ForRemoveEpsilon": "• \\(\\text{ k pravidlu } \\) {{originalRule}} \\(\\text{ pridané pravidlá } \\) {{newRule}}. \\(N_\\varepsilon\\): {{nullableSet}}",
 
-    "Row1ForLeftRecursion" : "1.Spustiť spracovanie pravidla pre i = {{i}} ({{rule}})",
-    "Row2ForLeftRecursion" : "2.Spracovanie predchádzajúcich pravidiel pre j = {{j}} ({{rule}})",
-    "Row3ForLeftRecursion" : "3.Nahradenie pravidla pre Aᵢ → Aⱼα novými alternatívami: {{currentRule}} sa nahradí {{previousRule}}\ni = {{i}}\nj = {{j}}",
-    "Row4ForLeftRecursion" : "4.{{leftSide}} → {{newRightSide}}\ni = {{i}}\nj = {{j}}",
-    "Row5ForLeftRecursion" : "5.A tak je potrebné zmeniť všetky pravidlá",
-    "Row6ForLeftRecursion" : "6.Aktuálny stav pravidiel po spracovaní j = {{j}} ({{rule}})\n{{rules}}",
-    "Row7ForLeftRecursion" : "7.Pravidlo po odstránení ľavej pravej rekurzie:\n{{rules}}\nNové vytvorené pravidlo:\n{{newRule}}\ni = {{i}}",
-    "Row8ForLeftRecursion" : "8.Aktuálny stav pravidiel po spracovaní i = {{i}} ({{rule}})\n{{rules}}",
+    "Row1ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}}",
+    "Row2ForRemoveUnitRules": "\\( N_A \\) = {{N_A}}",
+    "Row3ForRemoveUnitRules": "\\( N_A \\) = {{N_A}}\n \\( N'_A \\) = {{previousN_A}}",
+    "Row4ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}}\n\\( N_A \\) (\\( \\text{ z pravidla } \\){{leftSide}} → {{target}}) = {{N_A}}",
+    "Row5ForRemoveUnitRules": "\\( N_A \\) = {{N_A}}\n \\( N'_A \\) = {{previousN_A}}",
+    "Row6ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}} \n\\( N_A \\)= {{N_A}} \n{{leftSide}} → {{rightSide}}",
+    "Row7ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}} \n{{grammatik}}",
 
-    "Row1ForRemoveEpsilon": "1. Vytvoriť Nε: {{nullableSet}}",
-    "Row2ForRemoveEpsilon": "2. Skopírujte Nε do N̂ε\nNε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
-    "Row3ForRemoveEpsilon": "3. {{leftSide}} je pridaný do Nε, pretože má ε.",
-    "Row3ForRemoveEpsilon2": "3. {{leftSide}} sa pridáva k Nε, pretože všetky neterminály v alternatíve {{alternative}} sú N̂ε.",
-    "Row4ForRemoveEpsilon": "4. Nε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
+    "Row1ForRemoveUselessSymbols": "\\(\\text{Vytvorenie } N_T\\) = {{N_T}}",
+    "Row2ForRemoveUselessSymbols": "\\(\\text{Kopírovanie } N_T \\to N'_T\\) \n \\(N_T\\): {{N_T}}\n \\(N'_T\\): {{N_T_previous}}",
+    "Row3ForRemoveUselessSymbols": "\\(\\text{Pridávame }\\) ({{leftSide}}) \\(\\text{ do množiny terminálnych neterminálov } N_T \\text{, pretože existuje pravidlo }\\) {{leftSide}} → {{alternative}} \\(\\text{, kde všetky symboly alternatívy sú terminály}\\)",
+    "Row4ForRemoveUselessSymbols": "\\(N_T \\) = {{N_T}} \n\\(N'_T \\)  = {{N_T_previous}}",
+    "Row5ForRemoveUselessSymbols": "\\(N_T \\) = {{N_T}}",
+    "Row6ForRemoveUselessSymbols": "\\(\\text{Pravidlá po odstránení neterminálov, ktoré nie sú v } N_T\\) = {{N_T}}\n{{formattedRules}}",
+    "Row7ForRemoveUselessSymbols": "\\(\\text{Vytvorenie } V_D\\) = {{V_D}}",
+    "Row8ForRemoveUselessSymbols": "\\(\\text{Kopírovanie } V_D \\text{ do } V'_D \\) \n\\(V_D\\): {{V_D}}\n\\(V'_D\\): {{V_D_previous}}",
+    "Row9ForRemoveUselessSymbols": "\\(\\text{Pridávame } ({{symbol}}) \\text{ do množiny dosiahnuteľných symbolov } (V_D) \\text{, pretože existuje pravidlo}\\) {{leftSide}} → {{alternative}}",
+    "Row10ForRemoveUselessSymbols": "\\(V_D \\) = {{V_D}} \n\\(V'_D \\) = {{V_D_previous}}",
+    "Row11ForRemoveUselessSymbols": "\\(\\text{Pravidlá po odstránení symbolov, ktoré nie sú v } V_D\\) = {{V_D}}:\n{{formattedRules}}",
+    "Row12ForRemoveUselessSymbols": "\\(\\text{Výstup }\\):\n{{formattedRules}}",
+
+    "Row1ForLeftRecursion": "1. \\( \\text{Spustiť spracovanie pravidla pre i = } {{i}} \\) ({{rule}})",
+    "Row2ForLeftRecursion": "2. \\( \\text{Spracovanie predchádzajúcich pravidiel pre j = } {{j}} \\) ({{rule}})",
+    "Row3ForLeftRecursion": "3. \\( \\text{Nahradenie pravidla pre } A_i \\to A_j \\alpha \\text{ novými alternatívami: } \\) {{currentRule}} \\( \\text{sa nahrádza} \\) {{previousRule}} \n \\( i = {{i}} \\) \n \\( j = {{j}} \\)",
+    "Row4ForLeftRecursion": "4. {{leftSide}} → {{newRightSide}} \n \\( i = {{i}} \\) \n \\( j = {{j}} \\)",
+    "Row5ForLeftRecursion": "5. \\( \\text{A tak je potrebné zmeniť všetky pravidlá} \\)",
+    "Row6ForLeftRecursion": "6. \\( \\text{Aktuálny stav pravidiel po spracovaní j = } {{j}} ({{rule}}) \\) \n {{rules}}",
+    "Row7ForLeftRecursion": "7. \\( \\text{Pravidlo po odstránení ľavej priamej rekurzie i = } {{i}} ({{rule}}): \\) \n {{rules}} \n \\( \\text{Nové vytvorené pravidlo:} \\) \n {{newRule}}",
+    "Row8ForLeftRecursion": "8. \\( \\text{Aktuálny stav pravidiel po spracovaní i = } {{i}} ({{rule}}) \\) \n {{rules}}",
+
+    "Row1ForCNF": "\\( \\text{Vytvorenie nového počiatočného symbolu }\\) {{newStartSymbol}}\n{{grammatik}}",
+    "Row2ForCNF": "\\( \\text{Odstránenie epsilon pravidiel}\\)\n{{grammatik}}",
+    "Row3ForCNF": "\\( \\text{Odstránenie jednotkových pravidiel}\\)\n{{grammatik}}",
+    "Row4ForCNF": "\\( \\text{Odstránenie zbytočných symbolov}\\)\n{{grammatik}}",
+    "Row5ForCNF": "\\( \\text{Nahradenie terminálu v pravidle }\\) {{leftSide}} → {{production}}. \\( \\text{Nahradzujeme symbol }\\) : {{symbol}}\n{{grammatik}}",
+    "Row6ForCNF": "\\( \\text{Nahrádzanie alternatívy }\\): {{leftSide}} → {{production}} \\( \\text{ s }\\) {{leftSide}} → {{newNonTerminal}}, {{productionWithout1}}",
+    "Row7ForCNF": "\\( \\text{Vytvorený nový neterminál pre terminál }\\): {{newNonTerminal}} → {{symbol}}",
+    "Row8ForCNF": "{{grammatik}}",
+    "Row9ForCNF": "\\( \\text{Rozdelenie dlhého pravidla (n > 2) }\\): {{leftSide}} → {{production}}\n{{grammatik}}",
+    "Row10ForCNF": "\\( \\text{Nahrádzanie }\\): {{leftSide}} → {{first}} {{production}} \\( \\text{ s }\\) {{leftSide}} → {{newNonTerminal}} {{productionWithout1}}",
+    "Row11ForCNF": "\\( \\text{Nový neterminál vytvorený }\\): {{newNonTerminal}} → {{pair}}",
+    "Row12ForCNF": "{{grammatik}}",
 
     "PseudocodeRemoveLeftRecursion": "Algoritmus na odstránenie ľavej rekurzie",
 
     "next": "Dalej",
 
-    "stepsForLeftRecursion": [
-        "1:   \\( \\text{ pre všetky i } \\in \\{1,2,\\dots,n\\} \\text{ vykonaj }\\)",
-        "2:       \\( \\text{ pre všetky j } \\in \\{1,\\dots,i-1\\} \\text{ vykonaj } \\)",
-        "3:           \\( \\text{ nahraď každé pravidlo tvaru } A_i \\to A_j\\alpha  \\text{ pravidlami } \\)",
-        "4:           \\( A_i \\to \\beta_1\\alpha \\mid \\beta_2\\alpha \\mid \\dots \\mid \\beta_m\\alpha \\),",
-        "5:           \\( \\text{ pričom ak }  A_j \\to \\beta_1 \\mid \\beta_2 \\mid \\dots \\mid \\beta_m, \\text{ sú všetky } A_j \\text{ pravidlá zahrnuté } \\)",
-        "6:        \\( \\text{ koniec pre } \\)",
-        "7:        \\( \\text{ odstráň priamu ľavú rekurziu v netermináli } A_i \\text{ pomocou (2) } \\)",
-        "8:   \\( \\text{ koniec pre } \\)"
+    "stepsForRemoveEpsilonRules": [
+        "1: \\( N_\\epsilon \\gets \\emptyset; \\)",
+        "2:     \\( \\hat{N}_\\epsilon \\gets N_\\epsilon; \\)",
+        "3:     \\( N_\\epsilon \\gets \\hat{N}_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in \\hat{N}_\\epsilon^* \\}; \\)",
+        "4: \\( \\textbf{pokial } N_\\epsilon \\neq \\hat{N}_\\epsilon, \\text{ skok na krok 2.} \\)"
     ],
 
     "stepsForRemoveUnitRules": [
-        "1:         \\( \\text{pre všetky } A_i \\in N \\text{ vykonaj nasledovné:} \\)",
-        "2:             \\( N_A \\gets \\emptyset \\)",
-        "3:             \\( N'_A \\gets N_A \\)",
-        "4:                     \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\text{ a } B \\in N'_A \\} \\)",
-        "5:             \\( N'_A \\neq N_A \\text{, skok na krok 3} \\)",
-        "6:             \\( \\text{nahradíme pravidlá } A_i \\to A_j \\text{ všetkými alternatívami z } N_A \\)",
-        "7:         \\( \\text{koniec pre} \\)",
-        "8:   \\( \\text{koniec} \\)"
+        "1: \\( \\textbf{pre všetky } A_i \\in N \\textbf{ vykonaj} \\)",
+        "2:     \\( N_A \\gets \\emptyset \\)",
+        "3:         \\( N'_A \\gets N_A \\)",
+        "4:         \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\text{ a } B \\in N'_A \\} \\)",
+        "5:     \\( \\textbf{pokiaľ } N'_A \\neq N_A \\text{, skok na krok 3} \\)",
+        "6:         \\( \\text{nahradíme pravidlá } A_i \\to A_j \\text{ všetkými alternatívami z } N_A \\)",
+        "7: \\( \\textbf{koniec pre} \\)"
     ],
-
-    "stepsForRemoveEpsilonRules": [
-        "1:     \\( N_\\epsilon \\gets \\emptyset; \\) ⊲ \\( \\text{Inicializácia množiny nulovateľných neterminálov} \\)",
-        "2:         \\( N̂_\\epsilon \\gets N_\\epsilon; \\) ⊲ \\( \\text{Kopírovanie } N_\\epsilon \\text{ do } N̂_\\epsilon \\)",
-        "3:         \\( N_\\epsilon \\gets N̂_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in N̂_\\epsilon^* \\}; \\)",
-        "4:     \\( \\text{Kým } N_\\epsilon \\neq N̂_\\epsilon, \\text{ prejdite na krok 2.} \\)"
-    ],
-
 
     "stepsForRemoveUselessSymbols": [
-        "1:   \\( N_T \\gets \\emptyset \\) ⊲ \\( \\text{Inicializácia množiny užitočných neterminálov} \\)",
-        "2:       \\( N'_T \\gets N_T \\)",
-        "3:       \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in (N'_T \\cup T)^* \\} \\)",
-        "4:   \\( \\text{Pokiaľ } N_T \\neq N'_T, \\text{ prejdite na krok 2} \\) ⊲ \\( \\text{Opakujte, kým sa množina } N_T \\text{ mení} \\)",
-        "5:   \\( \\text{Ak } S \\in N_T, \\text{ pokračujte} \\) ⊲ \\( \\text{Ak } S \\notin N_T, \\text{ potom } L(G) = \\emptyset \\)",
-        "6:       \\( \\text{Odstráňte z gramatiky } G \\text{ všetky neterminály, ktoré nepatria do } N_T \\)",
-        "7:       \\( V_D \\gets \\{ S \\} \\) ⊲ \\( \\text{Inicializácia množiny dosiahnuteľných symbolov} \\)",
-        "8:           \\( V'_D \\gets V_D \\)",
-        "9:           \\( V_D \\gets V'_D \\cup \\{ X \\mid A \\to \\alpha X \\beta \\in P, A \\in V'_D \\} \\)",
-        "10:      \\( \\text{Pokiaľ } V_D \\neq V'_D, \\text{ prejdite na krok 8} \\) ⊲ \\( \\text{Opakujte, kým sa množina } V_D \\text{ mení} \\)",
-        "11:      \\( \\text{Odstráňte z gramatiky } G \\text{ všetky symboly, ktoré nepatria do } V_D \\)",
-        "12:  \\( \\text{Koniec} \\)"
+        "1: \\( N_T \\gets \\emptyset \\)",
+        "2:     \\( N'_T \\gets N_T \\)",
+        "3:     \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in (N'_T \\cup T)^* \\} \\)",
+        "4: \\( \\textbf{pokiaľ } N_T \\neq N'_T, \\text{ skok na krok 2} \\)",
+        "5: \\( \\textbf{ak } S \\in N_T, \\textbf{ potom} \\)",
+        "6:     \\( \\text{odstráňte z gramatiky } G \\text{ všetky neterminály, ktoré nepatria do } N_T \\)",
+        "7:     \\( V_D \\gets \\{ S \\} \\)",
+        "8:         \\( V'_D \\gets V_D \\)",
+        "9:         \\( V_D \\gets V'_D \\cup \\{ X \\mid A \\to \\alpha X \\beta \\in P, A \\in V'_D \\} \\)",
+        "10:    \\( \\textbf{pokiaľ } V_D \\neq V'_D, \\text{ prejdite na krok 8} \\) ",
+        "11:        \\( \\text{odstráňte z gramatiky } G \\text{ všetky symboly, ktoré nepatria do } V_D \\)",
+        "12: \\( \\textbf{koniec ak} \\)"
+    ],
+
+    "stepsForLeftRecursion": [
+        "1: \\( \\textbf{ pre všetky } i \\in \\{1,2,\\dots,n\\} \\textbf{ vykonaj }\\)",
+        "2:     \\( \\textbf{ pre všetky } j \\in \\{1,\\dots,i-1\\} \\textbf{ vykonaj } \\)",
+        "3:         \\( \\text{ nahraď každé pravidlo tvaru } A_i \\to A_j\\alpha  \\text{ pravidlami } \\)",
+        "4:         \\( A_i \\to \\beta_1\\alpha \\mid \\beta_2\\alpha \\mid \\dots \\mid \\beta_m\\alpha \\),",
+        "5:         \\( \\text{ pričom }  A_j \\to \\beta_1 \\mid \\beta_2 \\mid \\dots \\mid \\beta_m, \\text{ sú všetky } A_j \\text{ pravidlá } \\)",
+        "6:     \\( \\textbf{ koniec pre } \\)",
+        "7:     \\( \\text{ odstráň pripadnú priamu ľavú rekurziu v netermináli } A_i \\text{ pomocou (2) } \\)",
+        "8: \\( \\textbf{ koniec pre } \\)"
+    ],
+
+    "stepsForGrammarTransformation": [
+        "1: \\( \\text{zaveďte nový počiatočný symbol } S_0 \\text{ a pridajte pravidlo } S_0 \\to S; \\)",
+        "2: \\( \\text{odstráňte všetky } \\varepsilon \\text{-pravidlá;} \\)",
+        "3: \\( \\text{odstráňte všetky jednoduché pravidlá;} \\)",
+        "4: \\( \\text{odstráňte všetky nepoužiteľné symboly;} \\)",
+        "5: \\( \\textbf{pre všetky} \\text{ pravidlá tvaru } A \\to Y_1 Y_2, \\text{ kde } Y_1 \\in T \\text{ alebo } Y_2 \\in T, \\textbf{ vykonajte} \\)",
+        "6:     \\( \\text{nahraďte terminál } Y_1 (Y_2) \\text{ v pravej strane novými neterminálmi } V_1 (V_2), \\)",
+        "7:     \\( \\text{a pridajte pravidlá } V_1 \\to X_1, \\text{ a } V_2 \\to X_2; \\)",
+        "8: \\( \\textbf{koniec pre} \\)",
+        "9: \\( \\textbf{pre všetky} \\text{pravidlá tvaru } A \\to X_1 X_2 \\dots X_n, \\text{ kde } n \\geq 3, \\textbf{ vykonajte} \\)",
+        "10:    \\( \\text{nahraďte pravidlami } A \\to X_1 A_1, A_1 \\to X_2 A_2, \\dots, A_{n-2} \\to X_{n-1} X_n, \\)",
+        "11:    \\( \\text{kde } A_1, A_2, \\dots, A_{n-2} \\text{ sú nové neterminály;} \\)",
+        "12: \\( \\textbf{koniec pre} \\)"
     ]
+
+
 
 }

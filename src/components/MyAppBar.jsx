@@ -59,7 +59,7 @@ const MyAppBar = () => {
 
         {/* Language Switcher */}
         <Box sx={{ marginLeft: 2, display: "flex", gap: 1 }}>
-          {["en", "uk", "sk"].map((lang) => (
+          {["en", "ua", "sk"].map((lang) => (
             <Button
               key={lang}
               variant={i18n.language === lang ? "contained" : "outlined"}

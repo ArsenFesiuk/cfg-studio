@@ -1,0 +1,144 @@
+{
+    "appBarTitle": "Нормалізація безконтекстових граматик",
+    "repository": "Репозиторій",
+    "documentation": "Документація",
+    "contacts": "Контакти",
+
+    "input": "Вхідні дані",
+    "output": "Результат",
+    "explanation": "Пояснення",
+    "removeEpsilon": "Видалити епсілон",
+    "removeUnitRules": "Видалити прості правила",
+    "removeUselessSymbols": "Видалити непотрібні символи",
+    "removeLeftRecursion": "Видалити ліву рекурсію",
+    "convertToCNF": "Перетворити у ХНФ",
+
+    "guideTitle": "Інструкція із застосування",
+    "guideInput": "Як правильно вводити граматику",
+    "guideExplanation": "Як отримати пояснення",
+    "guideExplanation1": "Щоб отримати пояснення потрібно задати правильний вхідні дані і нажати на кнопку певного алгоритму, на цьому місці появиться псевдкод, де ти зможеш рухатись покроково і на кожен крок матимеш пояснення.",
+    "guideIntroduction": "Вступ",
+    "guideIntroduction2": "У цьому додатку ви зможете легко переводити безконтекстову граматику в Нормальну форму Хомського (CNF) за допомогою кнопки CFG to CNF, а також виконувати кожен алгоритм окремо. Це дозволяє вам детально ознайомитись з кожним етапом трансформації та зрозуміти, як граматика перетворюється в нормальну форму.",
+    "guideExample1": "Всі токени повинні бути розділені пробілами",
+    "guideExample2": "Якщо вам потрібна стрілка, напишіть ->",
+    "guideExample3": "Якщо вам потрібен епсілон, напишіть \\eps",
+
+    "examples": "Приклади",
+    "testForEpsilon" : "Тест для епсілон правил",
+    "testForUnit" : "Тест для простих правил",
+    "testForUseless" : "Тест для непотрібних символів",
+    "testForLeftRecursion" : "Тест для лівої рекурсії",
+    "testForCNF" : "Тест для CFG to CNF",
+
+    "Row1ForRemoveEpsilon": "1. \\( \\text{Створюємо } N_\\varepsilon: \\{ {{nullableSet}} \\} \\)",
+    "Row2ForRemoveEpsilon": "2. \\( \\text{Копіюємо } N_\\varepsilon \\text{ у } \\hat{N}_\\varepsilon \\) \n \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",
+    "Row3ForRemoveEpsilon": "3. \\( {{leftSide}} \\text{ додано в } N_\\varepsilon, \\text{ бо має } \\varepsilon. \\)",
+    "Row3ForRemoveEpsilon2": "3. \\( {{leftSide}} \\text{ додано в } N_\\varepsilon, \\text{ бо всі нетермінали в альтернативі } \\{ {{alternative}} \\} \\text{ є в } \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\}. \\) \n {{grammatik}}",
+    "Row4ForRemoveEpsilon": "4. \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",
+    "Row5ForRemoveEpsilon": "• \\(\\text{ до правила } \\) {{originalRule}} \\(\\text{ додано правила } \\) {{newRule}}. \\(N_\\varepsilon\\): {{nullableSet}}",
+
+    "Row1ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}}",
+    "Row2ForRemoveUnitRules": "\\( N_A \\) = {{N_A}}",
+    "Row3ForRemoveUnitRules": "\\( N_A \\) = {{N_A}}\n \\( N'_A \\) = {{previousN_A}}",
+    "Row4ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}}\n\\( N_A \\) (\\( \\text{ з правила } \\){{leftSide}} → {{target}}) = {{N_A}}",
+    "Row5ForRemoveUnitRules": "\\( N_A \\) = {{N_A}}\n \\( N'_A \\) = {{previousN_A}}",
+    "Row6ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}} \n\\( N_A \\)= {{N_A}} \n{{leftSide}} → {{rightSide}}",
+    "Row7ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}} \n{{grammatik}}",
+
+    "Row1ForRemoveUselessSymbols": "\\(\\text{Створюємо } N_T\\) = {{N_T}}",
+    "Row2ForRemoveUselessSymbols": "\\(\\text{Копіюємо } N_T \\to N'_T\\) \n \\(N_T\\): {{N_T}}\n \\(N'_T\\): {{N_T_previous}}",
+    "Row3ForRemoveUselessSymbols": "\\(\\text{Додаємо }\\) ({{leftSide}}) \\(\\text{ до множини завершальних нетерміналів } N_T \\text{, оскільки існує правило }\\) {{leftSide}} → {{alternative}} \\(\\text{, де всі символи альтернативи є терміналами}\\)",
+    "Row4ForRemoveUselessSymbols": "\\(N_T \\) = {{N_T}} \n\\(N'_T \\)  = {{N_T_previous}}",
+    "Row5ForRemoveUselessSymbols": "\\(N_T \\) = {{N_T}}",
+    "Row6ForRemoveUselessSymbols": "\\(\\text{Правила після видалення нетерміналів, які не входять до } N_T\\) = {{N_T}}\n{{formattedRules}}",
+    "Row7ForRemoveUselessSymbols": "\\(\\text{Створюємо } V_D\\) = {{V_D}}",
+    "Row8ForRemoveUselessSymbols": "\\(\\text{Копіюємо } V_D \\text{ у } V'_D \\) \n\\(V_D\\): {{V_D}}\n\\(V'_D\\): {{V_D_previous}}",
+    "Row9ForRemoveUselessSymbols": "\\(\\text{Додаємо } ({{symbol}}) \\text{ до множини досяжних символів } (V_D) \\text{, оскільки існує правило}\\) {{leftSide}} → {{alternative}}",
+    "Row10ForRemoveUselessSymbols": "\\(V_D \\) = {{V_D}} \n\\(V'_D \\) = {{V_D_previous}}",
+    "Row11ForRemoveUselessSymbols": "\\(\\text{Правила після видалення символів, що не входять до } V_D\\) = {{V_D}}:\n{{formattedRules}}",
+    "Row12ForRemoveUselessSymbols": "\\(\\text{Вихідні дані }\\):\n{{formattedRules}}",
+
+    "Row1ForLeftRecursion": "1. \\( \\text{Починаємо обробку правила для i = } {{i}} \\) ({{rule}})",
+    "Row2ForLeftRecursion": "2. \\( \\text{Обробка попередніх правил для j = } {{j}} \\) ({{rule}})",
+    "Row3ForLeftRecursion": "3. \\( \\text{Заміна правила для } A_i \\to A_j \\alpha \\text{ на нові альтернативи: } \\) {{currentRule}} \\( \\text{замінемо на} \\) {{previousRule}} \n \\( i = {{i}} \\) \n \\( j = {{j}} \\)",
+    "Row4ForLeftRecursion": "4. {{leftSide}} → {{newRightSide}} \n \\( i = {{i}} \\) \n \\( j = {{j}} \\)",
+    "Row5ForLeftRecursion": "5. \\( \\text{І так потрібно змінити всі правила} \\)",
+    "Row6ForLeftRecursion": "6. \\( \\text{Поточний стан правил після обробки j = } {{j}} ({{rule}}) \\) \n {{rules}}",
+    "Row7ForLeftRecursion": "7. \\( \\text{Правило після видалення прямої лівої рекурсії i = } {{i}} ({{rule}}): \\) \n {{rules}} \n \\( \\text{Створено нове правило:} \\) \n {{newRule}}",
+    "Row8ForLeftRecursion": "8. \\( \\text{Поточний стан правил після обробки i = } {{i}} ({{rule}}) \\) \n {{rules}}",
+
+    "Row1ForCNF": "\\( \\text{Створення нового початкового символу }\\) {{newStartSymbol}}\n{{grammatik}}",
+    "Row2ForCNF": "\\( \\text{Видалення епсилон-правил}\\)\n{{grammatik}}",
+    "Row3ForCNF": "\\( \\text{Видалення одиничних правил}\\)\n{{grammatik}}",
+    "Row4ForCNF": "\\( \\text{Видалення непотрібних символів}\\)\n{{grammatik}}",
+    "Row5ForCNF": "\\( \\text{Замінюємо термінал у правилі }\\) {{leftSide}} → {{production}}. \\( \\text{Замінюємо символ }\\) : {{symbol}}\n{{grammatik}}",
+    "Row6ForCNF": "\\( \\text{Замінюємо альтернативу }\\): {{leftSide}} → {{production}} \\( \\text{ на }\\) {{leftSide}} → {{newNonTerminal}}, {{productionWithout1}}",
+    "Row7ForCNF": "\\( \\text{Створено новий нетермінал для термінала }\\): {{newNonTerminal}} → {{symbol}}",
+    "Row8ForCNF": "{{grammatik}}",
+    "Row9ForCNF": "\\( \\text{Розбиття довгого правила (n > 2) }\\): {{leftSide}} → {{production}}\n{{grammatik}}",
+    "Row10ForCNF": "\\( \\text{Замінюємо }\\): {{leftSide}} → {{first}} {{production}} \\( \\text{ на }\\) {{leftSide}} → {{newNonTerminal}} {{productionWithout1}}",
+    "Row11ForCNF": "\\( \\text{Створено новий нетермінал }\\): {{newNonTerminal}} → {{pair}}",
+    "Row12ForCNF": "{{grammatik}}",
+
+    "PseudocodeRemoveLeftRecursion": "Алгоритм видалення лівої рекурсії",
+
+    "next": "Далі",
+
+    "stepsForRemoveEpsilonRules": [
+      "1: \\( N_\\epsilon \\gets \\emptyset; \\)",
+      "2:     \\( \\hat{N}_\\epsilon \\gets N_\\epsilon; \\)",
+      "3:     \\( N_\\epsilon \\gets \\hat{N}_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in \\hat{N}_\\epsilon^* \\}; \\)",
+      "4: \\(\\textbf{поки } N_\\epsilon \\neq \\hat{N}_\\epsilon, \\text{ перехід до кроку 2.} \\)"
+    ],
+
+    "stepsForRemoveUnitRules": [
+      "1: \\( \\textbf{для всіх } A_i \\in N \\textbf{ виконай} \\)",
+      "2:     \\( N_A \\gets \\emptyset \\)",
+      "3:         \\( N'_A \\gets N_A \\)",
+      "4:         \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\text{ і } B \\in N'_A \\} \\)",
+      "5:     \\( \\textbf{поки } N'_A \\neq N_A \\text{, перехід до кроку 3} \\)",
+      "6:         \\( \\text{замінити правила } A_i \\to A_j \\text{ всіма альтернативами з } N_A \\)",
+      "7: \\( \\textbf{кінець для} \\)"
+    ],
+
+    "stepsForRemoveUselessSymbols": [
+      "1: \\( N_T \\gets \\emptyset \\)",
+      "2:     \\( N'_T \\gets N_T \\)",
+      "3:     \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in (N'_T \\cup T)^* \\} \\)",
+      "4: \\( \\textbf{поки } N_T \\neq N'_T, \\text{ перехід до кроку 2} \\)",
+      "5: \\( \\textbf{якщо } S \\in N_T, \\textbf{ потім} \\)",
+      "6:     \\( \\text{видалити з граматики } G \\text{ всі нетермінали, які не належать до } N_T \\)",
+      "7:     \\( V_D \\gets \\{ S \\} \\)",
+      "8:         \\( V'_D \\gets V_D \\)",
+      "9:         \\( V_D \\gets V'_D \\cup \\{ X \\mid A \\to \\alpha X \\beta \\in P, A \\in V'_D \\} \\)",
+      "10:    \\( \\textbf{поки } V_D \\neq V'_D, \\text{ перехід до кроку 8} \\)",
+      "11:        \\( \\text{видалити з граматики } G \\text{ всі символи, які не належать до } V_D \\)",
+      "12: \\( \\textbf{кінець як} \\)"
+    ],
+
+    "stepsForLeftRecursion": [
+      "1: \\( \\textbf{ для всіх } i \\in \\{1,2,\\dots,n\\} \\textbf{ виконай }\\)",
+      "2:     \\( \\textbf{ для всіх } j \\in \\{1,\\dots,i-1\\} \\textbf{ виконай } \\)",
+      "3:         \\( \\text{ заміни кожне правило вигляду } A_i \\to A_j\\alpha  \\text{ правилами } \\)",
+      "4:         \\( A_i \\to \\beta_1\\alpha \\mid \\beta_2\\alpha \\mid \\dots \\mid \\beta_m\\alpha \\),",
+      "5:         \\( \\text{ де якщо }  A_j \\to \\beta_1 \\mid \\beta_2 \\mid \\dots \\mid \\beta_m, \\text{ то всі } A_j \\text{ - правила } \\)",
+      "6:     \\( \\textbf{ кінець для } \\)",
+      "7:     \\( \\text{ видали можливу пряму ліву рекурсію в нетерміналі } A_i \\text{ за допомогою (2) } \\)",
+      "8:\\( \\textbf{ кінець для } \\)"
+    ],
+
+    "stepsForGrammarTransformation": [
+      "1: \\( \\text{введіть новий початковий символ } S_0 \\text{ і додайте правило } S_0 \\to S; \\)",
+      "2: \\( \\text{видаліть усі } \\varepsilon \\text{-правила;} \\)",
+      "3: \\( \\text{видаліть усі прості правила;} \\)",
+      "4: \\( \\text{видаліть усі непотрібні символи;} \\)",
+      "5: \\( \\textbf{для всіх} \\text{ правил виду } A \\to Y_1 Y_2, \\text{ де } Y_1 \\in T \\text{ або } Y_2 \\in T, \\textbf{ виконайте} \\)",
+      "6:     \\( \\text{замініть термінал } Y_1 (Y_2) \\text{ у правій частині новими нетерміналами } V_1 (V_2), \\)",
+      "7:     \\( \\text{і додайте правила } V_1 \\to X_1, \\text{ та } V_2 \\to X_2; \\)",
+      "8: \\( \\textbf{кінець для} \\)",
+      "9: \\( \\textbf{для всіх} \\text{ правил виду } A \\to X_1 X_2 \\dots X_n, \\text{ де } n \\geq 3, \\textbf{ виконайте} \\)",
+      "10:    \\( \\text{замініть правилами } A \\to X_1 A_1, A_1 \\to X_2 A_2, \\dots, A_{n-2} \\to X_{n-1} X_n, \\)",
+      "11:    \\( \\text{де } A_1, A_2, \\dots, A_{n-2} \\text{ — нові нетермінали;} \\)",
+      "12: \\( \\textbf{кінець для} \\)"
+  ]
+}

@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
-import { RemovingLeftRecursion } from "../utils/RemovingLeftRecursion";
-import { useTranslation } from "react-i18next";
 import { MathJax } from "better-react-mathjax";
+import { useTranslation } from "react-i18next";
 
-export function PseudoCodeRemoveLeftRecursion({ inputText }) {
+export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey }) {
   const [currentLine, setCurrentLine] = useState(0);
   const [explanation, setExplanation] = useState("");
   const [steps, setSteps] = useState([]);
   const [currentExplanation, setCurrentExplanation] = useState(0);
   const { t } = useTranslation();
-  const pseudoCodeRemoveLeftRecursion = t("stepsForLeftRecursion", { returnObjects: true });
+  const pseudoCodeSteps = t(translationKey, { returnObjects: true });
 
   useEffect(() => {
     if (inputText) {
@@ -21,14 +20,13 @@ export function PseudoCodeRemoveLeftRecursion({ inputText }) {
         };
       });
 
-      const newRemover = new RemovingLeftRecursion(t);
-      const stepwiseExplanations = newRemover.eliminateLeftRecursion(rules);
-
-      setSteps(stepwiseExplanations);
+      const processor = new ProcessingClass(rules, t);
+      processor.execute();
+      setSteps(processor.explanations);
       setCurrentLine(0);
-      setExplanation(stepwiseExplanations[0]?.message || "");
+      setExplanation(processor.explanations[0]?.message || "");
     }
-  }, [inputText, t]);
+  }, [inputText, ProcessingClass, t]);
 
   const handleNextStep = () => {
     if (currentExplanation < steps.length - 1) {
@@ -44,7 +42,7 @@ export function PseudoCodeRemoveLeftRecursion({ inputText }) {
       {/* Контейнер для псевдокоду */}
       <div style={{ padding: "16px", fontFamily: "Arial, sans-serif", border: "1px solid #ddd", backgroundColor: "#fafafa"}}>
         <MathJax>
-          {pseudoCodeRemoveLeftRecursion.map((line, index) => (
+          {pseudoCodeSteps.map((line, index) => (
             <div
               key={index}
               style={{
@@ -60,22 +58,24 @@ export function PseudoCodeRemoveLeftRecursion({ inputText }) {
           ))}
         </MathJax>
       </div>
-  
+
       {/* Кнопка між блоками */}
       <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
         <button onClick={handleNextStep} disabled={currentLine >= steps.length - 1} style={buttonStyle}>
           {t("next")}
         </button>
       </div>
-  
+
       {/* Контейнер для пояснення */}
+
       <div style={{ padding: "16px", fontFamily: "Arial, sans-serif", border: "1px solid #ddd", backgroundColor: "#fafafa" }}>
+      <MathJax>
         <h3 style={{ marginTop: "16px" }}>{t("explanation")}:</h3>
         <p dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}></p>
+        </MathJax>
       </div>
     </div>
   );
-  
 }
 
 const buttonStyle = {

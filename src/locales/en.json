@@ -30,69 +30,115 @@
     "testForLeftRecursion" : "Test for left recursion",
     "testForCNF" : "Test for CFG to CNF",
 
-    "Row1ForLeftRecursion" : "1.Start processing the rule for i = {{i}} ({{rule}})",
-    "Row2ForLeftRecursion" : "2.Processing of previous rules for j = {{j}} ({{rule}})",
-    "Row3ForLeftRecursion" : "3.Replacing the rule for Aᵢ → Aⱼα with new alternatives: {{currentRule}} is replaced by {{previousRule}}\ni = {{i}}\nj = {{j}}",
-    "Row4ForLeftRecursion" : "4.{{leftSide}} → {{newRightSide}}\ni = {{i}}\nj = {{j}}",
-    "Row5ForLeftRecursion" : "5.And so all the rules need to be changed",
-    "Row6ForLeftRecursion" : "6.Current state of rules after processing j = {{j}} ({{rule}})\n{{rules}}",
-    "Row7ForLeftRecursion" : "7.Rule after removing the left-hand right recursion:\n{{rules}}\nNew rule created:\n{{newRule}}\ni = {{i}}",
-    "Row8ForLeftRecursion" : "8.Current state of rules after processing i = {{i}} ({{rule}})\n{{rules}}",
+    "Row1ForRemoveEpsilon": "1. \\( \\text{Create } N_\\varepsilon: \\{ {{nullableSet}} \\} \\)",
+    "Row2ForRemoveEpsilon": "2. \\( \\text{Copy } N_\\varepsilon \\text{ to } \\hat{N}_\\varepsilon \\) \n \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",
+    "Row3ForRemoveEpsilon": "3. \\( {{leftSide}} \\text{ is added to } N_\\varepsilon \\text{ because it has } \\varepsilon. \\) \n {{grammatik}}",
+    "Row3ForRemoveEpsilon2": "3. \\( {{leftSide}} \\text{ is added to } N_\\varepsilon \\text{ because all nonterminals in the alternative } \\{ {{alternative}} \\} \\text{ are in } \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\}. \\) \n {{grammatik}}",
+    "Row4ForRemoveEpsilon": "4. \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",
+    "Row5ForRemoveEpsilon": "• \\(\\text{ to the rule } \\) {{originalRule}} \\(\\text{ rules added } \\) {{newRule}}. \\(N_\\varepsilon\\): {{nullableSet}}",
 
-    "Row1ForRemoveEpsilon": "1. Create Nε: {{nullableSet}}",
-    "Row2ForRemoveEpsilon": "2. Copy Nε to N̂ε\nNε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
-    "Row3ForRemoveEpsilon": "3. {{leftSide}} is added to Nε because it has ε.",
-    "Row3ForRemoveEpsilon2": "3. {{leftSide}} is added to Nε because all nonterminals in the alternative {{alternative}} are N̂ε.",
-    "Row4ForRemoveEpsilon": "4. Nε = {{nullableSet}}\nN̂ε = {{previousNullableSet}}",
+    "Row1ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}}",
+    "Row2ForRemoveUnitRules": "\\( N_A \\) = {{N_A}}",
+    "Row3ForRemoveUnitRules": "\\( N_A \\) = {{N_A}}\n \\( N'_A \\) = {{previousN_A}}",
+    "Row4ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}}\n\\( N_A \\) (\\( \\text{ from the rule } \\){{leftSide}} → {{target}}) = {{N_A}}",
+    "Row5ForRemoveUnitRules": "\\( N_A \\) = {{N_A}}\n \\( N'_A \\) = {{previousN_A}}",
+    "Row6ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}} \n\\( N_A \\)= {{N_A}} \n{{leftSide}} → {{rightSide}}",
+    "Row7ForRemoveUnitRules": "\\( A_i \\) = {{leftSide}} \n{{grammatik}}",
+    
+    "Row1ForRemoveUselessSymbols": "\\(\\text{Create } N_T\\) = {{N_T}}",
+    "Row2ForRemoveUselessSymbols": "\\(\\text{Copy } N_T \\to N'_T\\) \n \\(N_T\\): {{N_T}}\n \\(N'_T\\): {{N_T_previous}}",
+    "Row3ForRemoveUselessSymbols": "\\(\\text{Adding }\\) ({{leftSide}}) \\(\\text{ to the set of terminating nonterminals } N_T \\text{, because there exists a rule }\\) {{leftSide}} → {{alternative}} \\(\\text{, where all symbols in the alternative are terminals}\\)",
+    "Row4ForRemoveUselessSymbols": "\\(N_T \\) = {{N_T}} \n\\(N'_T \\)  = {{N_T_previous}}",
+    "Row5ForRemoveUselessSymbols": "\\(N_T \\) = {{N_T}}",
+    "Row6ForRemoveUselessSymbols": "\\(\\text{Rules after removing nonterminals not in } N_T\\) = {{N_T}}\n{{formattedRules}}",
+    "Row7ForRemoveUselessSymbols": "\\(\\text{Create } V_D\\) = {{V_D}}",
+    "Row8ForRemoveUselessSymbols": "\\(\\text{Copy } V_D \\text{ to } V'_D \\) \n\\(V_D\\): {{V_D}}\n\\(V'_D\\): {{V_D_previous}}",
+    "Row9ForRemoveUselessSymbols": "\\(\\text{Adding } ({{symbol}}) \\text{ to the set of reachable symbols } (V_D) \\text{, because there exists a rule }\\) {{leftSide}} → {{alternative}}",
+    "Row10ForRemoveUselessSymbols": "\\(V_D \\) = {{V_D}} \n\\(V'_D \\) = {{V_D_previous}}",
+    "Row11ForRemoveUselessSymbols": "\\(\\text{Rules after removing symbols not in } V_D\\) = {{V_D}}:\n{{formattedRules}}",
+    "Row12ForRemoveUselessSymbols": "\\(\\text{Output }\\):\n{{formattedRules}}",
+
+    "Row1ForLeftRecursion": "1. \\( \\text{Start processing the rule for i = } {{i}} \\) ({{rule}})",
+    "Row2ForLeftRecursion": "2. \\( \\text{Processing of previous rules for j = } {{j}} \\) ({{rule}})",
+    "Row3ForLeftRecursion": "3. \\( \\text{Replacing the rule for } A_i \\to A_j \\alpha \\text{ with new alternatives: } \\) {{currentRule}}\\(\\text{ is replaced by }\\){{previousRule}} \n \\( i = {{i}} \\) \n \\( j = {{j}} \\)",
+    "Row4ForLeftRecursion": "4. {{leftSide}} → {{newRightSide}} \n \\( i = {{i}} \\) \n \\( j = {{j}} \\)",
+    "Row5ForLeftRecursion": "5. \\( \\text{And so all the rules need to be changed} \\)",
+    "Row6ForLeftRecursion": "6. \\( \\text{Current state of rules after processing j = } {{j}} ({{rule}}) \\) \n {{rules}}",
+    "Row7ForLeftRecursion": "7. \\( \\text{Rule after removing the left forward recursion i = } {{i}} ({{rule}}): \\) \n {{rules}} \n \\( \\text{New rule created:} \\) \n {{newRule}}",
+    "Row8ForLeftRecursion": "8. \\( \\text{Current state of rules after processing i = } {{i}} ({{rule}}) \\) \n {{rules}}",
+
+    "Row1ForCNF": "\\( \\text{Create new start symbol }\\) {{newStartSymbol}}\n{{grammatik}}",
+    "Row2ForCNF": "\\( \\text{Remove epsilon rules}\\)\n{{grammatik}}",
+    "Row3ForCNF": "\\( \\text{Remove unit rules}\\)\n{{grammatik}}",
+    "Row4ForCNF": "\\( \\text{Remove useless symbols}\\)\n{{grammatik}}",
+    "Row5ForCNF": "\\( \\text{Terminal replacement in rule }\\) {{leftSide}} → {{production}}. \\( \\text{Replace the symbol }\\) : {{symbol}}\n{{grammatik}}",
+    "Row6ForCNF": "\\( \\text{Replacing alternative }\\): {{leftSide}} → {{production}} \\( \\text{ with }\\) {{leftSide}} → {{newNonTerminal}}, {{productionWithout1}}",
+    "Row7ForCNF": "\\( \\text{Created new non-terminal for terminal }\\): {{newNonTerminal}} → {{symbol}}",
+    "Row8ForCNF": "{{grammatik}}",
+    "Row9ForCNF": "\\( \\text{Splitting long(n > 2) rule }\\): {{leftSide}} → {{production}}\n{{grammatik}}",
+    "Row10ForCNF": "\\( \\text{Replacing }\\): {{leftSide}} → {{first}} {{production}} \\( \\text{ with }\\) {{leftSide}} → {{newNonTerminal}} {{productionWithout1}}",
+    "Row11ForCNF": "\\( \\text{New non-terminal created }\\): {{newNonTerminal}} → {{pair}}",
+    "Row12ForCNF": "{{grammatik}}",
 
     "PseudocodeRemoveLeftRecursion": "Algorithm to remove left recursion",
 
     "next": "Next",
 
-    "stepsForLeftRecursion": [
-        "1:   \\( \\text{ for all } i \\in \\{1,2,\\dots,n\\} \\text{ do }\\)",
-        "2:       \\( \\text{ for all } j \\in \\{1,\\dots,i-1\\} \\text{ do } \\)",
-        "3:           \\( \\text{ replace each rule of the form } A_i \\to A_j\\alpha  \\text{ with the rules } \\)",
-        "4:           \\( A_i \\to \\beta_1\\alpha \\mid \\beta_2\\alpha \\mid \\dots \\mid \\beta_m\\alpha \\),",
-        "5:           \\( \\text{ where if }  A_j \\to \\beta_1 \\mid \\beta_2 \\mid \\dots \\mid \\beta_m, \\text{ then all } A_j \\text{ rules are included } \\)",
-        "6:        \\( \\text{ end for } \\)",
-        "7:        \\( \\text{ remove any direct left recursion in non-terminal } A_i \\text{ using (2) } \\)",
-        "8:   \\( \\text{ end for } \\)"
+    "stepsForRemoveEpsilonRules": [
+        "1: \\( N_\\epsilon \\gets \\emptyset; \\)",
+        "2:     \\( \\hat{N}_\\epsilon \\gets N_\\epsilon; \\)",
+        "3:     \\( N_\\epsilon \\gets \\hat{N}_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in \\hat{N}_\\epsilon^* \\}; \\)",
+        "4: \\( \\textbf{while } N_\\epsilon \\neq \\hat{N}_\\epsilon, \\text{ go to step 2.} \\)"
     ],
 
     "stepsForRemoveUnitRules": [
-        "1:         \\( \\text{for all } A_i \\in N \\text{, perform the following:} \\)",
-        "2:             \\( N_A \\gets \\emptyset \\)",
-        "3:             \\( N'_A \\gets N_A \\)",
-        "4:                 \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\text{ and } B \\in N'_A \\} \\)",
-        "5:             \\( N'_A \\neq N_A \\text{, jump to step 3} \\)",
-        "6:             \\( \\text{replace the rules } A_i \\to A_j \\text{ with all alternatives from } N_A \\)",
-        "7:         \\( \\text{end for} \\)",
-        "8:   \\( \\text{end} \\)"
+        "1: \\( \\textbf{for all } A_i \\in N \\textbf{ do} \\)",
+        "2:     \\( N_A \\gets \\emptyset \\)",
+        "3:         \\( N'_A \\gets N_A \\)",
+        "4:         \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\text{ and } B \\in N'_A \\} \\)",
+        "5:     \\( \\textbf{while } N'_A \\neq N_A \\text{, jump to step 3} \\)",
+        "6:         \\( \\text{replace the rules } A_i \\to A_j \\text{ with all alternatives from } N_A \\)",
+        "7: \\( \\textbf{end for} \\)"
     ],
-
-    "stepsForRemoveEpsilonRules": [
-        "1:     \\( N_\\epsilon \\gets \\emptyset; \\) ⊲ \\( \\text{Initialization of the set of nullable nonterminals} \\)",
-        "2:         \\( N̂_\\epsilon \\gets N_\\epsilon; \\) ⊲ \\( \\text{Copy } N_\\epsilon \\text{ into } N̂_\\epsilon \\)",
-        "3:         \\( N_\\epsilon \\gets N̂_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in N̂_\\epsilon^* \\}; \\)",
-        "4:     \\( \\text{While } N_\\epsilon \\neq N̂_\\epsilon, \\text{ go to step 2.} \\)"
-    ],
-
-
 
     "stepsForRemoveUselessSymbols": [
-        "1:   \\( N_T \\gets \\emptyset \\) ⊲ \\( \\text{Initialization of the set of useful non-terminals} \\)",
-        "2:       \\( N'_T \\gets N_T \\)",
-        "3:       \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in (N'_T \\cup T)^* \\} \\)",
-        "4:   \\( \\text{While } N_T \\neq N'_T, \\text{ proceed to step 2} \\) ⊲ \\( \\text{Repeat while the set } N_T \\text{ changes} \\)",
-        "5:   \\( \\text{If } S \\in N_T, \\text{ continue} \\) ⊲ \\( \\text{If } S \\notin N_T, \\text{ then } L(G) = \\emptyset \\)",
-        "6:       \\( \\text{Remove from the grammar } G \\text{ all non-terminals that do not belong to } N_T \\)",
-        "7:       \\( V_D \\gets \\{ S \\} \\) ⊲ \\( \\text{Initialization of the set of reachable symbols} \\)",
-        "8:           \\( V'_D \\gets V_D \\)",
-        "9:           \\( V_D \\gets V'_D \\cup \\{ X \\mid A \\to \\alpha X \\beta \\in P, A \\in V'_D \\} \\)",
-        "10:      \\( \\text{While } V_D \\neq V'_D, \\text{ proceed to step 8} \\) ⊲ \\( \\text{Repeat while the set } V_D \\text{ changes} \\)",
-        "11:      \\( \\text{Remove from the grammar } G \\text{ all symbols that do not belong to } V_D \\)",
-        "12:  \\( \\text{End} \\)"
-    ]
+        "1: \\( N_T \\gets \\emptyset \\)",
+        "2:     \\( N'_T \\gets N_T \\)",
+        "3:     \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in (N'_T \\cup T)^* \\} \\)",
+        "4: \\( \\textbf{while } N_T \\neq N'_T, \\text{ proceed to step 2} \\)",
+        "5: \\( \\textbf{if } S \\in N_T, \\textbf{ then} \\)",
+        "6:     \\( \\text{remove from the grammar } G \\text{ all non-terminals that do not belong to } N_T \\)",
+        "7:     \\( V_D \\gets \\{ S \\} \\)",
+        "8:         \\( V'_D \\gets V_D \\)",
+        "9:         \\( V_D \\gets V'_D \\cup \\{ X \\mid A \\to \\alpha X \\beta \\in P, A \\in V'_D \\} \\)",
+        "10:    \\( \\textbf{while } V_D \\neq V'_D, \\text{ proceed to step 8} \\)",
+        "11:        \\( \\text{remove from the grammar } G \\text{ all symbols that do not belong to } V_D \\)",
+        "12: \\( \\textbf{end if} \\)"
+    ],
 
+    "stepsForLeftRecursion": [
+        "1: \\( \\textbf{ for all } i \\in \\{1,2,\\dots,n\\} \\textbf{ do }\\)",
+        "2:     \\( \\textbf{ for all } j \\in \\{1,\\dots,i-1\\} \\textbf{ do } \\)",
+        "3:         \\( \\text{ replace each rule of the form } A_i \\to A_j\\alpha  \\text{ with the rules } \\)",
+        "4:         \\( A_i \\to \\beta_1\\alpha \\mid \\beta_2\\alpha \\mid \\dots \\mid \\beta_m\\alpha \\),",
+        "5:         \\( \\text{ where if }  A_j \\to \\beta_1 \\mid \\beta_2 \\mid \\dots \\mid \\beta_m, \\text{ then all } A_j \\text{ rules are included } \\)",
+        "6:     \\( \\textbf{ end for } \\)",
+        "7:     \\( \\text{ remove any direct left recursion in non-terminal } A_i \\text{ using (2) } \\)",
+        "8: \\( \\textbf{ end for } \\)"
+    ],
+
+    "stepsForGrammarTransformation": [
+        "1: \\( \\text{introduce a new start symbol } S_0 \\text{ and add the rule } S_0 \\to S; \\)",
+        "2: \\( \\text{remove all } \\epsilon; \\)",
+        "3: \\( \\text{remove all unit rules}; \\)",
+        "4: \\( \\text{remove all useless symbols}; \\)",
+        "5: \\( \\textbf{for all} \\text{ rules of the form } A \\to Y_1 Y_2, \\text{ where } Y_1 \\in T \\text{ or } Y_2 \\in T, \\textbf{ do} \\)",
+        "6:     \\( \\text{replace terminal } Y_1 (Y_2) \\text{ in the right-hand side with new non-terminals } V_1 (V_2), \\)",
+        "7:     \\( \\text{and add rules } V_1 \\to X_1, \\text{ and } V_2 \\to X_2; \\)",
+        "8: \\( \\textbf{end for} \\)",
+        "9: \\( \\textbf{for all} \\text{ rules of the form } A \\to X_1 X_2 \\dots X_n, \\text{ where } n \\geq 3, \\textbf{ do} \\)",
+        "10:    \\( \\text{replace with rules } A \\to X_1 A_1, A_1 \\to X_2 A_2, \\dots, A_{n-2} \\to X_{n-1} X_n, \\)",
+        "11:    \\( \\text{where } A_1, A_2, \\dots, A_{n-2} \\text{ are new non-terminals;} \\)",
+        "12: \\( \\textbf{end for} \\)"
+    ]
 }

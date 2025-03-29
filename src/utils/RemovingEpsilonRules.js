@@ -3,7 +3,6 @@ export class RemovingEpsilonRules {
     this.t = t;
     this.rules = rules;
     this.explanations = [];
-    this.history = [];
   }
 
   findNullableNonTerminals() {
@@ -14,29 +13,33 @@ export class RemovingEpsilonRules {
       message: this.t("Row1ForRemoveEpsilon", { nullableSet: [...nullableSet].join(", ") }),
     });
 
-    previousNullableSet = new Set(nullableSet);
-    this.explanations.push({
-      line: 1,
-      message: this.t("Row2ForRemoveEpsilon", { nullableSet: [...nullableSet].join(", "), previousNullableSet: [...previousNullableSet].join(", ") }),
-    });
-
     for (const rule of this.rules) {
       for (const alternative of rule.rightSide) {
+        previousNullableSet = new Set(nullableSet);
         if (alternative.includes("ε")) {
+
+          this.explanations.push({
+            line: 1,
+            message: this.t("Row2ForRemoveEpsilon", { nullableSet: [...nullableSet].join(", "), previousNullableSet: [...previousNullableSet].join(", ") }),
+          });
+
           nullableSet.add(rule.leftSide);
+
           this.explanations.push({
             line: 2,
-            message: this.t("Row3ForRemoveEpsilon", { leftSide: rule.leftSide }),
+            message: this.t("Row3ForRemoveEpsilon", { leftSide: rule.leftSide , grammatik: this.toString()}),
           });
+
+          this.explanations.push({
+            line: 3,
+            message: this.t("Row4ForRemoveEpsilon", { nullableSet: [...nullableSet].join(", "), previousNullableSet: [...previousNullableSet].join(", ") }),
+          });
+
           break;
         }
       }
-    }
 
-    this.explanations.push({
-      line: 3,
-      message: this.t("Row4ForRemoveEpsilon", { nullableSet: [...nullableSet].join(", "), previousNullableSet: [...previousNullableSet].join(", ") }),
-    });
+    }
 
     do {
       previousNullableSet = new Set(nullableSet);
@@ -49,10 +52,12 @@ export class RemovingEpsilonRules {
         for (const alternative of rule.rightSide) {
           if (alternative.every(symbol => nullableSet.has(symbol))) {
             nullableSet.add(rule.leftSide);
-            this.explanations.push({
-              line: 2,
-              message: this.t("Row3ForRemoveEpsilon2", { leftSide: rule.leftSide, alternative: alternative.join(" ") }),
-            });
+            if(nullableSet.size !== previousNullableSet.size){
+              this.explanations.push({
+                line: 2,
+                message: this.t("Row3ForRemoveEpsilon2", { leftSide: rule.leftSide, alternative: alternative.join(" "), previousNullableSet: [...previousNullableSet].join(", "), grammatik: this.toString()}),
+              });
+            }
             break;
           }
         }
@@ -98,18 +103,17 @@ export class RemovingEpsilonRules {
                 const newAltStr = newAlt.join(" ");
 
                 if (!existingAlternatives.has(newAltStr) && newAltStr !== rule.leftSide) {
+                    console.log("generated:", generated)
                     existingAlternatives.add(newAltStr);
                     rule.rightSide.push(newAlt); // Додаємо нову альтернативу
+                    console.log("newalt",newAlt)
 
                     let originalRule = `${rule.leftSide} → ${alternative.join("")}`;
                     let newRule = `${rule.leftSide} → ${newAlt.join("")}`;
-                    let removedSymbols = alternative.filter(symbol => !newAlt.includes(symbol));
-
-                    if (removedSymbols.length > 0) {
                         batchExplanations.push(
-                            `• до правила ${originalRule} додано правило ${newRule} (бо ${removedSymbols.join(", ")} ∈ Nε). Nε: {${[...nullableSet].join(", ")}}`
+                            this.t("Row5ForRemoveEpsilon", {originalRule : originalRule, newRule : newRule, nullableSet : [...nullableSet].join(", ")})
                         );
-                    }
+                    
                 }
             }
         }
@@ -118,9 +122,10 @@ export class RemovingEpsilonRules {
     // Додаємо всі пояснення за раз після досягнення line: 4
     this.explanations.push({
         line: 4,
-        message: batchExplanations.join("\n"), // Об'єднуємо всі пояснення в один блок
+        message: batchExplanations.join("\n") + `\n${this.toString()}` // Об'єднуємо всі пояснення в один блок
     });
 }
+
 
   
   generateCombinations(alternative, nullableSet) {
@@ -147,8 +152,9 @@ export class RemovingEpsilonRules {
     }).join("\n");
   } 
 
-  executeEpsilonRuleRemoval() {
+  execute() {
     const nullableSet = this.findNullableNonTerminals();
     this.addNullableCombinations(nullableSet);
-  }
+    return this.history;
+}
 }

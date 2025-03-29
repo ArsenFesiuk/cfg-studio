@@ -10,11 +10,7 @@ import SupportedGrammars from "./SupportedGrammars";
 import Examples from "./Examples";
 import { TextField, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { PseudoCodeRemoveEpsilonRules } from "./PseudoCodeRemoveEpsilonRules";
-import { PseudoCodeRemoveLeftRecursion } from "./PseudocodeRemoveLeftRecursion";
-import { PseudoCodeRemoveUselessSymbols } from "./PseudocodeRemoveUselessSymbols";
-import { PseudoCodeRemoveUnitRules } from "./PseudocodeRemoveUnitRule";
-
+import { PseudoCodeViewer } from "./PseudoCodeViewer";
 const GrammarInput = () => {
   const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
@@ -25,6 +21,7 @@ const GrammarInput = () => {
   const [showPseudocodeForRemoveLeftRecursion, setShowPseudocodeForRemoveLeftRecursion] = useState(false); 
   const [showPseudocodeForRemoveUselessSymbols, setshowPseudocodeForRemoveUselessSymbols] = useState(false); 
   const [showPseudocodeForRemoveUnitRules, setshowPseudocodeForRemoveUnitRules] = useState(false); 
+  const [showPseudocodeForCNFConversation, setshowPseudocodeForCNFConversation] = useState(false); 
   const fontSize = ["uk", "sk"].includes(i18n.language) ? "13px" : "14px";
 
 
@@ -35,6 +32,9 @@ const GrammarInput = () => {
     setExplanation(""); // Очищаємо пояснення при зміні інпуту
     setshowPseudocodeForRemoveEpsilonRules(false); // Ховаємо псевдокод при зміні інпуту
     setShowPseudocodeForRemoveLeftRecursion(false);
+    setshowPseudocodeForRemoveUselessSymbols(false);
+    setshowPseudocodeForRemoveUnitRules(false);
+    setshowPseudocodeForCNFConversation(false);
   
     const { errors } = parseGrammar(replacedInput);
     setErrors(errors.length > 0 ? errors : []);
@@ -63,7 +63,7 @@ const GrammarInput = () => {
     }
   
     const transformer = new RemovingEpsilonRules(rules, t);
-    transformer.executeEpsilonRuleRemoval();
+    transformer.execute();
     setOutput(formatGrammarOutput(rules));
     setExplanation(transformer.explanations.map(exp => `${exp.message}`).join("\n"));
     setshowPseudocodeForRemoveEpsilonRules(true);
@@ -76,8 +76,8 @@ const GrammarInput = () => {
       return;
     }
   
-    const transformer = new RemovingUnitRules(rules);
-    transformer.removeUnitRules(rules);
+    const transformer = new RemovingUnitRules(rules, t);
+    transformer.execute();
     setOutput(formatGrammarOutput(rules));
     setExplanation(transformer.explanations.join("\n"));
     setshowPseudocodeForRemoveUnitRules(true);
@@ -90,10 +90,10 @@ const GrammarInput = () => {
       return;
     }
   
-    const transformer = new RemovingUselessSymbols();
+    const transformer = new RemovingUselessSymbols(rules, t);
   
     // Викликаємо функцію, яка одночасно видаляє непотрібні символи
-    rules = transformer.executeRemovingUselessSymbols(rules);  // викликаємо комбіновану функцію
+    rules = transformer.execute();  // викликаємо комбіновану функцію
     setOutput(formatGrammarOutput(rules));
     setExplanation(transformer.explanations.join("\n"));
     setshowPseudocodeForRemoveUselessSymbols(true);
@@ -106,16 +106,11 @@ const GrammarInput = () => {
       return;
     }
   
-    const removeLeftRecursion = new RemovingLeftRecursion(t);
-    const explanations = removeLeftRecursion.eliminateLeftRecursion(rules); // Отримуємо масив об'єктів {line, message}
-  
-    // Формуємо текст з пояснень
-    const formattedExplanation = explanations
-      .map((exp) => exp.message)  // Доступ до тексту пояснення
-      .join("\n");
-  
+    const transformer = new RemovingLeftRecursion(rules,t);
+    transformer.execute(); // Отримуємо масив об'єктів {line, message}
+
     setOutput(formatGrammarOutput(rules));
-    setExplanation(formattedExplanation); // Встановлюємо пояснення як рядок
+    setExplanation(transformer.explanations.map(exp => `${exp.message}`).join("\n"));
     setShowPseudocodeForRemoveLeftRecursion(true);
   };
   
@@ -127,31 +122,12 @@ const GrammarInput = () => {
       return;
     }
   
-    const cnfConversion = new CNFConversion();
-    cnfConversion.addNewStartSymbol(rules);
-
-    const removeEpsilonRules = new RemovingEpsilonRules(rules, t);
-    removeEpsilonRules.executeEpsilonRuleRemoval();
-    setExplanation(removeEpsilonRules.explanations.join("\n"));
-
-    const removeUnitRules = new RemovingUnitRules(rules);
-    removeUnitRules.removeUnitRules(rules);
-    setExplanation(removeUnitRules.explanations.join("\n"));
-
-    const removeUselessSymbols = new RemovingUselessSymbols();
-    
-    // Remove non-terminating symbols
-    rules = removeUselessSymbols.removeNotTerminatingSymbols(rules);
-    setExplanation(removeUselessSymbols.explanations.join("\n"));
-    
-    // Remove unreachable symbols
-    rules = removeUselessSymbols.removeUnreachableSymbols(rules);
-    setExplanation(removeUselessSymbols.explanations.join("\n"));
-
-    cnfConversion.conversionToCNF(rules);
-    setOutput(formatGrammarOutput(rules));
-
+    const cnfConversion = new CNFConversion(rules, t);
+    const finalRules = cnfConversion.execute();  // Capture the returned rules
+    setOutput(formatGrammarOutput(finalRules));  // Pass the final rules to formatGrammarOutput
+    setshowPseudocodeForCNFConversation(true);
   };
+  
   
   return (
     <div style={{ paddingTop: "64px" }}>
@@ -253,15 +229,36 @@ const GrammarInput = () => {
   
         {/* Права частина: пояснення */}
         <div id="explanation" style={{ width: "50%", padding: "10px", fontSize: "16px", lineHeight: "1.5" }}>
-    
         {showPseudocodeForRemoveLeftRecursion ? (
-          <PseudoCodeRemoveLeftRecursion inputText={input} />
+          <PseudoCodeViewer 
+            inputText={input}
+            ProcessingClass={RemovingLeftRecursion} 
+            translationKey="stepsForLeftRecursion" 
+          />
         ) : showPseudocodeForRemoveEpsilonRules ? (
-          <PseudoCodeRemoveEpsilonRules inputText={input} />
+          <PseudoCodeViewer 
+            inputText={input}
+            ProcessingClass={RemovingEpsilonRules} 
+            translationKey="stepsForRemoveEpsilonRules" 
+          />
         ) : showPseudocodeForRemoveUselessSymbols ? (
-            <PseudoCodeRemoveUselessSymbols inputText={input} />
+          <PseudoCodeViewer 
+            inputText={input}
+            ProcessingClass={RemovingUselessSymbols} 
+            translationKey="stepsForRemoveUselessSymbols" 
+          />
         ) : showPseudocodeForRemoveUnitRules ? (
-            <PseudoCodeRemoveUnitRules inputText={input} />
+          <PseudoCodeViewer 
+            inputText={input}
+            ProcessingClass={RemovingUnitRules} 
+            translationKey="stepsForRemoveUnitRules" 
+          />
+        ) : showPseudocodeForCNFConversation ? (
+          <PseudoCodeViewer 
+            inputText={input}
+            ProcessingClass={CNFConversion} 
+            translationKey="stepsForGrammarTransformation" 
+          />
         ) :
             <SupportedGrammars />
         }

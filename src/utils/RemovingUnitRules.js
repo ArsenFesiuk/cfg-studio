@@ -1,31 +1,32 @@
 export class RemovingUnitRules {
-  constructor() {
+  constructor(rules, t) {
+    this.rules = rules;
     this.nonTerminals = new Set();
     this.explanations = []; // Масив для пояснень
+    this.t = t;
   }
 
   // Метод для видалення одиничних правил
-  removeUnitRules(rules) {
-    this.rules = rules;
-    this.initializeNonTerminals(rules);
+  execute() {
+    this.initializeNonTerminals(this.rules);
     let N_A = new Set();
 
     const alternativesMap = new Map();
 
     // Створюємо мапу альтернатив для кожного нетермінала
-    rules.forEach(rule => {
+    this.rules.forEach(rule => {
       alternativesMap.set(rule.leftSide, new Set(rule.rightSide.map(JSON.stringify)));
     });
 
-    rules.forEach(rule => {
+    this.rules.forEach(rule => {
       this.explanations.push({
         line: 0,
-        message: `Ai = {${rule.leftSide}}`,
+        message: this.t("Row1ForRemoveUnitRules", {leftSide : rule.leftSide})
       });
 
       this.explanations.push({
         line: 1,
-        message: `N_A = {${[...N_A]}}`,
+        message: this.t("Row2ForRemoveUnitRules", {N_A : [...N_A]})
       });
 
       const newRightSide = [];
@@ -46,7 +47,7 @@ export class RemovingUnitRules {
 
         this.explanations.push({
           line: 2,
-          message: `N_A = {${[...N_A]}}\n N'_A = {${[...previousN_A]}}`,
+          message: this.t("Row3ForRemoveUnitRules", {N_A : [...N_A].join(' | '), previousN_A : [...previousN_A].join(' | ')})
         });
 
         N_A = new Set([...N_A].filter(item => !this.isNonTerminal(item)));
@@ -71,16 +72,15 @@ export class RemovingUnitRules {
               newRightSide.push(parsedAlternative);
             }
           });
+          this.explanations.push({
+            line: 3,
+            message: this.t("Row4ForRemoveUnitRules", {leftSide : rule.leftSide, target : target,N_A : [...N_A].join(' | ')})
+          });
         }
 
         this.explanations.push({
-          line: 3,
-          message: `N_A = {${[...N_A]}}`,
-        });
-
-        this.explanations.push({
           line: 4,
-          message: `N_A = {${[...N_A]}}\n N'_A = {${[...previousN_A]}}`,
+          message: this.t("Row5ForRemoveUnitRules", {N_A : [...N_A].join(' | '), previousN_A : [...previousN_A].join(' | ')})
         });
 
       } while (unitQueue.length > 0 || previousN_A.size !== N_A.size);
@@ -90,24 +90,19 @@ export class RemovingUnitRules {
         alternativesMap.set(rule.leftSide, new Set(newRightSide.map(JSON.stringify)));
         this.explanations.push({
           line: 5,
-          message: `A_i = {${rule.leftSide}} \nN_A = {${[...N_A]}} \n${rule.leftSide} → ${rule.rightSide.map(alt => alt.join(" ")).join(" | ")}`
+          message: this.t("Row6ForRemoveUnitRules", {leftSide : rule.leftSide, N_A : [...N_A].join(' | '), rightSide : rule.rightSide.map(alt => alt.join(" ")).join(" | ")})
         });
       }
 
       this.explanations.push({
         line: 6,
-        message: `A_i = {${rule.leftSide}} \n${this.toString()}`
+        message: this.t("Row7ForRemoveUnitRules", {leftSide : rule.leftSide, grammatik : this.toString()})
       });
 
       N_A.clear();
     });
-
-    this.explanations.push({
-      line: 7,
-      message: `Update grammar: \n${this.toString()}`
-    });
-
-    this.removeEmptyRules(rules);
+    this.removeEmptyRules(this.rules);
+    return this.rules;
   }
 
   // Ініціалізація нетерміналів
