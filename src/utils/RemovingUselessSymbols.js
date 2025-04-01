@@ -48,7 +48,7 @@ export class RemovingUselessSymbols {
 
               this.explanations.push({
                 line: 2,
-                message: this.t("Row3ForRemoveUselessSymbols", {leftSide : rule.leftSide, alternative : alternative.join("")})
+                message: this.t("Row3ForRemoveUselessSymbols", {leftSide : rule.leftSide, alternative : alternative.join(" ")})
               });
               break;
             }
@@ -131,7 +131,6 @@ export class RemovingUselessSymbols {
                 for (const s of reachableSymbols) {
                   previousReachableSymbols.add(s);
                 }
-                break;
               }
             }
           }
@@ -180,7 +179,9 @@ export class RemovingUselessSymbols {
   // Виконання операцій для видалення непотрібних символів
   execute() {
     this.removeNotTerminatingSymbols();
+    console.log("Rules після видалення незавершених символів:", this.rules);
     this.removeUnreachableSymbols();
+    console.log("Rules після видалення недосяжних символів:", this.rules);
     return this.rules;
   }
 

@@ -11,12 +11,13 @@ import Examples from "./Examples";
 import { TextField, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { PseudoCodeViewer } from "./PseudoCodeViewer";
+import Tooltip from "@mui/material/Tooltip";
+
 const GrammarInput = () => {
   const { t, i18n } = useTranslation();
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [errors, setErrors] = useState([]);
-  const [explanation, setExplanation] = useState("");
   const [showPseudocodeForRemoveEpsilonRules, setshowPseudocodeForRemoveEpsilonRules] = useState(false); 
   const [showPseudocodeForRemoveLeftRecursion, setShowPseudocodeForRemoveLeftRecursion] = useState(false); 
   const [showPseudocodeForRemoveUselessSymbols, setshowPseudocodeForRemoveUselessSymbols] = useState(false); 
@@ -26,17 +27,17 @@ const GrammarInput = () => {
 
 
   const handleInputChange = (e) => {
+    
     const replacedInput = replaceEscapes(e.target.value);
     setInput(replacedInput);
     setOutput(""); // Очищаємо аутпут при зміні інпуту
-    setExplanation(""); // Очищаємо пояснення при зміні інпуту
     setshowPseudocodeForRemoveEpsilonRules(false); // Ховаємо псевдокод при зміні інпуту
     setShowPseudocodeForRemoveLeftRecursion(false);
     setshowPseudocodeForRemoveUselessSymbols(false);
     setshowPseudocodeForRemoveUnitRules(false);
     setshowPseudocodeForCNFConversation(false);
   
-    const { errors } = parseGrammar(replacedInput);
+    const { errors } = parseGrammar(replacedInput, t);
     setErrors(errors.length > 0 ? errors : []);
   };
 
@@ -65,7 +66,6 @@ const GrammarInput = () => {
     const transformer = new RemovingEpsilonRules(rules, t);
     transformer.execute();
     setOutput(formatGrammarOutput(rules));
-    setExplanation(transformer.explanations.map(exp => `${exp.message}`).join("\n"));
     setshowPseudocodeForRemoveEpsilonRules(true);
   };
   
@@ -79,7 +79,6 @@ const GrammarInput = () => {
     const transformer = new RemovingUnitRules(rules, t);
     transformer.execute();
     setOutput(formatGrammarOutput(rules));
-    setExplanation(transformer.explanations.join("\n"));
     setshowPseudocodeForRemoveUnitRules(true);
   };
   
@@ -95,7 +94,6 @@ const GrammarInput = () => {
     // Викликаємо функцію, яка одночасно видаляє непотрібні символи
     rules = transformer.execute();  // викликаємо комбіновану функцію
     setOutput(formatGrammarOutput(rules));
-    setExplanation(transformer.explanations.join("\n"));
     setshowPseudocodeForRemoveUselessSymbols(true);
   };
   
@@ -110,7 +108,6 @@ const GrammarInput = () => {
     transformer.execute(); // Отримуємо масив об'єктів {line, message}
 
     setOutput(formatGrammarOutput(rules));
-    setExplanation(transformer.explanations.map(exp => `${exp.message}`).join("\n"));
     setShowPseudocodeForRemoveLeftRecursion(true);
   };
   
@@ -161,7 +158,20 @@ const GrammarInput = () => {
           />
   
           {/* Кнопки між input і output */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginBottom: "20px" }}>
+          <Tooltip title={errors.length > 0 ? errors.map((err, i) => <div key={i}>{err}<br /></div>) : ""} 
+  arrow
+  componentsProps={{
+    tooltip: {
+      sx: {
+        fontSize: "16px", // Збільшуємо розмір тексту
+        padding: "12px 16px", // Збільшуємо відступи (робить тултіп більшим)
+        maxWidth: "400px", // Максимальна ширина тултіпа
+        borderRadius: "8px", // Закруглені кути
+      }
+    },
+    arrow: { sx: { color: "gray" } } // Колір стрілочки тултіпа
+  }} >
+            <span style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginBottom: "20px" }}>
             <Button variant="contained" onClick={handleRemoveEpsilon} disabled={errors.length > 0 || input.trim() === ""} sx={{
               padding: "5px 10px",
               minWidth: "auto",
@@ -212,7 +222,8 @@ const GrammarInput = () => {
           }}>
               {t("convertToCNF")}
             </Button>
-          </div>
+            </span>
+          </Tooltip>
   
           {/* Поле output */}
           <TextField
@@ -264,16 +275,7 @@ const GrammarInput = () => {
         }
     </div>
   </div>
-
-      {/* Інтегруємо PseudocodeSimulator, передаємо дані з граматики та поточний крок */}
-  
-  
-      <div style={{ color: "red" }}>
-        {errors.map((error, index) => (
-          <p key={index}>{error}</p>
-        ))}
-      </div>
-    </div>
+</div>
   );
 }
 

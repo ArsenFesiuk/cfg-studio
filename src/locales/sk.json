@@ -29,6 +29,10 @@
     "testForUseless": "Test na nadbytočné symboly",
     "testForLeftRecursion": "Test na ľavú rekurziu",
     "testForCNF": "Test na prevod do CNF",
+
+    "invalidRuleFormat": "Neplatný formát pravidla:",
+    "correctRuleExample": "Pravidlá by mali mať nasledujúci formát:",
+    "singleTokenLeftSide": "Ľavá strana pravidla musí obsahovať iba jeden neterminál:",
     
     "Row1ForRemoveEpsilon": "1. \\( \\text{Vytvoriť } N_\\varepsilon: \\{ {{nullableSet}} \\} \\)",
     "Row2ForRemoveEpsilon": "2. \\( \\text{Skopírovať } N_\\varepsilon \\text{ do } \\hat{N}_\\varepsilon \\) \n \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",
@@ -82,7 +86,10 @@
 
     "PseudocodeRemoveLeftRecursion": "Algoritmus na odstránenie ľavej rekurzie",
 
-    "next": "Dalej",
+    "next": "ĎALŠÍ",
+
+    "previous": "PREDCHÁDZAJÚCI",
+
 
     "stepsForRemoveEpsilonRules": [
         "1: \\( N_\\epsilon \\gets \\emptyset; \\)",

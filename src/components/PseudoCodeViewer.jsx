@@ -37,6 +37,15 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
     }
   };
 
+  const handlePreviousStep = () => {
+    if (currentExplanation > 0) {
+      const prevStep = steps[currentExplanation - 1];
+      setCurrentLine(prevStep.line);
+      setCurrentExplanation(currentExplanation - 1);
+      setExplanation(prevStep.message);
+    }
+  };
+
   return (
     <div>
       {/* Контейнер для псевдокоду */}
@@ -59,19 +68,21 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
         </MathJax>
       </div>
 
-      {/* Кнопка між блоками */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
-        <button onClick={handleNextStep} disabled={currentLine >= steps.length - 1} style={buttonStyle}>
+      {/* Кнопки для навігації */}
+      <div style={{ display: "flex", justifyContent: "center", gap: "80px", marginBottom: "20px" }}>
+        <button onClick={handlePreviousStep} disabled={currentExplanation <= 0} style={buttonStyle}>
+          {t("previous")}
+        </button>
+        <button onClick={handleNextStep} disabled={currentExplanation >= steps.length - 1} style={buttonStyle}>
           {t("next")}
         </button>
       </div>
 
       {/* Контейнер для пояснення */}
-
       <div style={{ padding: "16px", fontFamily: "Arial, sans-serif", border: "1px solid #ddd", backgroundColor: "#fafafa" }}>
-      <MathJax>
-        <h3 style={{ marginTop: "16px" }}>{t("explanation")}:</h3>
-        <p dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}></p>
+        <MathJax>
+          <h3 style={{ marginTop: "16px" }}>{t("explanation")}:</h3>
+          <p dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}></p>
         </MathJax>
       </div>
     </div>
@@ -79,8 +90,8 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
 }
 
 const buttonStyle = {
-  marginTop: "16px",
-  padding: "8px 16px",
+  marginTop: "20px",
+  padding: "8px 24px",
   backgroundColor: "#007BFF",
   color: "white",
   border: "none",

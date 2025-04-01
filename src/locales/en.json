@@ -30,6 +30,10 @@
     "testForLeftRecursion" : "Test for left recursion",
     "testForCNF" : "Test for CFG to CNF",
 
+    "invalidRuleFormat": "Invalid rule format:",
+    "correctRuleExample": "Rules should be in the following format:",
+    "singleTokenLeftSide": "The left side of the rule must contain only one nonterminal:",
+
     "Row1ForRemoveEpsilon": "1. \\( \\text{Create } N_\\varepsilon: \\{ {{nullableSet}} \\} \\)",
     "Row2ForRemoveEpsilon": "2. \\( \\text{Copy } N_\\varepsilon \\text{ to } \\hat{N}_\\varepsilon \\) \n \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",
     "Row3ForRemoveEpsilon": "3. \\( {{leftSide}} \\text{ is added to } N_\\varepsilon \\text{ because it has } \\varepsilon. \\) \n {{grammatik}}",
@@ -82,7 +86,9 @@
 
     "PseudocodeRemoveLeftRecursion": "Algorithm to remove left recursion",
 
-    "next": "Next",
+    "next": "NEXT",
+
+    "previous" : "PREVIOUS",
 
     "stepsForRemoveEpsilonRules": [
         "1: \\( N_\\epsilon \\gets \\emptyset; \\)",

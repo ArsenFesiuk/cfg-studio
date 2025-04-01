@@ -30,9 +30,9 @@ const Examples = () => {
           {t("testForUnit")}
         </Typography>
         <Typography variant="body1">
-            bexpr → bexpr or bterm | bterm{"\n"}
-            bterm → bterm and bfactor{"\n"}| bfactor{"\n"}
-            bfactor → not bfactor | ( bexpr ) | true | false
+          S → A B | A | B{"\n"}
+          A → a A A | a A | a{"\n"}
+          B → b B B | b B | b
         </Typography>
       </div>
 

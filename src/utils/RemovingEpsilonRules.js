@@ -103,10 +103,8 @@ export class RemovingEpsilonRules {
                 const newAltStr = newAlt.join(" ");
 
                 if (!existingAlternatives.has(newAltStr) && newAltStr !== rule.leftSide) {
-                    console.log("generated:", generated)
                     existingAlternatives.add(newAltStr);
                     rule.rightSide.push(newAlt); // Додаємо нову альтернативу
-                    console.log("newalt",newAlt)
 
                     let originalRule = `${rule.leftSide} → ${alternative.join("")}`;
                     let newRule = `${rule.leftSide} → ${newAlt.join("")}`;

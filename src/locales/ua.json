@@ -30,6 +30,10 @@
     "testForLeftRecursion" : "Тест для лівої рекурсії",
     "testForCNF" : "Тест для CFG to CNF",
 
+    "invalidRuleFormat": "Неправильний формат правила:",
+    "correctRuleExample": "Правила мають виглядати так:",
+    "singleTokenLeftSide": "Ліва частина правила повинна містити лише один нетермінал:",
+
     "Row1ForRemoveEpsilon": "1. \\( \\text{Створюємо } N_\\varepsilon: \\{ {{nullableSet}} \\} \\)",
     "Row2ForRemoveEpsilon": "2. \\( \\text{Копіюємо } N_\\varepsilon \\text{ у } \\hat{N}_\\varepsilon \\) \n \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",
     "Row3ForRemoveEpsilon": "3. \\( {{leftSide}} \\text{ додано в } N_\\varepsilon, \\text{ бо має } \\varepsilon. \\)",
@@ -82,7 +86,9 @@
 
     "PseudocodeRemoveLeftRecursion": "Алгоритм видалення лівої рекурсії",
 
-    "next": "Далі",
+    "next": "НАСТУПНИЙ",
+
+    "previous" : "ПОПЕРЕДНІЙ",
 
     "stepsForRemoveEpsilonRules": [
       "1: \\( N_\\epsilon \\gets \\emptyset; \\)",

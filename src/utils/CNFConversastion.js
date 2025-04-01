@@ -32,7 +32,7 @@ export class CNFConversion {
 
     // Remove useless symbols
     const removeUselessSymbols = new RemovingUselessSymbols(this.rules, this.t);
-    removeUselessSymbols.execute(); // Оновлення правил
+    this.rules = removeUselessSymbols.execute(); // Оновлення правил
     this.explanations.push({
       line: 3,
       message: this.t("Row4ForCNF", {grammatik : this.toString()})
