@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MathJax } from "better-react-mathjax";
 import { useTranslation } from "react-i18next";
 
@@ -9,6 +9,11 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
   const [currentExplanation, setCurrentExplanation] = useState(0);
   const { t } = useTranslation();
   const pseudoCodeSteps = t(translationKey, { returnObjects: true });
+
+  const pseudoCodeContainerRef = useRef(null);
+  const lineRefs = useRef([]);
+
+  const [algorithmTitle, setAlgorithmTitle] = useState("");
 
   useEffect(() => {
     if (inputText) {
@@ -25,8 +30,29 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
       setSteps(processor.explanations);
       setCurrentLine(0);
       setExplanation(processor.explanations[0]?.message || "");
+
+      if (ProcessingClass.name === "RemovingEpsilonRules") {
+        setAlgorithmTitle(t("PseudoCodeRemoveEpsilonRules"));
+      } else if (ProcessingClass.name === "RemovingUnitRules") {
+        setAlgorithmTitle(t("PseudoCodeRemoveUnitRules"));
+      } else if (ProcessingClass.name === "RemovingUselessSymbols") {
+        setAlgorithmTitle(t("PseudoCodeRemoveUselessSymbols"));
+      } else if (ProcessingClass.name === "RemovingLeftRecursion") {
+        setAlgorithmTitle(t("PseudoCodeRemoveLeftRecursion"));
+      } else if (ProcessingClass.name === "CNFConversion") {
+        setAlgorithmTitle(t("PseudoCodeRemoveCNFConversation"));
+      }
     }
   }, [inputText, ProcessingClass, t]);
+
+  useEffect(() => {
+    if (lineRefs.current[currentLine]) {
+      lineRefs.current[currentLine].scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [currentLine]);
 
   const handleNextStep = () => {
     if (currentExplanation < steps.length - 1) {
@@ -49,39 +75,84 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
   return (
     <div>
       {/* Контейнер для псевдокоду */}
-      <div style={{ padding: "16px", fontFamily: "Arial, sans-serif", border: "1px solid #ddd", backgroundColor: "#fafafa"}}>
+      <div
+        ref={pseudoCodeContainerRef}
+        style={{
+          position: "relative",
+          padding: "16px",
+          fontFamily: "Arial, sans-serif",
+          border: "1px solid #ddd",
+          backgroundColor: "#fafafa",
+          height: "290px",
+          overflowY: "auto",
+          borderRadius: "4px",
+        }}
+      >
+        <h3 style={{ marginTop: "0px" }}>{algorithmTitle}:</h3> {/* Використання змінної для заголовка */}
         <MathJax>
           {pseudoCodeSteps.map((line, index) => (
             <div
               key={index}
+              ref={(el) => (lineRefs.current[index] = el)}
               style={{
                 padding: "4px 8px",
                 fontWeight: index === currentLine ? "bold" : "normal",
                 backgroundColor: index === currentLine ? "#FFD700" : "transparent",
                 transition: "background-color 0.3s ease-in-out",
-                whiteSpace: "pre-wrap"
+                whiteSpace: "pre-wrap",
+                borderRadius: "4px",
+                textAlign: "left",
               }}
             >
               {line}
             </div>
           ))}
         </MathJax>
-      </div>
 
-      {/* Кнопки для навігації */}
-      <div style={{ display: "flex", justifyContent: "center", gap: "80px", marginBottom: "20px" }}>
-        <button onClick={handlePreviousStep} disabled={currentExplanation <= 0} style={buttonStyle}>
-          {t("previous")}
-        </button>
-        <button onClick={handleNextStep} disabled={currentExplanation >= steps.length - 1} style={buttonStyle}>
-          {t("next")}
-        </button>
+        {/* Стрілки завжди в правому нижньому куті */}
+        <div
+  style={{
+    position: "sticky",
+    bottom: "8px",
+    right: "8px",
+    display: "flex",
+    gap: "8px",
+    justifyContent: "flex-end",
+    pointerEvents: "none", // Запобігає блокуванню тексту
+  }}
+>
+  <button
+    onClick={handlePreviousStep}
+    disabled={currentExplanation <= 0}
+    style={{ ...arrowButtonStyle, pointerEvents: "auto" }} // Дозволяє клікати по кнопках
+  >
+    🔼
+  </button>
+  <button
+    onClick={handleNextStep}
+    disabled={currentExplanation >= steps.length - 1}
+    style={{ ...arrowButtonStyle, pointerEvents: "auto" }} // Дозволяє клікати по кнопках
+  >
+    🔽
+  </button>
+</div>
       </div>
 
       {/* Контейнер для пояснення */}
-      <div style={{ padding: "16px", fontFamily: "Arial, sans-serif", border: "1px solid #ddd", backgroundColor: "#fafafa" }}>
+      <div
+        style={{
+          padding: "16px",
+          fontFamily: "Arial, sans-serif",
+          border: "1px solid #ddd",
+          backgroundColor: "#fafafa",
+          height: "206px",
+          overflowY: "auto",
+          borderRadius: "4px",
+          marginTop: "16px",
+        }}
+      >
         <MathJax>
-          <h3 style={{ marginTop: "16px" }}>{t("explanation")}:</h3>
+          <h3 style = {{marginTop : "0px"}}>{t("explanation")}:</h3>
           <p dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}></p>
         </MathJax>
       </div>
@@ -89,13 +160,16 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
   );
 }
 
-const buttonStyle = {
-  marginTop: "20px",
-  padding: "8px 24px",
-  backgroundColor: "#007BFF",
+const arrowButtonStyle = {
+  background: "#007BFF",
   color: "white",
   border: "none",
   borderRadius: "4px",
-  cursor: "pointer",
+  padding: "6px 10px",
   fontSize: "16px",
+  cursor: "pointer",
+  transition: "opacity 0.2s ease-in-out",
+  opacity: 1,
 };
+
+export default PseudoCodeViewer;

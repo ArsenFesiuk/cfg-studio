@@ -33,6 +33,12 @@
     "invalidRuleFormat": "Neplatný formát pravidla:",
     "correctRuleExample": "Pravidlá by mali mať nasledujúci formát:",
     "singleTokenLeftSide": "Ľavá strana pravidla musí obsahovať iba jeden neterminál:",
+
+    "PseudoCodeRemoveEpsilonRules": "Pseudokód pre odstránenie epsilon pravidiel",
+    "PseudoCodeRemoveUnitRules": "Pseudokód pre odstránenie jednotkových pravidiel",
+    "PseudoCodeRemoveUselessSymbols": "Pseudokód pre odstránenie nadbytočných symbolov",
+    "PseudoCodeRemoveLeftRecursion": "Pseudokód pre odstránenie ľavej rekurzie",
+    "PseudoCodeRemoveCNFConversation": "Pseudokód pre úplnú transformáciu do CNF",
     
     "Row1ForRemoveEpsilon": "1. \\( \\text{Vytvoriť } N_\\varepsilon: \\{ {{nullableSet}} \\} \\)",
     "Row2ForRemoveEpsilon": "2. \\( \\text{Skopírovať } N_\\varepsilon \\text{ do } \\hat{N}_\\varepsilon \\) \n \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",

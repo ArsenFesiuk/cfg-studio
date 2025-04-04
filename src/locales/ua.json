@@ -34,6 +34,12 @@
     "correctRuleExample": "Правила мають виглядати так:",
     "singleTokenLeftSide": "Ліва частина правила повинна містити лише один нетермінал:",
 
+    "PseudoCodeRemoveEpsilonRules": "Псевдокод для видалення епсилон-правил",
+    "PseudoCodeRemoveUnitRules": "Псевдокод для видалення одиничних правил",
+    "PseudoCodeRemoveUselessSymbols": "Псевдокод для видалення зайвих символів",
+    "PseudoCodeRemoveLeftRecursion": "Псевдокод для видалення лівої рекурсії",
+    "PseudoCodeRemoveCNFConversation": "Псевдокод для повної трансформації в CNF",
+
     "Row1ForRemoveEpsilon": "1. \\( \\text{Створюємо } N_\\varepsilon: \\{ {{nullableSet}} \\} \\)",
     "Row2ForRemoveEpsilon": "2. \\( \\text{Копіюємо } N_\\varepsilon \\text{ у } \\hat{N}_\\varepsilon \\) \n \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",
     "Row3ForRemoveEpsilon": "3. \\( {{leftSide}} \\text{ додано в } N_\\varepsilon, \\text{ бо має } \\varepsilon. \\)",
