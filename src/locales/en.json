@@ -34,11 +34,7 @@
     "correctRuleExample": "Rules should be in the following format:",
     "singleTokenLeftSide": "The left side of the rule must contain only one nonterminal:",
 
-    "PseudoCodeRemoveEpsilonRules": "Pseudocode for remove epsilon rules",
-    "PseudoCodeRemoveUnitRules": "Pseudocode for remove unit rules",
-    "PseudoCodeRemoveUselessSymbols": "Pseudocode for remove useless symbols",
-    "PseudoCodeRemoveLeftRecursion": "Pseudocode for remove left recursion",
-    "PseudoCodeRemoveCNFConversation": "Pseudocode for full transformation to CNF",
+    "pseudocode" : "Pseudocode",
 
     "Row1ForRemoveEpsilon": "1. \\( \\text{Create } N_\\varepsilon: \\{ {{nullableSet}} \\} \\)",
     "Row2ForRemoveEpsilon": "2. \\( \\text{Copy } N_\\varepsilon \\text{ to } \\hat{N}_\\varepsilon \\) \n \\( N_\\varepsilon = \\{ {{nullableSet}} \\} \\) \n \\( \\hat{N}_\\varepsilon = \\{ {{previousNullableSet}} \\} \\)",

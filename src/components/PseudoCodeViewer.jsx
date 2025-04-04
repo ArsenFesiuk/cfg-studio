@@ -13,7 +13,10 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
   const pseudoCodeContainerRef = useRef(null);
   const lineRefs = useRef([]);
 
-  const [algorithmTitle, setAlgorithmTitle] = useState("");
+  //const [algorithmTitle, setAlgorithmTitle] = useState("");
+  
+  // Reference for MathJax container
+  const mathJaxRef = useRef(null);
 
   useEffect(() => {
     if (inputText) {
@@ -31,17 +34,18 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
       setCurrentLine(0);
       setExplanation(processor.explanations[0]?.message || "");
 
-      if (ProcessingClass.name === "RemovingEpsilonRules") {
-        setAlgorithmTitle(t("PseudoCodeRemoveEpsilonRules"));
-      } else if (ProcessingClass.name === "RemovingUnitRules") {
-        setAlgorithmTitle(t("PseudoCodeRemoveUnitRules"));
-      } else if (ProcessingClass.name === "RemovingUselessSymbols") {
-        setAlgorithmTitle(t("PseudoCodeRemoveUselessSymbols"));
-      } else if (ProcessingClass.name === "RemovingLeftRecursion") {
-        setAlgorithmTitle(t("PseudoCodeRemoveLeftRecursion"));
-      } else if (ProcessingClass.name === "CNFConversion") {
-        setAlgorithmTitle(t("PseudoCodeRemoveCNFConversation"));
-      }
+      // Зміна заголовку залежно від класу
+      // if (ProcessingClass.name === "RemovingEpsilonRules") {
+      //   setAlgorithmTitle(t("PseudoCodeRemoveEpsilonRules"));
+      // } else if (ProcessingClass.name === "RemovingUnitRules") {
+      //   setAlgorithmTitle(t("PseudoCodeRemoveUnitRules"));
+      // } else if (ProcessingClass.name === "RemovingUselessSymbols") {
+      //   setAlgorithmTitle(t("PseudoCodeRemoveUselessSymbols"));
+      // } else if (ProcessingClass.name === "RemovingLeftRecursion") {
+      //   setAlgorithmTitle(t("PseudoCodeRemoveLeftRecursion"));
+      // } else if (ProcessingClass.name === "CNFConversion") {
+      //   setAlgorithmTitle(t("PseudoCodeRemoveCNFConversation"));
+      // }
     }
   }, [inputText, ProcessingClass, t]);
 
@@ -72,6 +76,13 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
     }
   };
 
+  // This function forces MathJax to render after content change
+  useEffect(() => {
+    if (mathJaxRef.current) {
+      window.MathJax.typeset(); // Trigger MathJax re-render
+    }
+  }, [explanation]); // Trigger on explanation change
+
   return (
     <div>
       {/* Контейнер для псевдокоду */}
@@ -88,7 +99,7 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
           borderRadius: "4px",
         }}
       >
-        <h3 style={{ marginTop: "0px" }}>{algorithmTitle}:</h3> {/* Використання змінної для заголовка */}
+        <h3 style={{ marginTop: "0px" }}>{t("pseudocode")}:</h3>
         <MathJax>
           {pseudoCodeSteps.map((line, index) => (
             <div
@@ -111,31 +122,31 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
 
         {/* Стрілки завжди в правому нижньому куті */}
         <div
-  style={{
-    position: "sticky",
-    bottom: "8px",
-    right: "8px",
-    display: "flex",
-    gap: "8px",
-    justifyContent: "flex-end",
-    pointerEvents: "none", // Запобігає блокуванню тексту
-  }}
->
-  <button
-    onClick={handlePreviousStep}
-    disabled={currentExplanation <= 0}
-    style={{ ...arrowButtonStyle, pointerEvents: "auto" }} // Дозволяє клікати по кнопках
-  >
-    🔼
-  </button>
-  <button
-    onClick={handleNextStep}
-    disabled={currentExplanation >= steps.length - 1}
-    style={{ ...arrowButtonStyle, pointerEvents: "auto" }} // Дозволяє клікати по кнопках
-  >
-    🔽
-  </button>
-</div>
+          style={{
+            position: "sticky",
+            bottom: "8px",
+            right: "8px",
+            display: "flex",
+            gap: "8px",
+            justifyContent: "flex-end",
+            pointerEvents: "none", // Запобігає блокуванню тексту
+          }}
+        >
+          <button
+            onClick={handlePreviousStep}
+            disabled={currentExplanation <= 0}
+            style={{ ...arrowButtonStyle, pointerEvents: "auto" }} // Дозволяє клікати по кнопках
+          >
+            🔼
+          </button>
+          <button
+            onClick={handleNextStep}
+            disabled={currentExplanation >= steps.length - 1}
+            style={{ ...arrowButtonStyle, pointerEvents: "auto" }} // Дозволяє клікати по кнопках
+          >
+            🔽
+          </button>
+        </div>
       </div>
 
       {/* Контейнер для пояснення */}
@@ -152,8 +163,11 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
         }}
       >
         <MathJax>
-          <h3 style = {{marginTop : "0px"}}>{t("explanation")}:</h3>
-          <p dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}></p>
+          <h3 style={{ marginTop: "0px" }}>{t("explanation")}:</h3>
+          <p
+            ref={mathJaxRef}
+            dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}
+          ></p>
         </MathJax>
       </div>
     </div>
