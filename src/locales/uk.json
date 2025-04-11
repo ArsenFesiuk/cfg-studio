@@ -30,9 +30,18 @@
     "testForLeftRecursion" : "Тест для лівої рекурсії",
     "testForCNF" : "Тест для CFG to CNF",
 
-    "invalidRuleFormat": "Неправильний формат правила:",
+    "ExportGrammar": "Експортувати граматику",
+    "ExportInput": "Експортувати вхідні дані",
+    "ExportOutput": "Експортувати результат",
+
+    "ImportGrammar": "Імпортувати граматику",
+
+    "invalidRuleFormat": "Неправильний формат правила або в тебе є пустий рядок:",
     "correctRuleExample": "Правила мають виглядати так:",
     "singleTokenLeftSide": "Ліва частина правила повинна містити лише один нетермінал:",
+    "invalidAlternativeAfterPipe": "Якщо ви написали \"|\", то після неї має бути альтернатива або приберіть її.",
+    "fileImportError": "Помилка при імпорті файлу: некоректна граматика",
+
 
     "pseudocode" : "Псевдокод",
 

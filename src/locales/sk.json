@@ -18,7 +18,7 @@
     "guideIntroduction": "Úvod",
     "guideIntroduction2": "V tejto aplikácii môžete ľahko konvertovať bezkontextovú gramatiku na Chomského normálnu formu (CNF) pomocou tlačidla CFG na CNF a sledovať každý algoritmus samostatne. Vďaka tomu si môžete podrobne pozrieť každý krok transformácie a pochopiť, ako sa gramatika prevádza na normálnu formu.",
     "guideExplanation": "Ako získať vysvetlenie",
-    "guideExplanation1": "Ak chcete získať vysvetlenie, musíte nastaviť správne vstupné údaje a kliknúť na tlačidlo určitého algoritmu, v tomto okamihu sa zobrazí pseudokód, v ktorom sa môžete pohybovať krok za krokom a získať vysvetlenie každého kroku.",
+    "guideExplanation1": "Ak chcete získať vysvetlenie, musíte nastaviť správne vstupné údaje a kliknúť na tlačidlo určitého algoritmu, v tomto mieste sa zobrazí pseudokód, v ktorom sa môžete pohybovať krok za krokom a získať vysvetlenie každého kroku.",
     "guideExample1": "Všetky tokeny musia byť oddelené medzerami",
     "guideExample2": "Ak potrebujete šípku, napíšte ->",
     "guideExample3": "Ak potrebujete epsilon, napíšte \\eps",
@@ -30,9 +30,17 @@
     "testForLeftRecursion": "Test na ľavú rekurziu",
     "testForCNF": "Test na prevod do CNF",
 
-    "invalidRuleFormat": "Neplatný formát pravidla:",
+    "ExportGrammar": "Exportovať gramatiku",
+    "ExportInput": "Exportovať vstup",
+    "ExportOutput": "Exportovať výstup",
+
+    "ImportGrammar": "Importovať gramatiku",
+
+    "invalidRuleFormat": "Neplatný formát pravidla alebo máš prázdny riadok:",
     "correctRuleExample": "Pravidlá by mali mať nasledujúci formát:",
     "singleTokenLeftSide": "Ľavá strana pravidla musí obsahovať iba jeden neterminál:",
+    "invalidAlternativeAfterPipe": "Ak ste napísali \"|\", musí za ním byť alternatíva alebo ho odstráňte.",
+    "fileImportError": "Chyba pri importe súboru: neplatná gramatika",
 
     "pseudocode" : "Pseudocode",
     

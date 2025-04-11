@@ -37,7 +37,7 @@ const SupportedGrammars = () => {
       </Typography>
       <Typography
         variant="body1"
-        style={{ paddingLeft: "20px", marginBottom: "16px", lineHeight: "1.6" }}
+        style={{ paddingLeft: "20px", marginBottom: "16px", lineHeight: "1.7" }}
         dangerouslySetInnerHTML={{ __html: formattedGrammarText }}
       />
       

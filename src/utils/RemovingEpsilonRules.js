@@ -108,14 +108,14 @@ export class RemovingEpsilonRules {
 
                     let originalRule = `${rule.leftSide} → ${alternative.join("")}`;
                     let newRule = `${rule.leftSide} → ${newAlt.join("")}`;
-                        batchExplanations.push(
-                            this.t("Row5ForRemoveEpsilon", {originalRule : originalRule, newRule : newRule, nullableSet : [...nullableSet].join(", ")})
-                        );
+                    batchExplanations.push(
+                        this.t("Row5ForRemoveEpsilon", {originalRule : originalRule, newRule : newRule, nullableSet : [...nullableSet].join(", ")})
+                    );
                     
                 }
             }
         }
-    }
+    } 
 
     // Додаємо всі пояснення за раз після досягнення line: 4
     this.explanations.push({

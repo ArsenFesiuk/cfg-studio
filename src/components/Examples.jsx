@@ -1,75 +1,51 @@
-import { Paper, Typography } from "@mui/material";
+import { Button, Menu, MenuItem } from "@mui/material";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const Examples = () => {
+const Examples = ({ onExampleSelect }) => {
+  const { t } = useTranslation();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
-  const { t, i18n } = useTranslation();
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  return(
-  <Paper elevation={2} style={{ padding: "10px", whiteSpace: "pre-wrap", backgroundColor: "#fafafa" }}>
-    <Typography variant="h6" gutterBottom>
-      {t("examples")}
-    </Typography>
+  const handleSelect = (exampleText) => {
+    setAnchorEl(null);
+    if (onExampleSelect) {
+      onExampleSelect(exampleText); // передаємо тільки текст граматики
+    }
+  };
 
-    <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
-      <div style={{ width: "20%" }}>
-      <Typography variant="h6" gutterBottom>
+  return (
+    <>
+      <Button
+        variant="contained"
+        onClick={handleClick}
+        sx={{ backgroundColor: "contained", color: "white", height: "60px", width: "180px"}}
+      >
+        {t("examples")}
+      </Button>
+      <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
+        <MenuItem onClick={() => handleSelect(`S → A B C D\nA → C D | A C\nB → C b\nC → a | ε\nD → b D | ε`)}>
           {t("testForEpsilon")}
-        </Typography>
-        <Typography variant="body1">
-          S → A B C D{"\n"}
-          A → C D | A C{"\n"}
-          B → C b{"\n"}
-          C → a | ε{"\n"}
-          D → b D | ε{"\n"}
-        </Typography>
-      </div>
-
-      <div style={{ width: "20%" }}>
-        <Typography  variant="h6" gutterBottom sx={{ fontSize: i18n.language === "sk" ? "18.5px" : "20px" }}>
+        </MenuItem>
+        <MenuItem onClick={() => handleSelect(`S → A B | A | B\nA → a A A | a A | a\nB → b B B | b B | b`)}>
           {t("testForUnit")}
-        </Typography>
-        <Typography variant="body1">
-          S → A B | A | B{"\n"}
-          A → a A A | a A | a{"\n"}
-          B → b B B | b B | b
-        </Typography>
-      </div>
-
-      <div style={{ width: "20%" }}>
-        <Typography variant="h6" gutterBottom sx={{ fontSize: i18n.language === "sk" ? "18.5px" : "20px" }}>
+        </MenuItem>
+        <MenuItem onClick={() => handleSelect(`S → A B | a\nA → b\nB → C`)}>
           {t("testForUseless")}
-        </Typography>
-        <Typography variant="body1">
-            S → A B | a{"\n"}
-            A → b{"\n"}
-            B → C
-        </Typography>
-      </div>
-
-      <div style={{ width: "20%" }}>
-        <Typography variant="h6" gutterBottomsx={{ fontSize: i18n.language === "sk" ? "18.5px" : "20px" }}>
+        </MenuItem>
+        <MenuItem onClick={() => handleSelect(`A → B a | A a | c\nB → B b | A b | d`)}>
           {t("testForLeftRecursion")}
-        </Typography>
-        <Typography variant="body1">
-            A → B a | A a | c{"\n"}
-            B → B b | A b | d
-        </Typography>
-      </div>
-
-      <div style={{ width: "20%" }}>
-        <Typography variant="h6" gutterBottom sx={{ fontSize: i18n.language === "sk" ? "18.5px" : "20px" }}>
+        </MenuItem>
+        <MenuItem onClick={() => handleSelect(`S → A B A\nA → a A | ε\nB → b B c | ε`)}>
           {t("testForCNF")}
-        </Typography>
-        <Typography variant="body1">
-          S → A B A{"\n"}
-          A → a A | ε{"\n"}
-          B → b B c | ε
-        </Typography>
-      </div>
-    </div>
-  </Paper>
-);
+        </MenuItem>
+      </Menu>
+    </>
+  );
 };
 
 export default Examples;

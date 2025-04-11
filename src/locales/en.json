@@ -30,9 +30,17 @@
     "testForLeftRecursion" : "Test for left recursion",
     "testForCNF" : "Test for CFG to CNF",
 
-    "invalidRuleFormat": "Invalid rule format:",
+    "ExportGrammar" : "Export Grammar",
+    "ExportInput" : "Export Input",
+    "ExportOutput" : "Export Output",
+
+    "ImportGrammar" : "Import Grammar",
+
+    "invalidRuleFormat": "Invalid rule format or you have an empty line:",
     "correctRuleExample": "Rules should be in the following format:",
     "singleTokenLeftSide": "The left side of the rule must contain only one nonterminal:",
+    "invalidAlternativeAfterPipe": "If you wrote \"|\", there must be an alternative after it or remove it.",
+    "fileImportError": "File import error: invalid grammar",
 
     "pseudocode" : "Pseudocode",
 
@@ -91,8 +99,10 @@
         "1: \\( N_\\epsilon \\gets \\emptyset; \\)",
         "2:     \\( \\hat{N}_\\epsilon \\gets N_\\epsilon; \\)",
         "3:     \\( N_\\epsilon \\gets \\hat{N}_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in \\hat{N}_\\epsilon^* \\}; \\)",
-        "4: \\( \\textbf{while } N_\\epsilon \\neq \\hat{N}_\\epsilon, \\text{ go to step 2.} \\)"
+        "4: \\( \\textbf{while } N_\\epsilon \\neq \\hat{N}_\\epsilon, \\text{ go to step 2.} \\)",
+        "5: \\( \\text{Pre každé pravidlo } A \\to \\alpha_0 X_1 \\alpha_1 X_2 \\dots X_k \\alpha_k, \\text{ kde } X_i \\in N_\\epsilon \\text{ alebo } X_i = \\varepsilon, \\text{ pridáme kombinácie bez} X_i \\)"
     ],
+
 
     "stepsForRemoveUnitRules": [
         "1: \\( \\textbf{for all } A_i \\in N \\textbf{ do} \\)",

@@ -83,6 +83,26 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
     }
   }, [explanation]); // Trigger on explanation change
 
+  useEffect(() => {
+    if (inputText) {
+      const rules = inputText.split("\n").map((line) => {
+        const [left, right] = line.split("→").map((part) => part.trim());
+        return {
+          leftSide: left,
+          rightSide: right.split("|").map((alt) => alt.trim().split(" ")),
+        };
+      });
+  
+      const processor = new ProcessingClass(rules, t);
+      processor.execute();
+      setSteps(processor.explanations);
+      setCurrentLine(0);
+      setCurrentExplanation(0); // 👈 додано
+      setExplanation(processor.explanations[0]?.message || "");
+    }
+  }, [inputText, ProcessingClass, t]);
+  
+
   return (
     <div>
       {/* Контейнер для псевдокоду */}
@@ -94,31 +114,34 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
           fontFamily: "Arial, sans-serif",
           border: "1px solid #ddd",
           backgroundColor: "#fafafa",
-          height: "290px",
+          height: "254px",
           overflowY: "auto",
+          overflowX : "hidden",
           borderRadius: "4px",
         }}
       >
         <h3 style={{ marginTop: "0px" }}>{t("pseudocode")}:</h3>
         <MathJax>
-          {pseudoCodeSteps.map((line, index) => (
-            <div
-              key={index}
-              ref={(el) => (lineRefs.current[index] = el)}
-              style={{
-                padding: "4px 8px",
-                fontWeight: index === currentLine ? "bold" : "normal",
-                backgroundColor: index === currentLine ? "#FFD700" : "transparent",
-                transition: "background-color 0.3s ease-in-out",
-                whiteSpace: "pre-wrap",
-                borderRadius: "4px",
-                textAlign: "left",
-              }}
-            >
-              {line}
-            </div>
-          ))}
-        </MathJax>
+  {pseudoCodeSteps.map((line, index) => (
+    <div
+      key={index}
+      ref={(el) => (lineRefs.current[index] = el)}
+      style={{
+        padding: "4px 8px",
+        fontWeight: index === currentLine ? "bold" : "normal",
+        backgroundColor: index === currentLine ? "#FFD700" : "transparent",
+        transition: "background-color 0.3s ease-in-out",
+        whiteSpace: "pre-wrap",       // перенос по \n
+        wordBreak: "break-word",      // перенос довгих слів і формул
+        overflowWrap: "break-word",   // сумісність із браузерами
+        borderRadius: "4px",
+        textAlign: "left",
+      }}
+    >
+      {line}
+    </div>
+  ))}
+</MathJax>
 
         {/* Стрілки завжди в правому нижньому куті */}
         <div
@@ -156,7 +179,7 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
           fontFamily: "Arial, sans-serif",
           border: "1px solid #ddd",
           backgroundColor: "#fafafa",
-          height: "206px",
+          height: "254px",
           overflowY: "auto",
           borderRadius: "4px",
           marginTop: "16px",

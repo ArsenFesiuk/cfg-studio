@@ -12,6 +12,8 @@ import { TextField, Button } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { PseudoCodeViewer } from "./PseudoCodeViewer";
 import Tooltip from "@mui/material/Tooltip";
+import ImportFile from "./ImportFile";
+import ExportMenu from "./ExportMenu";
 
 const GrammarInput = () => {
   const { t, i18n } = useTranslation();
@@ -67,6 +69,10 @@ const GrammarInput = () => {
     transformer.execute();
     setOutput(formatGrammarOutput(rules));
     setshowPseudocodeForRemoveEpsilonRules(true);
+    setShowPseudocodeForRemoveLeftRecursion(false);
+    setshowPseudocodeForRemoveUselessSymbols(false);
+    setshowPseudocodeForRemoveUnitRules(false);
+    setshowPseudocodeForCNFConversation(false);
   };
   
   const handleRemoveUnitRules = () => {
@@ -80,6 +86,10 @@ const GrammarInput = () => {
     transformer.execute();
     setOutput(formatGrammarOutput(rules));
     setshowPseudocodeForRemoveUnitRules(true);
+    setshowPseudocodeForRemoveEpsilonRules(false); // Ховаємо псевдокод при зміні інпуту
+    setShowPseudocodeForRemoveLeftRecursion(false);
+    setshowPseudocodeForRemoveUselessSymbols(false);
+    setshowPseudocodeForCNFConversation(false);
   };
   
   const handleRemoveUselessSymbols = () => {
@@ -95,6 +105,10 @@ const GrammarInput = () => {
     rules = transformer.execute();  // викликаємо комбіновану функцію
     setOutput(formatGrammarOutput(rules));
     setshowPseudocodeForRemoveUselessSymbols(true);
+    setshowPseudocodeForRemoveEpsilonRules(false); // Ховаємо псевдокод при зміні інпуту
+    setShowPseudocodeForRemoveLeftRecursion(false);
+    setshowPseudocodeForRemoveUnitRules(false);
+    setshowPseudocodeForCNFConversation(false);
   };
   
   const handleRemoveLeftRecursion = () => {
@@ -109,6 +123,10 @@ const GrammarInput = () => {
 
     setOutput(formatGrammarOutput(rules));
     setShowPseudocodeForRemoveLeftRecursion(true);
+    setshowPseudocodeForRemoveEpsilonRules(false); // Ховаємо псевдокод при зміні інпуту
+    setshowPseudocodeForRemoveUselessSymbols(false);
+    setshowPseudocodeForRemoveUnitRules(false);
+    setshowPseudocodeForCNFConversation(false);
   };
   
   
@@ -123,9 +141,25 @@ const GrammarInput = () => {
     const finalRules = cnfConversion.execute();  // Capture the returned rules
     setOutput(formatGrammarOutput(finalRules));  // Pass the final rules to formatGrammarOutput
     setshowPseudocodeForCNFConversation(true);
+    setshowPseudocodeForRemoveEpsilonRules(false); // Ховаємо псевдокод при зміні інпуту
+    setShowPseudocodeForRemoveLeftRecursion(false);
+    setshowPseudocodeForRemoveUselessSymbols(false);
+    setshowPseudocodeForRemoveUnitRules(false);
+  }; 
+
+  const handleExampleSelect = (exampleText) => {
+    const replaced = replaceEscapes(exampleText);
+    setInput(replaced);
+    setOutput("");
+    setErrors([]);
+    setshowPseudocodeForRemoveEpsilonRules(false);
+    setShowPseudocodeForRemoveLeftRecursion(false);
+    setshowPseudocodeForRemoveUselessSymbols(false);
+    setshowPseudocodeForRemoveUnitRules(false);
+    setshowPseudocodeForCNFConversation(false);
   };
   
-  
+
   return (
     <div style={{ paddingTop: "64px" }}>
       <div id="MyAppBar" style={{ width: "100%" }}>
@@ -133,150 +167,157 @@ const GrammarInput = () => {
       </div>
   
       <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", padding: "10px" }}>
-        {/* <div id="SupportedGrammars" style={{ width: "30%", padding: "10px" }}>
-          <SupportedGrammars />
-        </div> */}
+        {/* Ліва частина: Examples, ImportFile, ExportMenu в ряд з однаковими розмірами та висотою */}
+        <div style={{ width: "50%", padding: "10px", display: "flex", flexDirection: "row", gap: "10px" }}>
+          <span style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+            <Examples onExampleSelect={handleExampleSelect} />
+            <ImportFile
+              onFileImport={(fileContent) => {
+                const replaced = replaceEscapes(fileContent);
+                const { errors } = parseGrammar(replaced, t);
   
-        <div id="Examples" style={{ width: "100%", padding: "10px"}}>
-          <Examples />
+                if (errors.length > 0) {
+                  setErrors([t("fileImportError"), ...errors]);
+                  setInput(replaced);
+                  setOutput("");
+                  return;
+                }
+  
+                setInput(replaced);
+                setOutput("");
+                setErrors([]);
+              }}
+            />
+            <ExportMenu inputText={input} outputText={output} isValidGrammar={errors.length === 0 && input.trim() !== ""} />
+            </span>
+        </div>
+  
+        {/* Права частина: Кнопки */}
+        <div style={{ width: "50%", padding: "10px", display: "flex", flexDirection: "row", gap: "10px" }}>
+          <Tooltip title={errors.length > 0 ? errors.map((err, i) => <div key={i}>{err}<br /></div>) : ""} 
+            arrow
+            componentsProps={{
+              tooltip: {
+                sx: {
+                  fontSize: "16px",
+                  padding: "12px 16px",
+                  maxWidth: "400px",
+                  borderRadius: "8px",
+                }
+              },
+              arrow: { sx: { color: "gray" } }
+            }}>
+            <span style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+              <Button variant="contained" onClick={handleRemoveEpsilon} disabled={errors.length > 0 || input.trim() === ""} sx={{
+                padding: "5px 10px",
+                width: "155px",
+                fontSize: fontSize,
+                boxSizing: "border-box",
+              }}>
+                {t("removeEpsilon")}
+              </Button>
+              <Button variant="contained" onClick={handleRemoveUnitRules} disabled={errors.length > 0 || input.trim() === ""} sx={{
+                padding: "5px 10px",
+                width: "195px",
+                fontSize: fontSize,
+                boxSizing: "border-box",
+              }}>
+                {t("removeUnitRules")}
+              </Button>
+              <Button variant="contained" onClick={handleRemoveUselessSymbols} disabled={errors.length > 0 || input.trim() === ""} sx={{
+                padding: "5px 10px",
+                width: "205px",
+                fontSize: fontSize,
+                boxSizing: "border-box",
+              }}>
+                {t("removeUselessSymbols")}
+              </Button>
+              <Button variant="contained" onClick={handleRemoveLeftRecursion} disabled={errors.length > 0 || input.trim() === ""} sx={{
+                padding: "5px 10px",
+                width: "185px",
+                fontSize: fontSize,
+                boxSizing: "border-box",
+              }}>
+                {t("removeLeftRecursion")}
+              </Button>
+              <Button variant="contained" onClick={handleToCNF} disabled={errors.length > 0 || input.trim() === ""} sx={{
+                padding: "5px 10px",
+                width: "145px",
+                fontSize: fontSize,
+                boxSizing: "border-box",
+              }}>
+                {t("convertToCNF")}
+              </Button>
+            </span>
+          </Tooltip>
         </div>
       </div>
   
       <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", padding: "10px" }}>
         {/* Ліва частина: input + кнопки + output */}
         <div id="input-container" style={{ width: "50%", padding: "10px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          {/* Поле вводу */}
           <TextField
             label={t("input")}
             multiline
-            rows={9}
+            rows={11}
             variant="outlined"
             value={input}
             onChange={handleInputChange}
             fullWidth
-            style={{ marginBottom: "20px", backgroundColor: "#fafafa"}}
+            style={{ marginBottom: "20px", backgroundColor: "#fafafa" }}
           />
-  
-          {/* Кнопки між input і output */}
-          <Tooltip title={errors.length > 0 ? errors.map((err, i) => <div key={i}>{err}<br /></div>) : ""} 
-  arrow
-  componentsProps={{
-    tooltip: {
-      sx: {
-        fontSize: "16px", // Збільшуємо розмір тексту
-        padding: "12px 16px", // Збільшуємо відступи (робить тултіп більшим)
-        maxWidth: "400px", // Максимальна ширина тултіпа
-        borderRadius: "8px", // Закруглені кути
-      }
-    },
-    arrow: { sx: { color: "gray" } } // Колір стрілочки тултіпа
-  }} >
-            <span style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginBottom: "20px" }}>
-            <Button variant="contained" onClick={handleRemoveEpsilon} disabled={errors.length > 0 || input.trim() === ""} sx={{
-              padding: "5px 10px",
-              minWidth: "auto",
-              maxWidth: "155px",
-              width: "155px",
-              fontSize: fontSize,
-              boxSizing: "border-box",
-            }}>
-              {t("removeEpsilon")}
-            </Button>
-            <Button variant="contained" onClick={handleRemoveUnitRules} disabled={errors.length > 0 || input.trim() === ""} sx={{
-              padding: "5px 10px",
-              minWidth: "auto",
-              maxWidth: "195px",
-              width: "195px",
-              fontSize: fontSize,
-              boxSizing: "border-box",
-            }}>
-              {t("removeUnitRules")}
-            </Button>
-            <Button variant="contained" onClick={handleRemoveUselessSymbols} disabled={errors.length > 0 || input.trim() === ""} sx={{
-            padding: "5px 10px",
-            minWidth: "auto",
-            maxWidth: "205px",
-            width: "205px",
-            fontSize: fontSize,
-            boxSizing: "border-box",
-          }}>
-              {t("removeUselessSymbols")}
-            </Button>
-            <Button variant="contained" onClick={handleRemoveLeftRecursion} disabled={errors.length > 0 || input.trim() === ""} sx={{
-            padding: "5px 10px",
-            minWidth: "auto",
-            maxWidth: "185px",
-            width: "185px",
-            fontSize: fontSize,
-            boxSizing: "border-box",
-          }}>
-              {t("removeLeftRecursion")}
-            </Button>
-            <Button variant="contained" onClick={handleToCNF} disabled={errors.length > 0 || input.trim() === ""} sx={{
-            padding: "5px 10px",
-            minWidth: "auto",
-            maxWidth: "145px",
-            width: "145px",
-            fontSize: fontSize,
-            boxSizing: "border-box",
-          }}>
-              {t("convertToCNF")}
-            </Button>
-            </span>
-          </Tooltip>
-  
-          {/* Поле output */}
           <TextField
             label={t("output")}
             multiline
-            rows={9}
+            rows={11}
             variant="outlined"
             value={output}
             fullWidth
             disabled
-            style={{ backgroundColor: "#fafafa"}}
+            style={{ backgroundColor: "#fafafa" }}
           />
         </div>
   
         {/* Права частина: пояснення */}
         <div id="explanation" style={{ width: "50%", padding: "10px", fontSize: "16px", lineHeight: "1.5" }}>
-        {showPseudocodeForRemoveLeftRecursion ? (
-          <PseudoCodeViewer 
-            inputText={input}
-            ProcessingClass={RemovingLeftRecursion} 
-            translationKey="stepsForLeftRecursion" 
-          />
-        ) : showPseudocodeForRemoveEpsilonRules ? (
-          <PseudoCodeViewer 
-            inputText={input}
-            ProcessingClass={RemovingEpsilonRules} 
-            translationKey="stepsForRemoveEpsilonRules" 
-          />
-        ) : showPseudocodeForRemoveUselessSymbols ? (
-          <PseudoCodeViewer 
-            inputText={input}
-            ProcessingClass={RemovingUselessSymbols} 
-            translationKey="stepsForRemoveUselessSymbols" 
-          />
-        ) : showPseudocodeForRemoveUnitRules ? (
-          <PseudoCodeViewer 
-            inputText={input}
-            ProcessingClass={RemovingUnitRules} 
-            translationKey="stepsForRemoveUnitRules" 
-          />
-        ) : showPseudocodeForCNFConversation ? (
-          <PseudoCodeViewer 
-            inputText={input}
-            ProcessingClass={CNFConversion} 
-            translationKey="stepsForGrammarTransformation" 
-          />
-        ) :
+          {showPseudocodeForRemoveLeftRecursion ? (
+            <PseudoCodeViewer 
+              inputText={input}
+              ProcessingClass={RemovingLeftRecursion} 
+              translationKey="stepsForLeftRecursion" 
+            />
+          ) : showPseudocodeForRemoveEpsilonRules ? (
+            <PseudoCodeViewer 
+              inputText={input}
+              ProcessingClass={RemovingEpsilonRules} 
+              translationKey="stepsForRemoveEpsilonRules" 
+            />
+          ) : showPseudocodeForRemoveUselessSymbols ? (
+            <PseudoCodeViewer 
+              inputText={input}
+              ProcessingClass={RemovingUselessSymbols} 
+              translationKey="stepsForRemoveUselessSymbols" 
+            />
+          ) : showPseudocodeForRemoveUnitRules ? (
+            <PseudoCodeViewer 
+              inputText={input}
+              ProcessingClass={RemovingUnitRules} 
+              translationKey="stepsForRemoveUnitRules" 
+            />
+          ) : showPseudocodeForCNFConversation ? (
+            <PseudoCodeViewer 
+              inputText={input}
+              ProcessingClass={CNFConversion} 
+              translationKey="stepsForGrammarTransformation" 
+            />
+          ) :
             <SupportedGrammars />
-        }
+          }
+        </div>
+      </div>
     </div>
-  </div>
-</div>
   );
+  
 }
 
 export default GrammarInput;

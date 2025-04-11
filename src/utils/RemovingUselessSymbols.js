@@ -53,7 +53,6 @@ export class RemovingUselessSymbols {
               break;
             }
           }
-          break;
         }
       }
 
@@ -86,7 +85,7 @@ export class RemovingUselessSymbols {
 
     const formattedRules = this.rules
     .map(rule => `${rule.leftSide} → ${rule.rightSide.map(alt => alt.join(" ")).join(" | ")}`)
-    .join("\n");
+    .join("\n"); 
     this.explanations.push({
       line: 5,
       message: this.t("Row6ForRemoveUselessSymbols", {N_T : [...nonTerminals].join(", "), formattedRules : formattedRules})
