@@ -98,7 +98,7 @@
     "stepsForRemoveEpsilonRules": [
         "1: \\( N_\\epsilon \\gets \\emptyset; \\)",
         "2:     \\( \\hat{N}_\\epsilon \\gets N_\\epsilon; \\)",
-        "3:     \\( N_\\epsilon \\gets \\hat{N}_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in \\hat{N}_\\epsilon^* \\}; \\)",
+        "3:     \\( N_\\epsilon \\gets \\hat{N}_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P \\land \\alpha \\in \\hat{N}_\\epsilon^* \\}; \\)",
         "4: \\( \\textbf{while } N_\\epsilon \\neq \\hat{N}_\\epsilon, \\text{ go to step 2.} \\)",
         "5: \\( \\text{Pre každé pravidlo } A \\to \\alpha_0 X_1 \\alpha_1 X_2 \\dots X_k \\alpha_k, \\text{ kde } X_i \\in N_\\epsilon \\text{ alebo } X_i = \\varepsilon, \\text{ pridáme kombinácie bez} X_i \\)"
     ],

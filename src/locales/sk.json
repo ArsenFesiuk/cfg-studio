@@ -104,7 +104,7 @@
     "stepsForRemoveEpsilonRules": [
         "1: \\( N_\\epsilon \\gets \\emptyset; \\)",
         "2:     \\( \\hat{N}_\\epsilon \\gets N_\\epsilon; \\)",
-        "3:     \\( N_\\epsilon \\gets \\hat{N}_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in \\hat{N}_\\epsilon^* \\}; \\)",
+        "3:     \\( N_\\epsilon \\gets \\hat{N}_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P \\land \\alpha \\in \\hat{N}_\\epsilon^* \\}; \\)",
         "4: \\( \\textbf{pokial } N_\\epsilon \\neq \\hat{N}_\\epsilon, \\text{ skok na krok 2.} \\)"
     ],
 
