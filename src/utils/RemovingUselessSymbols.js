@@ -7,45 +7,31 @@ export class RemovingUselessSymbols {
 
   // Видалення символів, що не завершуються
   removeNotTerminatingSymbols() {
-    this.terminatingSymbols = new Set();
-    let nonTerminals = new Set();
+    const terminatingNonTerminals = new Set();
     let rules = this.rules;
-    
-    // Крок 1: Ініціалізуємо N_T як порожню множину
+  
     this.explanations.push({
       line: 0,
-      message: this.t("Row1ForRemoveUselessSymbols", {N_T : [...this.terminatingSymbols].join(", ")})
-    });    
-
-    // Крок 2: Додаємо всі термінальні символи
-    for (const rule of rules) {
-      for (const alternative of rule.rightSide) {
-        for (const symbol of alternative) {
-          if (this.isTerminal(symbol) && symbol !== "ε") { 
-            this.terminatingSymbols.add(symbol);
-          }
-        }
-      }
-    }
-
-    // Крок 3-5: Ітеративно шукаємо нетермінали, що завершуються термінальною послідовністю
+      message: this.t("Row1ForRemoveUselessSymbols", {N_T : [...terminatingNonTerminals].join(", ")})
+    });
+  
     let added;
     do {
-      let previousTerminatingSet = new Set(nonTerminals);
+      const previousSet = new Set(terminatingNonTerminals);
       this.explanations.push({
         line: 1,
-        message: this.t("Row2ForRemoveUselessSymbols", {N_T : [...nonTerminals].join(", "), N_T_previous : [...previousTerminatingSet].join(", ")})
+        message: this.t("Row2ForRemoveUselessSymbols", {N_T : [...terminatingNonTerminals].join(", "), N_T_previous : [...previousSet].join(", ")})
       });
-
+  
       added = false;
       for (const rule of rules) {
-        if (!this.terminatingSymbols.has(rule.leftSide)) {
+        if (!terminatingNonTerminals.has(rule.leftSide)) {
           for (const alternative of rule.rightSide) {
-            if (alternative.every(symbol => this.terminatingSymbols.has(symbol))) { 
-              this.terminatingSymbols.add(rule.leftSide);
-              nonTerminals.add(rule.leftSide);
+            if (alternative.every(symbol =>
+              this.isTerminal(symbol) || terminatingNonTerminals.has(symbol)
+            )) {
+              terminatingNonTerminals.add(rule.leftSide);
               added = true;
-
               this.explanations.push({
                 line: 2,
                 message: this.t("Row3ForRemoveUselessSymbols", {leftSide : rule.leftSide, alternative : alternative.join(" ")})
@@ -55,42 +41,48 @@ export class RemovingUselessSymbols {
           }
         }
       }
-
+  
       this.explanations.push({
         line: 3,
-        message: this.t("Row4ForRemoveUselessSymbols", {N_T : [...nonTerminals].join(", "), N_T_previous : [...previousTerminatingSet].join(", ")})
+        message: this.t("Row4ForRemoveUselessSymbols", {N_T : [...terminatingNonTerminals].join(", "), N_T_previous : [...previousSet].join(", ")})
       });
-
+  
     } while (added);
-
+  
     this.explanations.push({
       line: 4,
-      message: this.t("Row5ForRemoveUselessSymbols", {N_T : [...nonTerminals].join(", ")})
+      message: this.t("Row5ForRemoveUselessSymbols", {N_T : [...terminatingNonTerminals].join(", ")})
     });
-
-    // Оновлення правил, видаляючи альтернативи з не завершеними символами
+  
+    // Фільтруємо правила
     let updatedRules = [];
     for (const rule of rules) {
-      const newRightSide = rule.rightSide.filter((alternative) => 
-        alternative.every((symbol) => this.terminatingSymbols.has(symbol))
+      if (!terminatingNonTerminals.has(rule.leftSide)) continue;
+  
+      const newRightSide = rule.rightSide.filter(alternative =>
+        alternative.every(symbol =>
+          this.isTerminal(symbol) || terminatingNonTerminals.has(symbol)
+        )
       );
-      
+  
       if (newRightSide.length > 0) {
         updatedRules.push({ ...rule, rightSide: newRightSide });
       }
     }
-
+  
     updatedRules = this.removeEmptyRules(updatedRules);
     this.rules = updatedRules;
-
+  
     const formattedRules = this.rules
-    .map(rule => `${rule.leftSide} → ${rule.rightSide.map(alt => alt.join(" ")).join(" | ")}`)
-    .join("\n"); 
+      .map(rule => `${rule.leftSide} → ${rule.rightSide.map(alt => alt.join(" ")).join(" | ")}`)
+      .join("\n");
+  
     this.explanations.push({
       line: 5,
-      message: this.t("Row6ForRemoveUselessSymbols", {N_T : [...nonTerminals].join(", "), formattedRules : formattedRules})
+      message: this.t("Row6ForRemoveUselessSymbols", {N_T : [...terminatingNonTerminals].join(", "), formattedRules})
     });
   }
+  
 
   // Видалення недосяжних символів
   removeUnreachableSymbols() {

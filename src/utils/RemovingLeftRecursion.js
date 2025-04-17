@@ -114,4 +114,9 @@ export class RemovingLeftRecursion {
   rightSideToString(rightSide) {
     return rightSide.map(alt => alt.join(" ")).join(" | ");
   }
+
+  highlightRule(rule) {
+    return `<b>${rule.leftSide} → ${rule.rightSide.map(alt => alt.join(" ")).join(" | ")}</b>`;
+  }
+  
 }

@@ -116,7 +116,7 @@ export function PseudoCodeViewer({ inputText, ProcessingClass, translationKey })
           backgroundColor: "#fafafa",
           height: "254px",
           overflowY: "auto",
-          overflowX : "hidden",
+          overflowX : "auto",
           borderRadius: "4px",
         }}
       >

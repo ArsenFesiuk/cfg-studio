@@ -112,7 +112,7 @@
       "1: \\( \\textbf{для всіх } A_i \\in N \\textbf{ виконай} \\)",
       "2:     \\( N_A \\gets \\emptyset \\)",
       "3:         \\( N'_A \\gets N_A \\)",
-      "4:         \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\text{ і } B \\in N'_A \\} \\)",
+      "4:         \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\land B \\in N'_A \\} \\)",
       "5:     \\( \\textbf{поки } N'_A \\neq N_A \\text{, перехід до кроку 3} \\)",
       "6:         \\( \\text{замінити правила } A_i \\to A_j \\text{ всіма альтернативами з } N_A \\)",
       "7: \\( \\textbf{кінець для} \\)"
@@ -121,13 +121,13 @@
     "stepsForRemoveUselessSymbols": [
       "1: \\( N_T \\gets \\emptyset \\)",
       "2:     \\( N'_T \\gets N_T \\)",
-      "3:     \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in (N'_T \\cup T)^* \\} \\)",
+      "3:     \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P \\land \\alpha \\in (N'_T \\cup T)^* \\} \\)",
       "4: \\( \\textbf{поки } N_T \\neq N'_T, \\text{ перехід до кроку 2} \\)",
       "5: \\( \\textbf{якщо } S \\in N_T, \\textbf{ потім} \\)",
       "6:     \\( \\text{видалити з граматики } G \\text{ всі нетермінали, які не належать до } N_T \\)",
       "7:     \\( V_D \\gets \\{ S \\} \\)",
       "8:         \\( V'_D \\gets V_D \\)",
-      "9:         \\( V_D \\gets V'_D \\cup \\{ X \\mid A \\to \\alpha X \\beta \\in P, A \\in V'_D \\} \\)",
+      "9:         \\( V_D \\gets V'_D \\cup \\{ \\beta \\mid A \\to \\alpha \\beta \\gamma \\in P \\land \\beta \\in (N \\cup T) \\land A \\in V'_D \\land \\alpha, \\gamma \\in (N \\cup T)^* \\} \\)",
       "10:    \\( \\textbf{поки } V_D \\neq V'_D, \\text{ перехід до кроку 8} \\)",
       "11:        \\( \\text{видалити з граматики } G \\text{ всі символи, які не належать до } V_D \\)",
       "12: \\( \\textbf{кінець як} \\)"

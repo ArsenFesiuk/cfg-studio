@@ -108,7 +108,7 @@
         "1: \\( \\textbf{for all } A_i \\in N \\textbf{ do} \\)",
         "2:     \\( N_A \\gets \\emptyset \\)",
         "3:         \\( N'_A \\gets N_A \\)",
-        "4:         \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\text{ and } B \\in N'_A \\} \\)",
+        "4:         \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\land B \\in N'_A \\} \\)",
         "5:     \\( \\textbf{while } N'_A \\neq N_A \\text{, jump to step 3} \\)",
         "6:         \\( \\text{replace the rules } A_i \\to A_j \\text{ with all alternatives from } N_A \\)",
         "7: \\( \\textbf{end for} \\)"
@@ -117,13 +117,13 @@
     "stepsForRemoveUselessSymbols": [
         "1: \\( N_T \\gets \\emptyset \\)",
         "2:     \\( N'_T \\gets N_T \\)",
-        "3:     \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in (N'_T \\cup T)^* \\} \\)",
+        "3:     \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P \\land \\alpha \\in (N'_T \\cup T)^* \\} \\)",
         "4: \\( \\textbf{while } N_T \\neq N'_T, \\text{ proceed to step 2} \\)",
         "5: \\( \\textbf{if } S \\in N_T, \\textbf{ then} \\)",
         "6:     \\( \\text{remove from the grammar } G \\text{ all non-terminals that do not belong to } N_T \\)",
         "7:     \\( V_D \\gets \\{ S \\} \\)",
         "8:         \\( V'_D \\gets V_D \\)",
-        "9:         \\( V_D \\gets V'_D \\cup \\{ X \\mid A \\to \\alpha X \\beta \\in P, A \\in V'_D \\} \\)",
+        "9:         \\( V_D \\gets V'_D \\cup \\{ \\beta \\mid A \\to \\alpha \\beta \\gamma \\in P \\land \\beta \\in (N \\cup T) \\land A \\in V'_D \\land \\alpha, \\gamma \\in (N \\cup T)^* \\} \\)",
         "10:    \\( \\textbf{while } V_D \\neq V'_D, \\text{ proceed to step 8} \\)",
         "11:        \\( \\text{remove from the grammar } G \\text{ all symbols that do not belong to } V_D \\)",
         "12: \\( \\textbf{end if} \\)"

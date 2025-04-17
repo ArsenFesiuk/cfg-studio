@@ -52,7 +52,7 @@ export class RemovingEpsilonRules {
         for (const alternative of rule.rightSide) {
           if (alternative.every(symbol => nullableSet.has(symbol))) {
             nullableSet.add(rule.leftSide);
-            if(nullableSet.size !== previousNullableSet.size){
+            if (nullableSet.size !== previousNullableSet.size && ![...previousNullableSet].includes(rule.leftSide)){
               this.explanations.push({
                 line: 2,
                 message: this.t("Row3ForRemoveEpsilon2", { leftSide: rule.leftSide, alternative: alternative.join(" "), previousNullableSet: [...previousNullableSet].join(", "), grammatik: this.toString()}),

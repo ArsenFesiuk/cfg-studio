@@ -112,7 +112,7 @@
         "1: \\( \\textbf{pre všetky } A_i \\in N \\textbf{ vykonaj} \\)",
         "2:     \\( N_A \\gets \\emptyset \\)",
         "3:         \\( N'_A \\gets N_A \\)",
-        "4:         \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\text{ a } B \\in N'_A \\} \\)",
+        "4:         \\( N_A \\gets N'_A \\cup \\{ C \\mid B \\to C \\in P \\land B \\in N'_A \\} \\)",
         "5:     \\( \\textbf{pokiaľ } N'_A \\neq N_A \\text{, skok na krok 3} \\)",
         "6:         \\( \\text{nahradíme pravidlá } A_i \\to A_j \\text{ všetkými alternatívami z } N_A \\)",
         "7: \\( \\textbf{koniec pre} \\)"
@@ -121,13 +121,13 @@
     "stepsForRemoveUselessSymbols": [
         "1: \\( N_T \\gets \\emptyset \\)",
         "2:     \\( N'_T \\gets N_T \\)",
-        "3:     \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P, \\alpha \\in (N'_T \\cup T)^* \\} \\)",
+        "3:     \\( N_T \\gets N'_T \\cup \\{ A \\mid A \\to \\alpha \\in P \\land \\alpha \\in (N'_T \\cup T)^* \\} \\)",
         "4: \\( \\textbf{pokiaľ } N_T \\neq N'_T, \\text{ skok na krok 2} \\)",
         "5: \\( \\textbf{ak } S \\in N_T, \\textbf{ potom} \\)",
         "6:     \\( \\text{odstráňte z gramatiky } G \\text{ všetky neterminály, ktoré nepatria do } N_T \\)",
         "7:     \\( V_D \\gets \\{ S \\} \\)",
         "8:         \\( V'_D \\gets V_D \\)",
-        "9:         \\( V_D \\gets V'_D \\cup \\{ X \\mid A \\to \\alpha X \\beta \\in P, A \\in V'_D \\} \\)",
+        "9:         \\( V_D \\gets V'_D \\cup \\{ \\beta \\mid A \\to \\alpha \\beta \\gamma \\in P \\land \\beta \\in (N \\cup T) \\land A \\in V'_D \\land \\alpha, \\gamma \\in (N \\cup T)^* \\} \\)",
         "10:    \\( \\textbf{pokiaľ } V_D \\neq V'_D, \\text{ prejdite na krok 8} \\) ",
         "11:        \\( \\text{odstráňte z gramatiky } G \\text{ všetky symboly, ktoré nepatria do } V_D \\)",
         "12: \\( \\textbf{koniec ak} \\)"
