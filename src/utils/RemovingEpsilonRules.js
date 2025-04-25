@@ -76,23 +76,13 @@ export class RemovingEpsilonRules {
   
 
   removeEpsilonAlternatives() {
-    //this.explanations.push("Крок 2: Видаляємо всі ε-альтернативи..");
-    
     for (const rule of this.rules) {
-      //const originalLength = rule.rightSide.length;
       rule.rightSide = rule.rightSide.filter(alt => !alt.includes("ε"));
-      
-      // if (rule.rightSide.length < originalLength) {
-      //   this.explanations.push(`Видалено ε з ${rule.leftSide}.`);
-      // }
     }
-
-    //this.explanations.push(this.toString());
   }
 
   addNullableCombinations(nullableSet) {
     let batchExplanations = []; // Масив для тимчасового збереження пояснень
-
     for (const rule of this.rules) {
         let existingAlternatives = new Set(rule.rightSide.map(alt => alt.join(" ")));
 
@@ -117,11 +107,33 @@ export class RemovingEpsilonRules {
         }
     } 
 
+    const startSymbol = this.rules[0].leftSide;
+    const startRule = this.rules.find(rule => rule.leftSide === startSymbol);
+    
+    const nullableAlt = startRule.rightSide.find(
+      alt => alt.every(symbol => nullableSet.has(symbol))
+    );
+    
+    if (nullableAlt && !startRule.rightSide.some(alt => alt.length === 1 && alt[0] === "ε")) {
+      startRule.rightSide.push(["ε"]);
+      let originalRule = `${startSymbol} → ${nullableAlt.join("")}`;
+      let newRule = `${startSymbol} → ε`;
+      batchExplanations.push(
+        this.t("Row5ForRemoveEpsilon", {
+          originalRule: originalRule,
+          newRule: newRule,
+          nullableSet: [...nullableSet].join(", ")
+        })
+      );
+    }
+    
+
     // Додаємо всі пояснення за раз після досягнення line: 4
     this.explanations.push({
         line: 4,
         message: batchExplanations.join("\n") + `\n${this.toString()}` // Об'єднуємо всі пояснення в один блок
     });
+
 }
 
 
