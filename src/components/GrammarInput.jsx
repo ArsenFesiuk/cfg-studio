@@ -258,6 +258,7 @@ const GrammarInput = () => {
         <div id="input-container" style={{ width: "50%", padding: "10px", display: "flex", flexDirection: "column", alignItems: "center" }}>
           <TextField
             label={t("input")}
+            placeholder={t("inputPlaceholder")}
             multiline
             rows={11}
             variant="outlined"

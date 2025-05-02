@@ -5,6 +5,7 @@
     "contacts": "Контакти",
 
     "input": "Вхідні дані",
+    "inputPlaceholder": "Приклад вхідних даних:\nS → a | a A | B\nA → a B B | ε\nB → A a | b",
     "output": "Результат",
     "explanation": "Пояснення",
     "removeEpsilon": "Видалити епсілон",
@@ -105,7 +106,9 @@
       "1: \\( N_\\epsilon \\gets \\emptyset; \\)",
       "2:     \\( \\hat{N}_\\epsilon \\gets N_\\epsilon; \\)",
       "3:     \\( N_\\epsilon \\gets \\hat{N}_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P \\land \\alpha \\in \\hat{N}_\\epsilon^* \\}; \\)",
-      "4: \\(\\textbf{поки } N_\\epsilon \\neq \\hat{N}_\\epsilon, \\text{ перехід до кроку 2.} \\)"
+      "4: \\(\\textbf{поки } N_\\epsilon \\neq \\hat{N}_\\epsilon, \\text{ перехід до кроку 2.} \\)",
+      "5: \\( \\text{Для кожного правила } A \\to \\alpha_0 X_1 \\alpha_1 X_2 \\dots X_k \\alpha_k, \\text{ де } X_i \\in N_\\epsilon \\text{ або } X_i = \\varepsilon, \\text{ додаємо всі комбінації без } X_i \\)"
+
     ],
 
     "stepsForRemoveUnitRules": [

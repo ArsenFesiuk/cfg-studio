@@ -5,6 +5,7 @@
     "contacts": "Contacts",
 
     "input": "Input",
+    "inputPlaceholder": "Example of input:\nS → a | a A | B\nA → a B B | ε\nB → A a | b",
     "output": "Output",
     "explanation": "Explanation",
     "removeEpsilon": "Remove Epsilon",
@@ -100,7 +101,8 @@
         "2:     \\( \\hat{N}_\\epsilon \\gets N_\\epsilon; \\)",
         "3:     \\( N_\\epsilon \\gets \\hat{N}_\\epsilon \\cup \\{ A \\mid A \\to \\alpha \\in P \\land \\alpha \\in \\hat{N}_\\epsilon^* \\}; \\)",
         "4: \\( \\textbf{while } N_\\epsilon \\neq \\hat{N}_\\epsilon, \\text{ go to step 2.} \\)",
-        "5: \\( \\text{Pre každé pravidlo } A \\to \\alpha_0 X_1 \\alpha_1 X_2 \\dots X_k \\alpha_k, \\text{ kde } X_i \\in N_\\epsilon \\text{ alebo } X_i = \\varepsilon, \\text{ pridáme kombinácie bez} X_i \\)"
+        "5: \\( \\text{For each rule } A \\to \\alpha_0 X_1 \\alpha_1 X_2 \\dots X_k \\alpha_k, \\text{ where } X_i \\in N_\\epsilon \\text{ or } X_i = \\varepsilon, \\text{ we add all combinations without the } X_i \\)"
+
     ],
 
 
