@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.js": "/cfg-studio/static/js/main.9c990317.js",
+    "main.js": "/cfg-studio/static/js/main.22ae2ee3.js",
     "index.html": "/cfg-studio/index.html",
-    "main.9c990317.js.map": "/cfg-studio/static/js/main.9c990317.js.map"
+    "main.22ae2ee3.js.map": "/cfg-studio/static/js/main.22ae2ee3.js.map"
   },
   "entrypoints": [
-    "static/js/main.9c990317.js"
+    "static/js/main.22ae2ee3.js"
   ]
 }
