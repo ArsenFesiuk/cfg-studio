@@ -17,22 +17,31 @@ export function parseGrammar(input, t) {
   const rules = [];
   const errors = [];
 
-  // Розбиваємо введений текст на рядки (одне правило на рядок)
+  // grammar ::= rule { newline rule }
+  // rule = line обовязкове newline = \n rule = line
   const lines = input.split("\n").map((line) => line.trim());
 
   for (const line of lines) {
     // Розділяємо правило на ліву і праву частину за допомогою стрілочки
-    const [leftSide, rightSide] = line.split("→").map((part) => part.trim());
-    if (!leftSide || !rightSide) {
+    // rule ::= NONTERMINAL '→' alternatives
+    // rule = line
+    const parts = line.split("→");
+
+    if (parts.length !== 2) {
+      // Якщо більше або менше ніж одна стрілка — це помилка
       errors.push(t("invalidRuleFormat"));
       errors.push(line);
       errors.push(t("correctRuleExample"));
       errors.push("A → B");
-      errors.push("B → a | c");
-      break;
+      return { rules, errors };
     }
+    
+    // rule ::= NONTERMINAL '→' alternatives
+    const leftSide = parts[0].trim(); // leftSide = NONTERMINAL
+    const rightSide = parts[1].trim(); // rightSide = alternatives
 
     // Перевіряємо, чи ліва частина містить лише один токен
+    // NONTERMINAL
     const leftTokens = leftSide.split(/\s+/);
     if (leftTokens.length !== 1) {
       errors.push(t("singleTokenLeftSide"));
@@ -44,9 +53,12 @@ export function parseGrammar(input, t) {
     }
 
     // Очищаємо праву частину і перетворюємо на масив альтернатив
+    // alternatives ::= alternative { '|' alternative }
     const alternatives = rightSide
       .split("|")
-      .map((alt) => alt.trim().split(/\s+/).filter(Boolean));
+      .map((alt) =>
+        // alternative ::= symbol { symbol }
+         alt.trim().split(/\s+/).filter(Boolean));
 
     // Якщо є порожні альтернативи після "|", додаємо помилку
     const hasEmptyAlternative = alternatives.some(alt => alt.length === 0);
