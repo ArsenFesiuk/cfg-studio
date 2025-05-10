@@ -37,11 +37,8 @@
 
     "ImportGrammar": "Importovať gramatiku",
 
-    "invalidRuleFormat": "Neplatný formát pravidla alebo máš prázdny riadok:",
-    "correctRuleExample": "Pravidlá by mali mať nasledujúci formát:",
-    "singleTokenLeftSide": "Ľavá strana pravidla musí obsahovať iba jeden neterminál:",
-    "invalidAlternativeAfterPipe": "Ak ste napísali \"|\", musí za ním byť alternatíva alebo ho odstráňte.",
-    "fileImportError": "Chyba pri importe súboru: neplatná gramatika",
+    "error": "Očakávaný token {{expectedType}}, ale nájdený {{token}}",
+    "error1": "Očakávaný token (NONTERMINAL alebo TERMINAL), ale nájdený {{token}}",
 
     "pseudocode" : "Pseudocode",
     

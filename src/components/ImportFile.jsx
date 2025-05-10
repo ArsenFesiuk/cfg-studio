@@ -47,7 +47,7 @@ const ImportFile = ({ onFileImport }) => {
       <Button
         variant="contained"
         onClick={() => document.getElementById("file-input").click()}
-        sx={{ backgroundColor: "contained", color: "white", height: "60px", width: "220px"}}
+        sx={{ backgroundColor: "contained", color: "white", height: "60px", width: "230px"}}
       >
         {t("ImportGrammar")}
       </Button>

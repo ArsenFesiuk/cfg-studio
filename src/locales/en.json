@@ -37,11 +37,8 @@
 
     "ImportGrammar" : "Import Grammar",
 
-    "invalidRuleFormat": "Invalid rule format or you have an empty line:",
-    "correctRuleExample": "Rules should be in the following format:",
-    "singleTokenLeftSide": "The left side of the rule must contain only one nonterminal:",
-    "invalidAlternativeAfterPipe": "If you wrote \"|\", there must be an alternative after it or remove it.",
-    "fileImportError": "File import error: invalid grammar",
+    "error": "Expected token {{expectedType}}, but found {{token}}",
+    "error1": "Expected a token (NONTERMINAL or TERMINAL), but found {{token}}",
 
     "pseudocode" : "Pseudocode",
 

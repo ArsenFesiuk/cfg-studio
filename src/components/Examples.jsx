@@ -23,7 +23,7 @@ const Examples = ({ onExampleSelect }) => {
       <Button
         variant="contained"
         onClick={handleClick}
-        sx={{ backgroundColor: "contained", color: "white", height: "60px", width: "180px"}}
+        sx={{ backgroundColor: "contained", color: "white", height: "60px", width: "230px"}}
       >
         {t("examples")}
       </Button>

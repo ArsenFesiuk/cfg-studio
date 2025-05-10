@@ -210,7 +210,7 @@ const GrammarInput = () => {
             <span style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
               <Button variant="contained" onClick={handleRemoveEpsilon} disabled={errors.length > 0 || input.trim() === ""} sx={{
                 padding: "5px 10px",
-                width: "155px",
+                width: "177px",
                 fontSize: fontSize,
                 boxSizing: "border-box",
               }}>
@@ -218,7 +218,7 @@ const GrammarInput = () => {
               </Button>
               <Button variant="contained" onClick={handleRemoveUnitRules} disabled={errors.length > 0 || input.trim() === ""} sx={{
                 padding: "5px 10px",
-                width: "195px",
+                width: "177px",
                 fontSize: fontSize,
                 boxSizing: "border-box",
               }}>
@@ -226,7 +226,7 @@ const GrammarInput = () => {
               </Button>
               <Button variant="contained" onClick={handleRemoveUselessSymbols} disabled={errors.length > 0 || input.trim() === ""} sx={{
                 padding: "5px 10px",
-                width: "205px",
+                width: "177px",
                 fontSize: fontSize,
                 boxSizing: "border-box",
               }}>
@@ -234,7 +234,7 @@ const GrammarInput = () => {
               </Button>
               <Button variant="contained" onClick={handleRemoveLeftRecursion} disabled={errors.length > 0 || input.trim() === ""} sx={{
                 padding: "5px 10px",
-                width: "185px",
+                width: "177px",
                 fontSize: fontSize,
                 boxSizing: "border-box",
               }}>
@@ -242,7 +242,7 @@ const GrammarInput = () => {
               </Button>
               <Button variant="contained" onClick={handleToCNF} disabled={errors.length > 0 || input.trim() === ""} sx={{
                 padding: "5px 10px",
-                width: "145px",
+                width: "177px",
                 fontSize: fontSize,
                 boxSizing: "border-box",
               }}>
