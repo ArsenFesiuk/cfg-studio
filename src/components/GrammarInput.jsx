@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { RemovingEpsilonRules } from "../utils/RemovingEpsilonRules";
-import { RemovingUnitRules } from "../utils/RemovingUnitRules";
-import { RemovingUselessSymbols } from "../utils/RemovingUselessSymbols";
-import { RemovingLeftRecursion } from "../utils/RemovingLeftRecursion";
-import { CNFConversion } from "../utils/CNFConversastion";
-import { parseGrammar } from "../utils/GrammarParser";
+import { RemovingEpsilonRules } from "../utils/normalization/RemovingEpsilonRules";
+import { RemovingUnitRules } from "../utils/normalization/RemovingUnitRules";
+import { RemovingUselessSymbols } from "../utils/normalization/RemovingUselessSymbols";
+import { RemovingLeftRecursion } from "../utils/normalization/RemovingLeftRecursion";
+import { CNFConversion } from "../utils/normalization/CNFConversastion";
+import { parseGrammar } from "../utils/grammar/GrammarParser";
 import MyAppBar from "./MyAppBar";
 import SupportedGrammars from "./SupportedGrammars";
 import Examples from "./Examples";
