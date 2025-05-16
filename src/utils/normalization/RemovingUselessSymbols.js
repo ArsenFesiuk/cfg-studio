@@ -159,7 +159,8 @@ export class RemovingUselessSymbols {
 
   // Перевірка, чи є символ терміналом
   isTerminal(symbol) {
-    return symbol[0] === symbol[0].toLowerCase();
+    const nonTerminals = new Set(this.rules.map(rule => rule.leftSide));
+    return !nonTerminals.has(symbol) && symbol[0] === symbol[0].toLowerCase();;
   }
 
   // Видалення порожніх правил
