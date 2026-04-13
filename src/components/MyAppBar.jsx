@@ -1,87 +1,154 @@
-import React, { useState } from "react";
-import { AppBar, Toolbar, Typography, Button, Box, Menu, MenuItem } from "@mui/material";
+import React from "react";
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import MenuIcon from "@mui/icons-material/Menu"; // Import the hamburger menu icon
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import BedtimeIcon from "@mui/icons-material/Bedtime";
 
-const MyAppBar = () => {
+const TABS = [
+  { key: "removeEpsilon", labelKey: "removeEpsilon" },
+  { key: "removeUnitRules", labelKey: "removeUnitRules" },
+  { key: "removeUselessSymbols", labelKey: "removeUselessSymbols" },
+  { key: "removeLeftRecursion", labelKey: "removeLeftRecursion" },
+  { key: "convertToCNF", labelKey: "convertToCNF" },
+  { key: "bnfToEbnf", label: "BNF → EBNF" },
+  { key: "ebnfToBnf", label: "EBNF → BNF" },
+];
+
+const MyAppBar = ({ activeTab, onTabChange, tabsDisabled }) => {
   const { t, i18n } = useTranslation();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openMenu = Boolean(anchorEl);
-
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
 
   return (
-    <AppBar sx={{ width: "100%" }}>
-      <Toolbar>
-        {/* Hamburger menu icon */}
-        <Button
-          color="inherit"
-          onClick={handleMenuClick}
-          sx={{ minWidth: "auto", padding: "8px" }}
-        >
-          <MenuIcon />
-        </Button>
+    <AppBar
+      position="fixed"
+      elevation={0}
+      sx={{
+        backgroundColor: "#FFFFFF",
+        borderBottom: "1px solid #DDE3EA",
+        color: "#1A1A2E",
+      }}
+    >
+      <Toolbar sx={{ gap: 1, minHeight: "56px !important", px: "12px !important" }}>
+        {/* Logo */}
+        <Box sx={{ display: "flex", alignItems: "center", mr: 2, minWidth: "fit-content" }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 800,
+              color: "#1565C0",
+              fontSize: "1.05rem",
+              letterSpacing: "-0.3px",
+              lineHeight: 1,
+            }}
+          >
+            CFG
+            <Box component="span" sx={{ color: "#43A047", fontWeight: 800 }}>
+              {" "}Studio
+            </Box>
+          </Typography>
+        </Box>
 
-        {/* Text for the app, like "Normalising context-free grammar" */}
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          {t("appBarTitle")}
-        </Typography>
+        {/* Transformation Tabs */}
+        <Box sx={{ display: "flex", gap: 0.5, flexGrow: 1, flexWrap: "nowrap", overflow: "hidden" }}>
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab.key;
+            const isDisabled =
+              tabsDisabled &&
+              tab.key !== "bnfToEbnf" &&
+              tab.key !== "ebnfToBnf";
+            return (
+              <Button
+                key={tab.key}
+                onClick={() => onTabChange(tab.key)}
+                disabled={isDisabled}
+                sx={{
+                  fontSize: "0.68rem",
+                  fontWeight: isActive ? 700 : 500,
+                  px: 1.2,
+                  py: 0.4,
+                  minWidth: "auto",
+                  borderRadius: "4px",
+                  textTransform: "none",
+                  whiteSpace: "nowrap",
+                  backgroundColor: isActive ? "#1E3A5F" : "transparent",
+                  color: isActive ? "#FFFFFF" : "#3A3A5C",
+                  "&:hover": {
+                    backgroundColor: isActive ? "#1E3A5F" : "#EEF2F7",
+                  },
+                  "&.Mui-disabled": {
+                    color: "#B0BEC5",
+                    backgroundColor: "transparent",
+                  },
+                }}
+              >
+                {tab.label ?? t(tab.labelKey)}
+              </Button>
+            );
+          })}
+        </Box>
 
-        {/* Menu for Repository, Documentation, Contacts */}
-        <Menu
-          anchorEl={anchorEl}
-          open={openMenu}
-          onClose={handleMenuClose}
-          sx={{
-            backgroundColor: "rgba(0, 0, 0, 0.1)", // Make menu almost transparent
-            borderRadius: "8px", // Optional: to give the menu rounded corners
-            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" // Optional: soft shadow for the menu
-          }}
-        >
-          <MenuItem onClick={handleMenuClose}>
-            <a
-              href="https://github.com/ArsenFesiuk/cfg-studio/"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: "none", color: "inherit" }}
-            >
-              {t("repository")}
-            </a>
-          </MenuItem>
-          <MenuItem onClick={handleMenuClose}>{t("documentation")}</MenuItem>
-        </Menu>
-
-        {/* Language Switcher */}
-        <Box sx={{ marginLeft: 2, display: "flex", gap: 1 }}>
-          {["en", "uk", "sk"].map((lang) => (
-            <Button
-              key={lang}
-              variant={i18n.language === lang ? "contained" : "outlined"}
-              color={i18n.language === lang ? "primary" : "inherit"}
-              onClick={() => i18n.changeLanguage(lang)}
+        {/* Right utilities */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.75, ml: 1 }}>
+          <Tooltip title="Help">
+            <IconButton
+              size="small"
               sx={{
-                borderRadius: "20px",
-                minWidth: "50px",
-                textTransform: "uppercase",
-                fontWeight: i18n.language === lang ? "bold" : "normal",
-                backgroundColor: i18n.language === lang ? "black" : "transparent",
-                color: i18n.language === lang ? "white" : "black",
-                border: "1px solid black",
-                transition: "0.3s",
-                "&:hover": {
-                  backgroundColor: i18n.language === lang ? "black" : "rgba(0, 0, 0, 0.1)",
-                },
+                color: "#555",
+                border: "1px solid #DDE3EA",
+                borderRadius: "50%",
+                p: 0.6,
               }}
             >
-              {lang}
-            </Button>
-          ))}
+              <HelpOutlineIcon sx={{ fontSize: "18px" }} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Dark mode">
+            <IconButton
+              size="small"
+              sx={{
+                color: "#555",
+                border: "1px solid #DDE3EA",
+                borderRadius: "50%",
+                p: 0.6,
+              }}
+            >
+              <BedtimeIcon sx={{ fontSize: "18px" }} />
+            </IconButton>
+          </Tooltip>
+
+          {/* Language switcher */}
+          <Box
+            sx={{
+              display: "flex",
+              border: "1px solid #DDE3EA",
+              borderRadius: "4px",
+              overflow: "hidden",
+            }}
+          >
+            {["en", "sk", "uk"].map((lang) => (
+              <Button
+                key={lang}
+                onClick={() => i18n.changeLanguage(lang)}
+                sx={{
+                  minWidth: "36px",
+                  px: 1,
+                  py: 0.4,
+                  fontSize: "0.72rem",
+                  fontWeight: i18n.language === lang ? 700 : 400,
+                  borderRadius: 0,
+                  textTransform: "uppercase",
+                  backgroundColor: i18n.language === lang ? "#1565C0" : "transparent",
+                  color: i18n.language === lang ? "#FFFFFF" : "#444",
+                  "&:hover": {
+                    backgroundColor:
+                      i18n.language === lang ? "#1565C0" : "#EEF2F7",
+                  },
+                }}
+              >
+                {lang}
+              </Button>
+            ))}
+          </Box>
         </Box>
       </Toolbar>
     </AppBar>

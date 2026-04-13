@@ -1,6 +1,6 @@
-import { RemovingEpsilonRules } from "./RemovingEpsilonRules";
-import { RemovingUnitRules } from "./RemovingUnitRules";
-import { RemovingUselessSymbols } from "./RemovingUselessSymbols";
+import { RemovingEpsilonRules } from "./RemovingEpsilonRules.js";
+import { RemovingUnitRules } from "./RemovingUnitRules.js";
+import { RemovingUselessSymbols } from "./RemovingUselessSymbols.js";
 
 export class CNFConversion {
   constructor(rules, t) {

@@ -56,7 +56,7 @@ export class RemovingUnitRules {
         const targetAlternatives = alternativesMap.get(target);
 
         if (targetAlternatives && typeof targetAlternatives[Symbol.iterator] === 'function') {
-          targetAlternatives.forEach(unitAlternative => {
+          for (const unitAlternative of targetAlternatives) {
             const parsedAlternative = JSON.parse(unitAlternative);
 
             // Додаємо альтернативи одиничного правила в N_A
@@ -71,7 +71,7 @@ export class RemovingUnitRules {
             if (!this.containsRightSide(rule.rightSide, parsedAlternative)) {
               newRightSide.push(parsedAlternative);
             }
-          });
+          }
           this.explanations.push({
             line: 3,
             message: this.t("Row4ForRemoveUnitRules", {leftSide : rule.leftSide, target : target,N_A : [...N_A].join(' | ')})
