@@ -2,37 +2,7 @@ import { Button, Menu, MenuItem, ListSubheader, Divider } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-// ── Main grammar format (→) — for normalization tabs ──────────────────────────
-// Terminals: bare letters; non-terminals: uppercase letters; ε for epsilon
-const MAIN_EXAMPLES = [
-  {
-    labelKey: "testForEpsilon",
-    tab: "removeEpsilon",
-    text: "S → A B C D\nA → C D | A C\nB → C b\nC → a | ε\nD → b D | ε",
-  },
-  {
-    labelKey: "testForUnit",
-    tab: "removeUnitRules",
-    text: "S → A B | A | B\nA → a A A | a A | a\nB → b B B | b B | b",
-  },
-  {
-    labelKey: "testForUseless",
-    tab: "removeUselessSymbols",
-    text: "S → A B | a\nA → b\nB → C",
-  },
-  {
-    labelKey: "testForLeftRecursion",
-    tab: "removeLeftRecursion",
-    text: "A → B a | A a | c\nB → B b | A b | d",
-  },
-  {
-    labelKey: "testForCNF",
-    tab: "convertToCNF",
-    text: "S → A B A\nA → a A | ε\nB → b B c | ε",
-  },
-];
-
-// ── Formal BNF notation (<NonTerm> ::= ...) — for BNF → EBNF tab ─────────────
+// ── Formal BNF notation (<NonTerm> ::= ...) ─────────────────────────────────
 // Same grammars rewritten with <> non-terminals, ::= separator, `epsilon` keyword
 const BNF_FORMAL_EXAMPLES = [
   {
@@ -48,7 +18,8 @@ const BNF_FORMAL_EXAMPLES = [
   {
     labelKey: "testForUseless",
     tab: "removeUselessSymbols",
-    text: "<S> ::= <A> <B> | a\n<A> ::= b\n<B> ::= <C>",
+    // Textbook example 8.1.1: B is non-terminating, A and D become unreachable
+    text: "<S> ::= <A> <B> | <C>\n<A> ::= a <A> | a\n<B> ::= b <B>\n<C> ::= c\n<D> ::= b c",
   },
   {
     labelKey: "testForLeftRecursion",
@@ -86,7 +57,8 @@ const EBNF_EXAMPLES = [
   {
     labelKey: "testForUseless",
     tab: "removeUselessSymbols",
-    text: 'S ::= A B | "a"\nA ::= "b"\nB ::= C',
+    // Textbook example 8.1.1: B is non-terminating, A and D become unreachable
+    text: 'S ::= A B | C\nA ::= "a" A | "a"\nB ::= "b" B\nC ::= "c"\nD ::= "b" "c"',
   },
   {
     labelKey: "testForLeftRecursion",
@@ -148,17 +120,7 @@ const Examples = ({ onExampleSelect }) => {
         onClose={() => setAnchorEl(null)}
         PaperProps={{ sx: { maxHeight: 520, minWidth: 240 } }}
       >
-        {/* ── Normalization (main format) ── */}
-        <ListSubheader sx={SUBHEADER_SX}>{t("sectionMain")}</ListSubheader>
-        {MAIN_EXAMPLES.map((ex) => (
-          <MenuItem key={`main-${ex.labelKey}`} onClick={() => handleSelect(ex.text, ex.tab)}>
-            {t(ex.labelKey)}
-          </MenuItem>
-        ))}
-
-        <Divider sx={{ my: 0.5 }} />
-
-        {/* ── BNF → EBNF ── */}
+        {/* ── BNF format ── */}
         <ListSubheader sx={SUBHEADER_SX}>{t("sectionBNFtoEBNF")}</ListSubheader>
         {BNF_FORMAL_EXAMPLES.map((ex) => (
           <MenuItem key={`bnf-${ex.labelKey}`} onClick={() => handleSelect(ex.text, ex.tab)}>

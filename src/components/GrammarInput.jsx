@@ -1,12 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useLayoutEffect, useMemo } from "react";
 import { RemovingEpsilonRules } from "../utils/normalization/RemovingEpsilonRules.js";
 import { RemovingUnitRules } from "../utils/normalization/RemovingUnitRules.js";
 import { RemovingUselessSymbols } from "../utils/normalization/RemovingUselessSymbols.js";
 import { RemovingLeftRecursion } from "../utils/normalization/RemovingLeftRecursion.js";
 import { CNFConversion } from "../utils/normalization/CNFConversastion.js";
-import { parseGrammar } from "../utils/grammar/GrammarParser.js";
-import { convertBNFToEBNF } from "../utils/grammar/convertBNFToEBNF.js";
-import { convertEBNFToBNF } from "../utils/grammar/convertEBNFToBNF.js";
+import { parseGrammar, getPlainRules, detectGrammarType } from "../utils/grammar/GrammarParser.js";
 import MyAppBar from "./MyAppBar.jsx";
 import SupportedGrammars from "./SupportedGrammars.jsx";
 import Examples from "./Examples.jsx";
@@ -15,17 +13,21 @@ import { useTranslation } from "react-i18next";
 import { PseudoCodeViewer } from "./PseudoCodeViewer.jsx";
 import ImportFile from "./ImportFile.jsx";
 import ExportMenu from "./ExportMenu.jsx";
+import FormatSwitch from "./FormatSwitch.jsx";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import FlagIcon from "@mui/icons-material/Flag";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
+// Each tab maps to its algorithm class. Algorithms that expose their own
+// `blocks` (8.1–8.6 pseudocode) need nothing more; legacy ones get a
+// `legacyLinesKey` pointing at their single flat pseudocode array.
 const TAB_CONFIG = {
-  removeEpsilon: { ProcessingClass: RemovingEpsilonRules, translationKey: "stepsForRemoveEpsilonRules" },
-  removeUnitRules: { ProcessingClass: RemovingUnitRules, translationKey: "stepsForRemoveUnitRules" },
-  removeUselessSymbols: { ProcessingClass: RemovingUselessSymbols, translationKey: "stepsForRemoveUselessSymbols" },
-  removeLeftRecursion: { ProcessingClass: RemovingLeftRecursion, translationKey: "stepsForLeftRecursion" },
-  convertToCNF: { ProcessingClass: CNFConversion, translationKey: "stepsForGrammarTransformation" },
+  removeEpsilon: { ProcessingClass: RemovingEpsilonRules, legacyLinesKey: "stepsForRemoveEpsilonRules" },
+  removeUnitRules: { ProcessingClass: RemovingUnitRules, legacyLinesKey: "stepsForRemoveUnitRules" },
+  removeUselessSymbols: { ProcessingClass: RemovingUselessSymbols },
+  removeLeftRecursion: { ProcessingClass: RemovingLeftRecursion, legacyLinesKey: "stepsForLeftRecursion" },
+  convertToCNF: { ProcessingClass: CNFConversion, legacyLinesKey: "stepsForGrammarTransformation" },
 };
 
 const GrammarInput = () => {
@@ -37,11 +39,14 @@ const GrammarInput = () => {
   const [activeTab, setActiveTab] = useState(null);
   const [resultReady, setResultReady] = useState(false);
   const [stepInfo, setStepInfo] = useState(null);
+  const [format, setFormat] = useState("bnf"); // 'bnf' | 'ebnf'
 
   const pseudoCodeViewerRef = useRef(null);
+  const textareaRef = useRef(null);
+  const cursorPosRef = useRef(null);
 
   const replaceEscapes = (text) =>
-    text.replace(/\\eps/g, "ε").replace(/->/g, "→");
+    text.replace(/\\eps/g, "ε").replace(/\bepsilon\b/g, "ε");
 
   const formatGrammarOutput = (rules) =>
     rules
@@ -51,93 +56,85 @@ const GrammarInput = () => {
       })
       .join("\n");
 
-  const isBnfEbnfMode = (tab) => tab === "bnfToEbnf" || tab === "ebnfToBnf";
+  // Plain CFG rules for the current input (EBNF is expanded to BNF first).
+  // Memoised so the viewer doesn't re-run on every render.
+  const plainRules = useMemo(() => getPlainRules(input, t).rules, [input, t]);
 
-  const handleInputChange = (e) => {
-    const replacedInput = replaceEscapes(e.target.value);
-    setInput(replacedInput);
-    setOutput("");
-    setResultReady(false);
-    setStepInfo(null);
-
-    // Skip CFG grammar validation for formal BNF/EBNF conversion tabs
-    if (isBnfEbnfMode(activeTab)) {
-      setErrors([]);
-      return;
+  // Restore cursor position after React re-renders with transformed text
+  useLayoutEffect(() => {
+    if (cursorPosRef.current !== null && textareaRef.current) {
+      textareaRef.current.selectionStart = cursorPosRef.current;
+      textareaRef.current.selectionEnd = cursorPosRef.current;
+      cursorPosRef.current = null;
     }
+  }, [input]);
 
+  const validate = (text) => {
     try {
-      const { errors } = parseGrammar(replacedInput, t);
-      setErrors(errors.length > 0 ? errors : []);
+      const { errors: parseErrors } = parseGrammar(text, t);
+      setErrors(parseErrors.length > 0 ? parseErrors : []);
     } catch (error) {
       setErrors([error.message]);
     }
   };
 
-  // ε ↔ epsilon helpers for the formal BNF/EBNF parsers
-  const epsilonToWord = (text) => text.replace(/ε/g, "epsilon");
-  const wordToEpsilon = (text) => text.replace(/\bepsilon\b/g, "ε");
+  const handleInputChange = (e) => {
+    const rawValue = e.target.value;
+    const rawCursor = e.target.selectionStart;
+    const replacedInput = replaceEscapes(rawValue);
+
+    // Compute where the cursor lands after replacements before it
+    const replacedBeforeCursor = replaceEscapes(rawValue.substring(0, rawCursor));
+    cursorPosRef.current = replacedBeforeCursor.length;
+
+    setInput(replacedInput);
+    setOutput("");
+    setResultReady(false);
+    setStepInfo(null);
+    syncFormat(replacedInput);
+    validate(replacedInput);
+  };
 
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
     setOutput("");
     setResultReady(false);
     setStepInfo(null);
+    if (input.trim()) validate(input);
+  };
+
+  const handleFormatSwitch = (newFormat, newText, errorMsg) => {
+    setFormat(newFormat);
+    setInput(newText);
+    setOutput("");
+    setResultReady(false);
+    setStepInfo(null);
+    if (errorMsg) {
+      setErrors([errorMsg]);
+    } else if (newText.trim()) {
+      validate(newText);
+    } else {
+      setErrors([]);
+    }
   };
 
   const runTransformation = () => {
     if (!activeTab) return;
-
-    if (activeTab === "bnfToEbnf") {
-      try {
-        const result = convertBNFToEBNF(epsilonToWord(input));
-        setOutput(wordToEpsilon(result));
-        setErrors([]);
-        setResultReady(true);
-        setStepInfo(null);
-      } catch (err) {
-        setErrors([err.message]);
-      }
-      return;
-    }
-
-    if (activeTab === "ebnfToBnf") {
-      try {
-        const result = convertEBNFToBNF(epsilonToWord(input));
-        setOutput(wordToEpsilon(result));
-        setErrors([]);
-        setResultReady(true);
-        setStepInfo(null);
-      } catch (err) {
-        setErrors([err.message]);
-      }
-      return;
-    }
-
     const config = TAB_CONFIG[activeTab];
     if (!config) return;
 
-    const { rules, errors: parseErrors } = parseGrammar(input, t);
+    const { rules, errors: parseErrors } = getPlainRules(input, t);
     if (parseErrors.length > 0) {
       setErrors(parseErrors);
       return;
     }
     setErrors([]);
 
-    if (activeTab === "removeUselessSymbols") {
-      const transformer = new RemovingUselessSymbols(rules, t);
-      const finalRules = transformer.execute();
-      setOutput(formatGrammarOutput(finalRules));
-    } else if (activeTab === "convertToCNF") {
-      const cnfConversion = new CNFConversion(rules, t);
-      const finalRules = cnfConversion.execute();
-      setOutput(formatGrammarOutput(finalRules));
-    } else {
-      const transformer = new config.ProcessingClass(rules, t);
-      transformer.execute();
-      setOutput(formatGrammarOutput(rules));
-    }
-
+    const transformer = new config.ProcessingClass(rules, t);
+    transformer.execute();
+    // every algorithm keeps the final grammar in `transformer.rules`
+    const resultRules = Array.isArray(transformer.rules) ? transformer.rules : rules;
+    setOutput(formatGrammarOutput(resultRules));
     setResultReady(true);
   };
 
@@ -150,6 +147,11 @@ const GrammarInput = () => {
     setStepInfo(null);
   };
 
+  const syncFormat = (text) => {
+    const type = detectGrammarType(text);
+    if (type === "bnf" || type === "ebnf") setFormat(type);
+  };
+
   const handleExampleSelect = (exampleText, targetTab) => {
     const replaced = replaceEscapes(exampleText);
     setInput(replaced);
@@ -158,22 +160,23 @@ const GrammarInput = () => {
     setResultReady(false);
     setStepInfo(null);
     if (targetTab) setActiveTab(targetTab);
+    syncFormat(replaced);
+    if (replaced.trim()) validate(replaced);
   };
 
   const hasErrors = errors.length > 0;
   const isEmpty = input.trim() === "";
-  const isBnfEbnfTab = activeTab === "bnfToEbnf" || activeTab === "ebnfToBnf";
-  const resultDisabled = !activeTab || (hasErrors && !isBnfEbnfTab) || isEmpty;
+  const resultDisabled = !activeTab || hasErrors || isEmpty;
 
   const showPseudoCode =
-    resultReady && activeTab && TAB_CONFIG[activeTab];
+    resultReady && activeTab && TAB_CONFIG[activeTab] && plainRules.length > 0;
 
   return (
     <Box sx={{ backgroundColor: "#EEF2F7", minHeight: "100vh", pt: "56px" }}>
       <MyAppBar
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        tabsDisabled={hasErrors || isEmpty}
+        tabsDisabled={isEmpty}
       />
 
       {/* Main content */}
@@ -202,15 +205,14 @@ const GrammarInput = () => {
             <ImportFile
               onFileImport={(fileContent) => {
                 const replaced = replaceEscapes(fileContent);
-                const { errors } = parseGrammar(replaced, t);
-                if (errors.length > 0) {
-                  setErrors([t("fileImportError"), ...errors]);
-                  setInput(replaced);
-                  setOutput("");
-                  return;
-                }
+                const { errors: importErrors } = parseGrammar(replaced, t);
                 setInput(replaced);
                 setOutput("");
+                syncFormat(replaced);
+                if (importErrors.length > 0) {
+                  setErrors([t("fileImportError"), ...importErrors]);
+                  return;
+                }
                 setErrors([]);
               }}
             />
@@ -234,12 +236,15 @@ const GrammarInput = () => {
               overflow: "hidden",
             }}
           >
-            <Typography
-              variant="caption"
-              sx={{ fontWeight: 700, color: "#1565C0", mb: 0.5, fontSize: "0.78rem" }}
-            >
-              {t("input")}
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 0.5 }}>
+              <Typography
+                variant="caption"
+                sx={{ fontWeight: 700, color: "#1565C0", fontSize: "0.78rem" }}
+              >
+                {t("input")}
+              </Typography>
+              <FormatSwitch format={format} value={input} onSwitch={handleFormatSwitch} />
+            </Box>
             <Tooltip
               title={hasErrors ? errors.map((err, i) => <div key={i}>{err}<br /></div>) : ""}
               arrow
@@ -250,6 +255,7 @@ const GrammarInput = () => {
               }}
             >
               <textarea
+                ref={textareaRef}
                 value={input}
                 onChange={handleInputChange}
                 placeholder={t("inputPlaceholder")}
@@ -334,7 +340,7 @@ const GrammarInput = () => {
               variant="outlined"
               size="small"
               startIcon={<ArrowBackIosNewIcon sx={{ fontSize: "12px !important" }} />}
-              onClick={() => pseudoCodeViewerRef.current?.goNext && pseudoCodeViewerRef.current.goPrev()}
+              onClick={() => pseudoCodeViewerRef.current?.goPrev && pseudoCodeViewerRef.current.goPrev()}
               disabled={!showPseudoCode || !stepInfo?.canGoPrev}
               sx={{
                 borderColor: "#DDE3EA",
@@ -439,9 +445,9 @@ const GrammarInput = () => {
             {showPseudoCode ? (
               <PseudoCodeViewer
                 ref={pseudoCodeViewerRef}
-                inputText={input}
+                rules={plainRules}
                 ProcessingClass={TAB_CONFIG[activeTab].ProcessingClass}
-                translationKey={TAB_CONFIG[activeTab].translationKey}
+                legacyLinesKey={TAB_CONFIG[activeTab].legacyLinesKey}
                 onStepChange={(info) => setStepInfo(info)}
               />
             ) : (

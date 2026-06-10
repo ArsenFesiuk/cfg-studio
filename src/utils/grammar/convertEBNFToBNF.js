@@ -79,28 +79,37 @@ function convertElement(elCtx, extraRules) {
 export function convertEBNFToBNF(input) {
   counter = 0; // reset between calls
 
-  const inputStream = new antlr4.InputStream(input);
-  const lexer = new EBNFLexer(inputStream);
-  lexer.removeErrorListeners();
-  const tokenStream = new antlr4.CommonTokenStream(lexer);
-  const parser = new EBNFParser(tokenStream);
-  parser.removeErrorListeners();
-
   const errors = [];
-  parser.addErrorListener({
+  const errorListener = {
     syntaxError: (_r, _o, line, column, msg) => {
       errors.push(`Line ${line}:${column} ${msg}`);
     }
-  });
+  };
+
+  const inputStream = new antlr4.InputStream(input);
+  const lexer = new EBNFLexer(inputStream);
+  lexer.removeErrorListeners();
+  lexer.addErrorListener(errorListener);
+  const tokenStream = new antlr4.CommonTokenStream(lexer);
+  const parser = new EBNFParser(tokenStream);
+  parser.removeErrorListeners();
+  parser.addErrorListener(errorListener);
 
   const tree = parser.ebnf();
-  if (errors.length > 0) throw new Error(errors.join('\n'));
+  if (errors.length > 0) {
+    throw new Error(
+      'Invalid EBNF. Format: NonTerminal ::= "terminal" | NonTerminal | [optional] | {repeat}\n' +
+      errors.join('\n')
+    );
+  }
 
   const mainRules = [];
   const extraRules = [];
 
   for (const pravidloCtx of tree.pravidlo()) {
-    const nonterm = pravidloCtx.NETERMINAL().getText();
+    const _nt = pravidloCtx.NETERMINAL();
+    if (!_nt) continue;
+    const nonterm = _nt.getText();
     const pravaCtx = pravidloCtx.pravastrana();
 
     const alternatives = [];

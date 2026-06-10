@@ -2,112 +2,88 @@ import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "re
 import { MathJax } from "better-react-mathjax";
 import { useTranslation } from "react-i18next";
 
+// Renders an algorithm's pseudocode as one or more "blocks" (e.g. Algoritmus 8.1
+// and 8.2) and walks through its steps. Each step says which block + line is
+// active. Algorithms expose:
+//   processor.blocks = [{ titleKey, linesKey }]   (optional; legacy fallback used otherwise)
+//   processor.steps  = [{ block, line, message }] (or legacy processor.explanations = [{line, message}])
 export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
-  { inputText, ProcessingClass, translationKey, onStepChange },
+  { rules, ProcessingClass, legacyLinesKey, onStepChange },
   ref
 ) {
-  const [currentLine, setCurrentLine] = useState(0);
-  const [explanation, setExplanation] = useState("");
-  const [steps, setSteps] = useState([]);
-  const [currentExplanation, setCurrentExplanation] = useState(0);
   const { t } = useTranslation();
-  const pseudoCodeSteps = t(translationKey, { returnObjects: true });
+  const [steps, setSteps] = useState([]);
+  const [blocks, setBlocks] = useState([]);
+  const [current, setCurrent] = useState(0);
 
-  const pseudoCodeContainerRef = useRef(null);
-  const lineRefs = useRef([]);
-  const mathJaxRef = useRef(null);
+  const lineRefs = useRef({}); // key: `${block}:${line}` -> element
 
-  const handleNextStep = () => {
-    if (currentExplanation < steps.length - 1) {
-      const nextStep = steps[currentExplanation + 1];
-      setCurrentLine(nextStep.line);
-      setCurrentExplanation((prev) => prev + 1);
-      setExplanation(nextStep.message);
-    }
-  };
-
-  const handlePreviousStep = () => {
-    if (currentExplanation > 0) {
-      const prevStep = steps[currentExplanation - 1];
-      setCurrentLine(prevStep.line);
-      setCurrentExplanation((prev) => prev - 1);
-      setExplanation(prevStep.message);
-    }
-  };
+  const handleNext = () => setCurrent((c) => Math.min(c + 1, steps.length - 1));
+  const handlePrev = () => setCurrent((c) => Math.max(c - 1, 0));
 
   useImperativeHandle(ref, () => ({
-    goNext: handleNextStep,
-    goPrev: handlePreviousStep,
-    canGoNext: () => currentExplanation < steps.length - 1,
-    canGoPrev: () => currentExplanation > 0,
-    currentStep: currentExplanation + 1,
-    totalSteps: steps.length,
+    goNext: handleNext,
+    goPrev: handlePrev,
   }));
 
+  // Build steps + blocks whenever the input grammar or algorithm changes
   useEffect(() => {
-    if (inputText) {
-      const rules = inputText.split("\n").map((line) => {
-        const [left, right] = line.split("→").map((part) => part.trim());
-        return {
-          leftSide: left,
-          rightSide: right.split("|").map((alt) => alt.trim().split(" ")),
-        };
-      });
-
-      const processor = new ProcessingClass(rules, t);
-      processor.execute();
-      setSteps(processor.explanations);
-      setCurrentLine(0);
-      setCurrentExplanation(0);
-      const firstMsg = processor.explanations[0]?.message || "";
-      setExplanation(firstMsg);
-      if (onStepChange) {
-        onStepChange({
-          current: 1,
-          total: processor.explanations.length,
-          message: firstMsg,
-          canGoNext: processor.explanations.length > 1,
-          canGoPrev: false,
-        });
-      }
+    if (!rules || rules.length === 0) {
+      setSteps([]);
+      setBlocks([]);
+      return;
     }
-  }, [inputText, ProcessingClass, t]);
+    // deep copy so the algorithm never mutates the caller's rules
+    const rulesCopy = rules.map((r) => ({
+      leftSide: r.leftSide,
+      rightSide: r.rightSide.map((alt) => [...alt]),
+    }));
 
+    const processor = new ProcessingClass(rulesCopy, t);
+    processor.execute();
+
+    const builtBlocks = processor.blocks ?? [{ titleKey: null, linesKey: legacyLinesKey }];
+    const builtSteps =
+      processor.steps ??
+      (processor.explanations || []).map((e) => ({ block: 0, line: e.line, message: e.message }));
+
+    setBlocks(builtBlocks);
+    setSteps(builtSteps);
+    setCurrent(0);
+  }, [rules, ProcessingClass, legacyLinesKey, t]);
+
+  const activeStep = steps[current] || null;
+
+  // Notify parent about step position
   useEffect(() => {
-    if (lineRefs.current[currentLine]) {
-      lineRefs.current[currentLine].scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
-    }
-  }, [currentLine]);
+    if (!onStepChange) return;
+    onStepChange({
+      current: steps.length ? current + 1 : 0,
+      total: steps.length,
+      message: activeStep?.message || "",
+      canGoNext: current < steps.length - 1,
+      canGoPrev: current > 0,
+    });
+  }, [current, steps, activeStep, onStepChange]);
 
+  // Scroll active line into view
   useEffect(() => {
-    if (onStepChange) {
-      onStepChange({
-        current: currentExplanation + 1,
-        total: steps.length,
-        message: explanation,
-        canGoNext: currentExplanation < steps.length - 1,
-        canGoPrev: currentExplanation > 0,
-      });
-    }
-  }, [currentExplanation, steps.length, explanation]);
+    if (!activeStep) return;
+    const el = lineRefs.current[`${activeStep.block}:${activeStep.line}`];
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [activeStep]);
 
+  // Re-typeset MathJax when explanation changes
   useEffect(() => {
-    if (mathJaxRef.current && window.MathJax) {
-      window.MathJax.typeset();
-    }
-  }, [explanation]);
+    if (window.MathJax && window.MathJax.typeset) window.MathJax.typeset();
+  }, [activeStep]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px", height: "100%" }}>
-      {/* Pseudocode container */}
+      {/* Pseudocode blocks */}
       <div
-        ref={pseudoCodeContainerRef}
         style={{
           flex: 1,
-          position: "relative",
           padding: "16px",
           fontFamily: "Arial, sans-serif",
           border: "1px solid #DDE3EA",
@@ -120,32 +96,48 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
         <h3 style={{ marginTop: "0px", color: "#1565C0", fontSize: "0.95rem" }}>
           {t("pseudocode")}:
         </h3>
-        <MathJax>
-          {pseudoCodeSteps.map((line, index) => (
-            <div
-              key={index}
-              ref={(el) => (lineRefs.current[index] = el)}
-              style={{
-                padding: "4px 8px",
-                fontWeight: index === currentLine ? "bold" : "normal",
-                backgroundColor: index === currentLine ? "#FFF3CD" : "transparent",
-                border: index === currentLine ? "1px solid #FFD700" : "1px solid transparent",
-                transition: "background-color 0.3s ease-in-out",
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-                overflowWrap: "break-word",
-                borderRadius: "4px",
-                textAlign: "left",
-                fontSize: "0.88rem",
-              }}
-            >
-              {line}
-            </div>
-          ))}
+        <MathJax dynamic>
+          {blocks.map((block, bi) => {
+            const lines = t(block.linesKey, { returnObjects: true }) || [];
+            return (
+              <div key={bi} style={{ marginBottom: "14px" }}>
+                {block.titleKey && (
+                  <div style={{ fontWeight: 700, color: "#1E3A5F", fontSize: "0.82rem", margin: "6px 0" }}>
+                    {t(block.titleKey)}
+                  </div>
+                )}
+                {Array.isArray(lines) &&
+                  lines.map((line, li) => {
+                    const isActive = activeStep && activeStep.block === bi && activeStep.line === li;
+                    return (
+                      <div
+                        key={li}
+                        ref={(el) => (lineRefs.current[`${bi}:${li}`] = el)}
+                        style={{
+                          padding: "4px 8px",
+                          fontWeight: isActive ? "bold" : "normal",
+                          backgroundColor: isActive ? "#FFF3CD" : "transparent",
+                          border: isActive ? "1px solid #FFD700" : "1px solid transparent",
+                          transition: "background-color 0.3s ease-in-out",
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word",
+                          borderRadius: "4px",
+                          textAlign: "left",
+                          fontSize: "0.88rem",
+                        }}
+                      >
+                        {line}
+                      </div>
+                    );
+                  })}
+              </div>
+            );
+          })}
         </MathJax>
       </div>
 
-      {/* Explanation container */}
+      {/* Explanation */}
       <div
         style={{
           flex: 1,
@@ -157,14 +149,13 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
           borderRadius: "8px",
         }}
       >
-        <MathJax>
+        <MathJax dynamic>
           <h3 style={{ marginTop: "0px", color: "#1565C0", fontSize: "0.95rem" }}>
             {t("explanation")}:
           </h3>
           <p
-            ref={mathJaxRef}
             style={{ fontSize: "0.9rem", lineHeight: "1.6", margin: 0 }}
-            dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, "<br />") }}
+            dangerouslySetInnerHTML={{ __html: (activeStep?.message || "").replace(/\n/g, "<br />") }}
           />
         </MathJax>
       </div>

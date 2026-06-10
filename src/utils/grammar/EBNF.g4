@@ -22,6 +22,7 @@ element     : TERMINAL               // terminál v úvodzovkách
 // TERMINAL includes surrounding quotes so it is distinct from NETERMINAL.
 // Without this, both tokens match bare identifiers and ANTLR always
 // picks TERMINAL (first-defined wins), making NETERMINAL unreachable.
-TERMINAL    : '"' [a-zA-Z0-9_\-]+ '"' ;
-NETERMINAL  : [a-zA-Z][a-zA-Z0-9_\-]* ;
+TERMINAL    : '"' [a-zA-Z0-9_\-+=*]+ '"' ;
+NETERMINAL  : [a-zA-Z][a-zA-Z0-9_\-+=*]*  ;
 WS          : [ \t\r\n]+ -> skip ;
+

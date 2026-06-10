@@ -14,17 +14,15 @@ export class CNFConversion {
     // Add new start symbol
     this.addNewStartSymbol(this.rules);
 
-    // Remove epsilon rules
-    const removeEpsilonRules = new RemovingEpsilonRules(this.rules, this.t);
-    removeEpsilonRules.execute(); // Оновлення правил
+    // Remove epsilon rules (new class returns the transformed rule set)
+    this.rules = new RemovingEpsilonRules(this.rules, this.t).execute();
     this.explanations.push({
       line: 1,
       message: this.t("Row2ForCNF", {grammatik : this.toString()})
     });
 
     // Remove unit rules
-    const removeUnitRules = new RemovingUnitRules(this.rules, this.t);
-    removeUnitRules.execute(); // Оновлення правил
+    this.rules = new RemovingUnitRules(this.rules, this.t).execute();
     this.explanations.push({
       line: 2,
       message: this.t("Row3ForCNF", {grammatik : this.toString()})

@@ -10,28 +10,37 @@ import BNFParser from './BNF/BNFParser.js';
  * NETERMINAL token text includes angle brackets (<A>), stripped here.
  */
 export function convertBNFToEBNF(input) {
-  const inputStream = new antlr4.InputStream(input);
-  const lexer = new BNFLexer(inputStream);
-  lexer.removeErrorListeners();
-  const tokenStream = new antlr4.CommonTokenStream(lexer);
-  const parser = new BNFParser(tokenStream);
-  parser.removeErrorListeners();
-
   const errors = [];
-  parser.addErrorListener({
+  const errorListener = {
     syntaxError: (_r, _o, line, column, msg) => {
       errors.push(`Line ${line}:${column} ${msg}`);
     }
-  });
+  };
+
+  const inputStream = new antlr4.InputStream(input);
+  const lexer = new BNFLexer(inputStream);
+  lexer.removeErrorListeners();
+  lexer.addErrorListener(errorListener);
+  const tokenStream = new antlr4.CommonTokenStream(lexer);
+  const parser = new BNFParser(tokenStream);
+  parser.removeErrorListeners();
+  parser.addErrorListener(errorListener);
 
   const tree = parser.bnf();
-  if (errors.length > 0) throw new Error(errors.join('\n'));
+  if (errors.length > 0) {
+    throw new Error(
+      'Invalid BNF. Format: <NonTerminal> ::= <NonTerminal> terminal | epsilon\n' +
+      errors.join('\n')
+    );
+  }
 
   const lines = [];
 
   for (const pravidloCtx of tree.pravidlo()) {
+    const _nt = pravidloCtx.NETERMINAL();
+    if (!_nt) continue;
     // NETERMINAL includes <>, strip to get bare name
-    const nonterm = pravidloCtx.NETERMINAL().getText().slice(1, -1);
+    const nonterm = _nt.getText().slice(1, -1);
     const pravaCtx = pravidloCtx.pravastrana();
     const postupnosti = pravaCtx.postupnost();
 

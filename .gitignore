@@ -11,6 +11,10 @@
 # production
 /build
 
+# reference / scratch files (not part of the codebase)
+photo_*.jpg
+/docs/superpowers
+
 # misc
 .DS_Store
 .env.local

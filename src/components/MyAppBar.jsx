@@ -10,8 +10,6 @@ const TABS = [
   { key: "removeUselessSymbols", labelKey: "removeUselessSymbols" },
   { key: "removeLeftRecursion", labelKey: "removeLeftRecursion" },
   { key: "convertToCNF", labelKey: "convertToCNF" },
-  { key: "bnfToEbnf", label: "BNF → EBNF" },
-  { key: "ebnfToBnf", label: "EBNF → BNF" },
 ];
 
 const MyAppBar = ({ activeTab, onTabChange, tabsDisabled }) => {
@@ -51,10 +49,7 @@ const MyAppBar = ({ activeTab, onTabChange, tabsDisabled }) => {
         <Box sx={{ display: "flex", gap: 0.5, flexGrow: 1, flexWrap: "nowrap", overflow: "hidden" }}>
           {TABS.map((tab) => {
             const isActive = activeTab === tab.key;
-            const isDisabled =
-              tabsDisabled &&
-              tab.key !== "bnfToEbnf" &&
-              tab.key !== "ebnfToBnf";
+            const isDisabled = tabsDisabled;
             return (
               <Button
                 key={tab.key}
