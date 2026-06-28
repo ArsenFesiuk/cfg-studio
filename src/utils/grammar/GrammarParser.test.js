@@ -181,6 +181,34 @@ describe('convertBNFToEBNF', () => {
     const result = convertBNFToEBNF(input);
     expect(result).toBe('S ::= A\nA ::= "a"');
   });
+
+  test('folds immediate left recursion into [] form', () => {
+    const result = convertBNFToEBNF('<E> ::= <E> + <T> | <T>');
+    expect(result).toBe('E ::= [E "+"] T');
+  });
+
+  test('folds whole arithmetic grammar into [] forms', () => {
+    const input =
+      '<E> ::= <E> + <T> | <T>\n' +
+      '<T> ::= <T> * <F> | <F>\n' +
+      '<F> ::= num | <E>';
+    const result = convertBNFToEBNF(input);
+    expect(result).toBe(
+      'E ::= [E "+"] T\n' +
+      'T ::= [T "*"] F\n' +
+      'F ::= "num" | E'
+    );
+  });
+
+  test('falls back to Kleene {} when no common suffix', () => {
+    const result = convertBNFToEBNF('<A> ::= <A> a | b');
+    expect(result).toBe('A ::= "b" {"a"}');
+  });
+
+  test('folds right recursion into leading Kleene (epsilon base dropped)', () => {
+    const result = convertBNFToEBNF('<D> ::= b <D> | ε');
+    expect(result).toBe('D ::= {"b"}');
+  });
 });
 
 // ─── convertEBNFToBNF ────────────────────────────────────────────────────────
@@ -208,7 +236,7 @@ describe('convertEBNFToBNF', () => {
     expect(result).toContain('a');
   });
 
-  test('expands Kleene closure { ... } with left-recursive rule', () => {
+  test('expands Kleene closure { ... } with a left-recursive helper (book method)', () => {
     const result = convertEBNFToBNF('A ::= {"a"}');
     const lines = result.split('\n');
     expect(lines.length).toBeGreaterThan(1);
@@ -227,5 +255,22 @@ describe('convertEBNFToBNF', () => {
     const lhs1 = r1.map(r => r.leftSide).sort();
     const lhs2 = r2.map(r => r.leftSide).sort();
     expect(lhs1).toEqual(lhs2);
+  });
+
+  test('round-trip on left-recursive grammar: [] folds, then expands back to valid BNF', () => {
+    const original =
+      '<E> ::= <E> + <T> | <T>\n' +
+      '<T> ::= <T> * <F> | <F>\n' +
+      '<F> ::= num';
+    const ebnf = convertBNFToEBNF(original);
+    expect(ebnf).toBe(
+      'E ::= [E "+"] T\n' +
+      'T ::= [T "*"] F\n' +
+      'F ::= "num"'
+    );
+    // expanding the EBNF back must yield a parseable BNF grammar (no errors)
+    const backToBNF = convertEBNFToBNF(ebnf);
+    const { errors } = parseBNF(backToBNF);
+    expect(errors).toHaveLength(0);
   });
 });

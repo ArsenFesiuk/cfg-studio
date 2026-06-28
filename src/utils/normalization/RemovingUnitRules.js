@@ -4,6 +4,7 @@
 // Pure logic + step emission; pseudocode lives in the locale files.
 
 const setStr = (set) => [...set].join(', ');
+const fmtSet = (set) => (set.size ? `{${[...set].join(', ')}}` : '∅');
 const key = (alt) => JSON.stringify(alt);
 
 function formatRules(rules) {
@@ -22,13 +23,21 @@ export class RemovingUnitRules {
     this.NT = new Set(this.rules.map((r) => r.leftSide));
     this.steps = [];
     this.blocks = [
-      { titleKey: 'algoTitle_8_5', linesKey: 'pseudo_8_5' },
+      { titleKey: 'algoTitle_8_5', linesKey: 'pseudo_8_5', tables: [] },
       { titleKey: 'algoTitle_8_6', linesKey: 'pseudo_8_6' },
     ];
   }
 
-  emit(block, line, message) {
-    this.steps.push({ block, line, message });
+  // `snapshot` is the grammar at this step. During the 8.6 rewrite the evolving
+  // grammar lives in a `result` map (this.rules is materialised only at the end),
+  // so emit reads it through `currentGrammar()`. `change` (optional) marks the one
+  // alternative added here: { kind: 'add', leftSide, alt }.
+  emit(block, line, message, table = null, iter = null, change = null) {
+    this.steps.push({ block, line, message, table, iter, snapshot: this.currentGrammar(), change });
+  }
+
+  currentGrammar() {
+    return this._draw ? this._draw() : formatRules(this.rules);
   }
 
   isUnit(alt) {
@@ -43,13 +52,19 @@ export class RemovingUnitRules {
 
   // ── Algoritmus 8.5: N_A ─────────────────────────────────────────────────────
   buildNA(A) {
+    const tableIdx = this.blocks[0].tables.length;
+    const rows = [];
     let N = new Set([A]);
-    this.emit(0, 0, this.t('unit_8_5_init', { A, NA: setStr(N) })); // N_A ← {A}
+    this.emit(0, 0, this.t('unit_8_5_init', { A, NA: setStr(N) }), tableIdx, null); // N_A ← {A}
 
     let prev;
+    let iter = -1;
     do {
+      iter++;
       prev = new Set(N);
-      this.emit(0, 2, this.t('unit_8_5_copy', { NA: setStr(N), prev: setStr(prev) })); // Ń_A ← N_A
+      // No iter here: the row holds the post-union (line 4) value, so it must
+      // only be revealed once line 4 runs — not yet, at the copy step.
+      this.emit(0, 2, this.t('unit_8_5_copy', { NA: setStr(N), prev: setStr(prev) }), tableIdx); // Ń_A ← N_A
 
       for (const rule of this.rules) {
         if (!prev.has(rule.leftSide)) continue;
@@ -60,13 +75,15 @@ export class RemovingUnitRules {
               C: alt[0],
               B: rule.leftSide,
               NA: setStr(N),
-            }));
+            }), tableIdx, iter);
           }
         }
       }
-      this.emit(0, 4, this.t('unit_8_5_while', { NA: setStr(N), prev: setStr(prev) }));
+      rows.push({ set: fmtSet(N), prev: fmtSet(prev), condition: N.size !== prev.size });
+      this.emit(0, 4, this.t('unit_8_5_while', { NA: setStr(N), prev: setStr(prev) }), tableIdx, iter);
     } while (N.size !== prev.size);
 
+    this.blocks[0].tables.push({ setLabel: `N_{${A}}`, prevLabel: `\\acute{N}_{${A}}`, rows });
     return N;
   }
 
@@ -74,17 +91,30 @@ export class RemovingUnitRules {
   execute() {
     this.emit(1, 0, this.t('unit_8_6_init', { rules: formatRules(this.rules) })); // P' ← P
 
-    // line 2: remove all unit rules from P'
+    // result starts as a full copy of every rule (unit rules included) so the
+    // grammar can shrink one unit rule per step. seen mirrors result throughout.
     const result = new Map(); // leftSide -> array of alternatives
     const seen = new Map(); // leftSide -> Set of keys
     for (const rule of this.rules) {
-      const nonUnit = rule.rightSide.filter((alt) => !this.isUnit(alt));
-      result.set(rule.leftSide, nonUnit);
-      seen.set(rule.leftSide, new Set(nonUnit.map(key)));
+      result.set(rule.leftSide, [...rule.rightSide]);
+      seen.set(rule.leftSide, new Set(rule.rightSide.map(key)));
     }
     const drawRules = () =>
       formatRules(this.rules.map((r) => ({ leftSide: r.leftSide, rightSide: result.get(r.leftSide) })));
-    this.emit(1, 1, this.t('unit_8_6_remove_units', { rules: drawRules() }));
+    this._draw = drawRules; // from here on, snapshots reflect the evolving P'
+
+    // line 2: remove all unit rules from P', one at a time (amber removal steps)
+    for (const rule of this.rules) {
+      for (const alt of result.get(rule.leftSide).filter((a) => this.isUnit(a))) {
+        result.set(rule.leftSide, result.get(rule.leftSide).filter((a) => a !== alt));
+        seen.get(rule.leftSide).delete(key(alt));
+        this.emit(1, 1, this.t('unit_8_6_remove_unit', {
+          A: rule.leftSide,
+          alt: alt.join(' '),
+          rules: drawRules(),
+        }), null, null, { kind: 'remove', leftSide: rule.leftSide, alt: alt.join(' ') });
+      }
+    }
 
     // line 3: for all N_A, A ∈ N
     for (const A of this.NT) {
@@ -108,7 +138,7 @@ export class RemovingUnitRules {
               B,
               alt: alt.join(' '),
               rules: drawRules(),
-            }));
+            }), null, null, { kind: 'add', leftSide: A, alt: alt.join(' ') });
           }
         }
       }

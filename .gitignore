@@ -13,6 +13,7 @@
 
 # reference / scratch files (not part of the codebase)
 photo_*.jpg
+images/*.jpg
 /docs/superpowers
 
 # misc

@@ -53,7 +53,7 @@ function convertElement(elCtx, extraRules) {
     return [`<${name}>`];
   }
 
-  // '{' pravastrana '}' → Kleene: N ::= inner N | epsilon
+  // '{' pravastrana '}' → Kleene (ліво-рекурсивно, навмисно): N ::= N inner | epsilon
   if (text.startsWith('{')) {
     const name = freshName('Rep');
     const inner = ps.postupnost().map(p => {
@@ -71,7 +71,7 @@ function convertElement(elCtx, extraRules) {
  * Конвертує EBNF рядок в BNF рядок.
  * EBNF: expr ::= term {"+" term}
  * BNF:  <expr> ::= <term> <Rep_1>
- *       <Rep_1> ::= "+" <term> <Rep_1> | epsilon
+ *       <Rep_1> ::= <Rep_1> "+" <term> | epsilon   (ліво-рекурсивно, навмисно)
  *
  * TERMINAL token text includes quotes ("a"), stripped here.
  * Groups use pravastrana() context (no more alternativa()).

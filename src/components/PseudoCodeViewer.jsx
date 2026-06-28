@@ -54,17 +54,36 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
 
   const activeStep = steps[current] || null;
 
-  // Notify parent about step position
+  // Keep the latest onStepChange in a ref so the notify effect below does NOT
+  // depend on its identity. The parent passes a fresh inline callback every
+  // render; depending on it here would re-run the effect → setState in parent
+  // → re-render → new callback → loop ("Maximum update depth exceeded").
+  const onStepChangeRef = useRef(onStepChange);
   useEffect(() => {
-    if (!onStepChange) return;
-    onStepChange({
+    onStepChangeRef.current = onStepChange;
+  });
+
+  // Notify parent about step position — only when the step actually changes.
+  useEffect(() => {
+    // Effective grammar = the most recent snapshot at or before the current step
+    // (steps without a grammar change carry the previous state forward).
+    let grammar = null;
+    for (let i = Math.min(current, steps.length - 1); i >= 0; i--) {
+      if (typeof steps[i]?.snapshot === "string" && steps[i].snapshot) {
+        grammar = steps[i].snapshot;
+        break;
+      }
+    }
+    onStepChangeRef.current?.({
       current: steps.length ? current + 1 : 0,
       total: steps.length,
-      message: activeStep?.message || "",
+      message: steps[current]?.message || "",
+      grammar,
+      change: steps[current]?.change || null,
       canGoNext: current < steps.length - 1,
       canGoPrev: current > 0,
     });
-  }, [current, steps, activeStep, onStepChange]);
+  }, [current, steps]);
 
   // Scroll active line into view
   useEffect(() => {
@@ -77,6 +96,30 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
   useEffect(() => {
     if (window.MathJax && window.MathJax.typeset) window.MathJax.typeset();
   }, [activeStep]);
+
+  // Progressive reveal of an iteration table (block bi, table tj): how many rows
+  // are visible so far, computed from the steps walked up to `current`.
+  const tableProgress = (bi, tj) => {
+    let maxIter = -1;
+    let referenced = false;
+    for (let i = 0; i <= current && i < steps.length; i++) {
+      const s = steps[i];
+      if (s.block === bi && s.table === tj) {
+        referenced = true;
+        if (typeof s.iter === "number" && s.iter > maxIter) maxIter = s.iter;
+      }
+    }
+    return { referenced, maxIter };
+  };
+
+  const cellStyle = {
+    border: "1px solid #DDE3EA",
+    padding: "4px 10px",
+    fontSize: "0.82rem",
+    textAlign: "left",
+    whiteSpace: "nowrap",
+  };
+  const headStyle = { ...cellStyle, fontWeight: 700, color: "#1E3A5F", backgroundColor: "#F5F7FA" };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px", height: "100%" }}>
@@ -131,6 +174,45 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
                       </div>
                     );
                   })}
+
+                {/* Iteration tables (Tabuľka 8.1–8.8) built progressively */}
+                {(block.tables || []).map((tbl, tj) => {
+                  const { referenced, maxIter } = tableProgress(bi, tj);
+                  if (!referenced) return null;
+                  const visibleRows = tbl.rows.slice(0, maxIter + 1);
+                  return (
+                    <table
+                      key={`tbl-${tj}`}
+                      style={{ borderCollapse: "collapse", margin: "8px 0 4px", fontFamily: "Arial, sans-serif" }}
+                    >
+                      <thead>
+                        <tr>
+                          <th style={headStyle}>{t("tableIter")}</th>
+                          <th style={headStyle}>{`${t("tableSet")} \\(${tbl.setLabel}\\)`}</th>
+                          <th style={headStyle}>{`${t("tableSet")} \\(${tbl.prevLabel}\\)`}</th>
+                          <th style={headStyle}>{`${t("tableCond")} \\(${tbl.setLabel} \\neq ${tbl.prevLabel}\\)`}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {visibleRows.map((row, r) => {
+                          const active =
+                            activeStep &&
+                            activeStep.block === bi &&
+                            activeStep.table === tj &&
+                            activeStep.iter === r;
+                          return (
+                            <tr key={r} style={{ backgroundColor: active ? "#FFF3CD" : "transparent" }}>
+                              <td style={cellStyle}>{r + 1}.</td>
+                              <td style={cellStyle}>{row.set}</td>
+                              <td style={cellStyle}>{row.prev}</td>
+                              <td style={{ ...cellStyle, fontStyle: "italic" }}>{String(row.condition)}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  );
+                })}
               </div>
             );
           })}

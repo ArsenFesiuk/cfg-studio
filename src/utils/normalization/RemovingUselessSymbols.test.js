@@ -44,6 +44,21 @@ describe('RemovingUselessSymbols (textbook example 8.1.1)', () => {
     expect(original[0].rightSide).toEqual([['A', 'B'], ['C']]);
   });
 
+  test('builds N_T and V_D iteration tables like Tabuľka 8.1 and 8.2', () => {
+    const algo = new RemovingUselessSymbols(buildRules(), t);
+    algo.execute();
+    expect(algo.blocks[0].tables[0].rows).toEqual([   // Tabuľka 8.1 (N_T)
+      { set: '{A, C, D}', prev: '∅', condition: true },
+      { set: '{A, C, D, S}', prev: '{A, C, D}', condition: true },
+      { set: '{A, C, D, S}', prev: '{A, C, D, S}', condition: false },
+    ]);
+    expect(algo.blocks[1].tables[0].rows).toEqual([   // Tabuľka 8.2 (V_D)
+      { set: '{S, C}', prev: '{S}', condition: true },
+      { set: '{S, C, c}', prev: '{S, C}', condition: true },
+      { set: '{S, C, c}', prev: '{S, C, c}', condition: false },
+    ]);
+  });
+
   test('emits steps tagged with pseudocode block 8.1 and 8.2', () => {
     const algo = new RemovingUselessSymbols(buildRules(), t);
     algo.execute();
@@ -51,5 +66,30 @@ describe('RemovingUselessSymbols (textbook example 8.1.1)', () => {
     expect(blocks.has(0)).toBe(true); // 8.1
     expect(blocks.has(1)).toBe(true); // 8.2
     expect(algo.steps.every((s) => typeof s.line === 'number')).toBe(true);
+  });
+
+  test('removes useless symbols one at a time with amber change markers', () => {
+    const algo = new RemovingUselessSymbols(buildRules(), t);
+    algo.execute();
+    const removes = algo.steps.filter((s) => s.change && s.change.kind === 'remove');
+    // B (non-terminating), then A and D (unreachable) each get their own remove step,
+    // plus the "A B" alternative pruned from S → at least 4 removals total
+    expect(removes.length).toBeGreaterThanOrEqual(4);
+    const removedLhs = removes.map((s) => s.change.leftSide);
+    expect(removedLhs).toContain('B'); // non-terminating rule
+    expect(removedLhs).toContain('A'); // unreachable rule
+    expect(removedLhs).toContain('D'); // unreachable rule
+  });
+
+  test('snapshots shrink toward the final grammar', () => {
+    const algo = new RemovingUselessSymbols(buildRules(), t);
+    algo.execute();
+    const steps = algo.steps;
+    expect(steps.every((s) => typeof s.snapshot === 'string' && s.snapshot.length > 0)).toBe(true);
+    // last snapshot is the final (smallest) grammar; an earlier one is larger
+    expect(steps[steps.length - 1].snapshot).toBe(algo.toString());
+    const lastLines = steps[steps.length - 1].snapshot.split('\n').length;
+    const firstLines = steps[0].snapshot.split('\n').length;
+    expect(firstLines).toBeGreaterThan(lastLines);
   });
 });
