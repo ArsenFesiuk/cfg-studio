@@ -1,13 +1,21 @@
 import antlr4 from 'antlr4';
 import BNFLexer from './BNF/BNFLexer.js';
 import BNFParser from './BNF/BNFParser.js';
+import { factorLeftRecursion } from './factorLeftRecursion.js';
 
 /**
  * Конвертує BNF рядок в EBNF рядок.
- * BNF:  <expr> ::= <term> | a epsilon
- * EBNF: expr ::= term | "a" | epsilon
  *
- * NETERMINAL token text includes angle brackets (<A>), stripped here.
+ * Конвеєр: парс ANTLR → IR → factorLeftRecursion → рендер.
+ *
+ * Окрім косметики (нетермінали без <>, термінали в лапках) згортає
+ * безпосередню ліву рекурсію в EBNF-конструкції [ ] / { }:
+ *   <E> ::= <E> + <T> | <T>   →   E ::= [E "+"] T
+ *   <A> ::= <A> a | b         →   A ::= "b" {"a"}   (Kleene-фолбек)
+ *
+ * IR: rule = { lhs, alts }, alt = symbol[], symbol = { text, isTerminal }.
+ * isTerminal береться з типу ANTLR-токена (TERMINAL vs NETERMINAL),
+ * щоб рендер правильно брав термінали в лапки, а нетермінали лишав голими.
  */
 export function convertBNFToEBNF(input) {
   const errors = [];
@@ -40,22 +48,24 @@ export function convertBNFToEBNF(input) {
     const _nt = pravidloCtx.NETERMINAL();
     if (!_nt) continue;
     // NETERMINAL includes <>, strip to get bare name
-    const nonterm = _nt.getText().slice(1, -1);
-    const pravaCtx = pravidloCtx.pravastrana();
-    const postupnosti = pravaCtx.postupnost();
+    const lhs = _nt.getText().slice(1, -1);
+    const postupnosti = pravidloCtx.pravastrana().postupnost();
 
-    const alternatives = postupnosti.map(p => {
-      if (p.getText() === 'epsilon') return 'epsilon';
-      return p.symbol().map(s => {
+    const alts = postupnosti.map(p => {
+      const symbols = p.symbol();
+      // 'ε' branch has no symbol children → treat as epsilon (word form)
+      if (symbols.length === 0) {
+        return [{ text: 'epsilon', isTerminal: true }];
+      }
+      return symbols.map(s => {
         const terminal = s.TERMINAL();
-        if (terminal) return `"${terminal.getText()}"`;
+        if (terminal) return { text: terminal.getText(), isTerminal: true };
         const nt = s.NETERMINAL();
-        if (nt) return nt.getText().slice(1, -1); // strip <>
-        return s.getText();
-      }).join(' ');
+        return { text: nt.getText().slice(1, -1), isTerminal: false }; // strip <>
+      });
     });
 
-    lines.push(`${nonterm} ::= ${alternatives.join(' | ')}`);
+    lines.push(`${lhs} ::= ${factorLeftRecursion(lhs, alts)}`);
   }
 
   return lines.join('\n');
