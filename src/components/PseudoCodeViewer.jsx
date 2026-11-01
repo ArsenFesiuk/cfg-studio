@@ -179,7 +179,86 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
                 {(block.tables || []).map((tbl, tj) => {
                   const { referenced, maxIter } = tableProgress(bi, tj);
                   if (!referenced) return null;
+
+                  // "grid" tables are a one-shot LL(1) parse table RT[A, t]: rows are
+                  // non-terminals, columns are terminals (+ $), cells hold rule
+                  // numbers — conflicting cells (more than one rule) are highlighted.
+                  if (tbl.kind === "grid") {
+                    return (
+                      <table
+                        key={`tbl-${tj}`}
+                        style={{ borderCollapse: "collapse", margin: "8px 0 4px", fontFamily: "Arial, sans-serif" }}
+                      >
+                        <thead>
+                          <tr>
+                            <th style={headStyle}>RT</th>
+                            {tbl.columns.map((col) => (
+                              <th key={col} style={headStyle}>{col}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tbl.rows.map((row) => (
+                            <tr key={row.label}>
+                              <td style={{ ...cellStyle, fontWeight: 700 }}>{row.label}</td>
+                              {row.cells.map((cell, ci) => (
+                                <td
+                                  key={ci}
+                                  style={{
+                                    ...cellStyle,
+                                    color: cell.conflict ? "#C62828" : "#2E7D32",
+                                    fontWeight: cell.conflict ? 700 : 400,
+                                  }}
+                                >
+                                  {cell.numbers.join(", ")}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    );
+                  }
+
                   const visibleRows = tbl.rows.slice(0, maxIter + 1);
+
+                  // "multi" tables track several sets at once (one column per
+                  // non-terminal), e.g. FST_A / FLW_A — one row per outer iteration.
+                  if (tbl.kind === "multi") {
+                    return (
+                      <table
+                        key={`tbl-${tj}`}
+                        style={{ borderCollapse: "collapse", margin: "8px 0 4px", fontFamily: "Arial, sans-serif" }}
+                      >
+                        <thead>
+                          <tr>
+                            <th style={headStyle}>{t("tableIter")}</th>
+                            {tbl.columns.map((col) => (
+                              <th key={col} style={headStyle}>{col}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {visibleRows.map((row, r) => {
+                            const active =
+                              activeStep &&
+                              activeStep.block === bi &&
+                              activeStep.table === tj &&
+                              activeStep.iter === r;
+                            return (
+                              <tr key={r} style={{ backgroundColor: active ? "#FFF3CD" : "transparent" }}>
+                                <td style={cellStyle}>{r + 1}.</td>
+                                {tbl.columns.map((col) => (
+                                  <td key={col} style={cellStyle}>{row.values[col]}</td>
+                                ))}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    );
+                  }
+
                   return (
                     <table
                       key={`tbl-${tj}`}

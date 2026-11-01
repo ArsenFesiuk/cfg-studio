@@ -4,6 +4,7 @@ import { RemovingUnitRules } from "../utils/normalization/RemovingUnitRules.js";
 import { RemovingUselessSymbols } from "../utils/normalization/RemovingUselessSymbols.js";
 import { RemovingLeftRecursion } from "../utils/normalization/RemovingLeftRecursion.js";
 import { CNFConversion } from "../utils/normalization/CNFConversastion.js";
+import { LL1Analysis } from "../utils/analysis/LL1Analysis.js";
 import { parseGrammar, getPlainRules, detectGrammarType } from "../utils/grammar/GrammarParser.js";
 import MyAppBar from "./MyAppBar.jsx";
 import SupportedGrammars from "./SupportedGrammars.jsx";
@@ -31,6 +32,7 @@ const TAB_CONFIG = {
   removeUselessSymbols: { ProcessingClass: RemovingUselessSymbols, stepwiseOutput: true },
   removeLeftRecursion: { ProcessingClass: RemovingLeftRecursion, legacyLinesKey: "stepsForLeftRecursion" },
   convertToCNF: { ProcessingClass: CNFConversion, legacyLinesKey: "stepsForGrammarTransformation" },
+  llAnalysis: { ProcessingClass: LL1Analysis, stepwiseOutput: true },
 };
 
 const GrammarInput = () => {
@@ -188,9 +190,14 @@ const GrammarInput = () => {
 
     const transformer = new config.ProcessingClass(rules, t);
     transformer.execute();
-    // every algorithm keeps the final grammar in `transformer.rules`
-    const resultRules = Array.isArray(transformer.rules) ? transformer.rules : rules;
-    setOutput(formatGrammarOutput(resultRules));
+    // analysis-only algorithms (e.g. LL1Analysis) report a text summary instead
+    // of a rewritten grammar; everything else keeps the final grammar in `rules`.
+    if (typeof transformer.summary === "string") {
+      setOutput(transformer.summary);
+    } else {
+      const resultRules = Array.isArray(transformer.rules) ? transformer.rules : rules;
+      setOutput(formatGrammarOutput(resultRules));
+    }
     setResultReady(true);
   };
 

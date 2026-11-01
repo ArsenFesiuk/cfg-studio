@@ -22,6 +22,8 @@
     "removeUselessSymbols": "Remove Useless Symbols",
     "removeLeftRecursion": "Remove Left Recursion",
     "convertToCNF": "CFG to CNF",
+    "llAnalysis": "FIRST / FOLLOW / PREDICT",
+    "testForLL1": "Test on FIRST/FOLLOW/PREDICT",
 
     "guideTitle": "The application guide",
     "guideInput": "How to enter grammar correctly",
@@ -279,5 +281,104 @@
         "10:    \\( \\text{replace with rules } A \\to X_1 A_1, A_1 \\to X_2 A_2, \\dots, A_{n-2} \\to X_{n-1} X_n, \\)",
         "11:    \\( \\text{where } A_1, A_2, \\dots, A_{n-2} \\text{ are new non-terminals;} \\)",
         "12: \\( \\textbf{end for} \\)"
-    ]
+    ],
+
+    "algoTitle_nullable": "Nullable set N_ε (prerequisite, same construction as in the previous exercise)",
+    "algoTitle_fst": "Algorithm 1 — construction of the sets FST_A for all A ∈ N",
+    "algoTitle_first_fn": "Algorithm 2 — the function FIRST(α)",
+    "algoTitle_follow": "Algorithm 3 — construction of the sets FOLLOW(A) for all A ∈ N",
+    "algoTitle_predict": "Construction of PREDICT(A → α) for every rule",
+    "algoTitle_parsetable": "LL(1) parse table and conflict check",
+
+    "pseudo_nullable": [
+        "1: \\( N_\\varepsilon \\gets \\emptyset; \\)",
+        "2: \\( \\textbf{do} \\)",
+        "3:     \\( \\acute{N}_\\varepsilon \\gets N_\\varepsilon; \\)",
+        "4:     \\( N_\\varepsilon \\gets \\acute{N}_\\varepsilon \\cup \\{ A \\mid A \\to \\alpha \\in P \\land \\alpha \\in \\acute{N}_\\varepsilon^* \\}; \\)",
+        "5: \\( \\textbf{while } N_\\varepsilon \\neq \\acute{N}_\\varepsilon \\)"
+    ],
+    "pseudo_fst": [
+        "1: \\( \\textbf{for all } a \\in T \\textbf{ do} \\)",
+        "2:    \\( FST_a \\gets \\{ a \\}; \\)",
+        "3: \\( \\textbf{end for} \\)",
+        "4: \\( \\textbf{for all } A \\in N \\textbf{ do} \\)",
+        "5:    \\( FST_A \\gets \\emptyset; \\)",
+        "6: \\( \\textbf{end for} \\)",
+        "7: \\( \\textbf{for all } A \\in N_\\varepsilon \\textbf{ do} \\)",
+        "8:    \\( FST_A \\gets \\{ \\varepsilon \\}; \\)",
+        "9: \\( \\textbf{end for} \\)",
+        "10: \\( \\textbf{do} \\)",
+        "11:   \\( \\textbf{for all } A \\to \\beta_1\\beta_2 \\dots \\beta_k \\in P \\textbf{ do} \\)",
+        "12:    \\( \\textbf{for all } \\beta_i \\in \\{ \\beta_1,\\dots,\\beta_k \\} \\textbf{ do} \\)",
+        "13:       \\( FST_A \\gets FST_A \\cup (FST_{\\beta_i} - \\{ \\varepsilon \\}); \\)",
+        "14:       \\( \\textbf{if } \\beta_i \\notin N_\\varepsilon \\textbf{ then} \\)",
+        "15:          \\( \\textbf{break}; \\)",
+        "16:       \\( \\textbf{end if} \\)",
+        "17:    \\( \\textbf{end for} \\)",
+        "18:   \\( \\textbf{end for} \\)",
+        "19: \\( \\textbf{while } \\text{some } FST_A \\text{ changed} \\)"
+    ],
+    "pseudo_first_fn": [
+        "1: \\( \\textbf{function } FIRST(\\alpha) \\)",
+        "2:   \\( \\textbf{if } \\alpha = \\varepsilon \\textbf{ then} \\)",
+        "3:     \\( \\textbf{return } \\{ \\varepsilon \\}; \\)",
+        "4:   \\( \\textbf{end if} \\)",
+        "5:   \\( \\textbf{if } \\alpha = a\\beta,\\ a \\in T \\textbf{ then} \\)",
+        "6:     \\( \\textbf{return } \\{ a \\}; \\)",
+        "7:   \\( \\textbf{end if} \\)",
+        "8:   \\( \\textbf{if } \\alpha = A\\beta,\\ A \\in N \\textbf{ then} \\)",
+        "9:     \\( \\textbf{if } A \\in N_\\varepsilon \\textbf{ then} \\)",
+        "10:       \\( \\textbf{return } (FST_A - \\{ \\varepsilon \\}) \\cup FIRST(\\beta); \\)",
+        "11:    \\( \\textbf{else} \\)",
+        "12:       \\( \\textbf{return } FST_A; \\)",
+        "13:    \\( \\textbf{end if} \\)",
+        "14:  \\( \\textbf{end if} \\)",
+        "15: \\( \\textbf{end function} \\)"
+    ],
+    "pseudo_follow": [
+        "1: \\( \\textbf{for all } A \\in N \\textbf{ do} \\)",
+        "2:    \\( FLW_A \\gets \\emptyset; \\)",
+        "3: \\( \\textbf{end for} \\)",
+        "4: \\( FLW_S \\gets \\{ \\$ \\}; \\)",
+        "5: \\( \\textbf{repeat} \\)",
+        "6:   \\( \\textbf{for all } A \\in N \\textbf{ do} \\)",
+        "7:    \\( \\textbf{for all } B \\to \\alpha A \\beta \\in P \\textbf{ do} \\)",
+        "8:       \\( FLW_A \\gets FLW_A \\cup (FIRST(\\beta) - \\{ \\varepsilon \\}); \\)",
+        "9:       \\( \\textbf{if } \\varepsilon \\in FIRST(\\beta) \\textbf{ then} \\)",
+        "10:         \\( FLW_A \\gets FLW_A \\cup FLW_B; \\)",
+        "11:      \\( \\textbf{end if} \\)",
+        "12:    \\( \\textbf{end for} \\)",
+        "13:   \\( \\textbf{end for} \\)",
+        "14: \\( \\textbf{until } \\text{no } FLW_A \\text{ changed} \\)",
+        "15: \\( FOLLOW(A) = FLW_A \\text{ for all } A \\in N \\)"
+    ],
+    "pseudo_predict": [
+        "1: \\( PREDICT(A \\to \\alpha) = FIRST(\\alpha),\\ \\text{if } \\varepsilon \\notin FIRST(\\alpha) \\)",
+        "2: \\( PREDICT(A \\to \\alpha) = (FIRST(\\alpha) - \\{ \\varepsilon \\}) \\cup FOLLOW(A),\\ \\text{if } \\varepsilon \\in FIRST(\\alpha) \\)"
+    ],
+    "pseudo_parsetable": [
+        "1: \\( \\textbf{for all } t \\in PREDICT(A \\to \\alpha):\\ RT[A,t] \\gets A \\to \\alpha \\)",
+        "2: \\( \\text{if any cell } RT[A,t] \\text{ receives more than one rule, the grammar is } \\textbf{not } LL(1) \\)"
+    ],
+
+    "nullable_init": "\\( N_\\varepsilon \\gets \\emptyset \\):  \\( N_\\varepsilon = \\{ {{N}} \\} \\)",
+    "nullable_copy": "\\( \\acute{N}_\\varepsilon \\gets N_\\varepsilon \\).  \\( N_\\varepsilon = \\{ {{N}} \\} \\)",
+    "nullable_add": "\\( {{A}} \\) is added to \\( N_\\varepsilon \\): the alternative \\( {{A}} \\to {{alt}} \\) is nullable.  \\( N_\\varepsilon = \\{ {{N}} \\} \\)",
+    "nullable_while": "Check \\( N_\\varepsilon \\neq \\acute{N}_\\varepsilon \\):  \\( N_\\varepsilon = \\{ {{N}} \\} \\),  \\( \\acute{N}_\\varepsilon = \\{ {{prev}} \\} \\)",
+
+    "fst_init": "Initialise: \\(FST_a = \\{a\\}\\) for every terminal; for every non-terminal \\(FST_A = \\emptyset\\) (or \\(\\{\\varepsilon\\}\\) if \\(A \\in N_\\varepsilon\\)). {{sets}}",
+    "fst_add": "Rule \\( {{rule}} \\): add \\( FST_{{{sym}}} - \\{ \\varepsilon \\} \\) to \\( FST_{{{A}}} \\).  \\( FST_{{{A}}} = \\{ {{FST}} \\} \\)",
+    "fst_iterationDone": "End of outer-loop iteration {{iter}}.",
+
+    "follow_init": "Initialise: \\( FLW_A = \\emptyset \\) for every non-terminal; \\( FLW_{{{S}}} = \\{ \\$ \\} \\) (the start symbol).",
+    "follow_add": "Rule \\( {{rule}} \\): add \\( FIRST(\\beta) - \\{ \\varepsilon \\} \\) (and \\( FLW \\) of the left side, if \\( \\varepsilon \\in FIRST(\\beta) \\)) to \\( FLW_{{{A}}} \\).  \\( FLW_{{{A}}} = \\{ {{FLW}} \\} \\)",
+    "follow_iterationDone": "End of repeat-loop iteration {{iter}}.",
+
+    "predict_start": "Compute \\( PREDICT(A \\to \\alpha) \\) for every rule of the grammar.",
+    "predict_rule": "({{n}}) \\( PREDICT({{rule}}) = \\{ {{set}} \\} \\)",
+
+    "parsetable_start": "Build the parse table \\( RT \\) from the \\( PREDICT \\) sets.",
+    "parsetable_ll1_yes": "No conflicts found in the parse table — the grammar **is** an LL(1) grammar.",
+    "parsetable_ll1_no": "Conflicts found in the parse table ({{conflicts}}) — the grammar is **not** an LL(1) grammar."
 }
+

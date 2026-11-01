@@ -31,6 +31,15 @@ const BNF_FORMAL_EXAMPLES = [
     tab: "convertToCNF",
     text: "<S> ::= <A> <B> <A>\n<A> ::= a <A> | epsilon\n<B> ::= b <B> c | epsilon",
   },
+  {
+    labelKey: "testForLL1",
+    tab: "llAnalysis",
+    // classic arithmetic-expression grammar, already free of left recursion
+    // (E2/T2 play the role of E'/T'), so the parse table has no conflicts — LL(1).
+    // BNF terminals here can't contain "(" / ")" (see BNF.g4), so parens are
+    // spelled out as word-terminals instead of literal symbols.
+    text: "<E> ::= <T> <E2>\n<E2> ::= + <T> <E2> | epsilon\n<T> ::= <F> <T2>\n<T2> ::= * <F> <T2> | epsilon\n<F> ::= num | lparen <E> rparen",
+  },
 ];
 
 // ── EBNF notation (NonTerm ::= ..., "terminal", {}, [], ()) — for EBNF → BNF ─
@@ -73,6 +82,14 @@ const EBNF_EXAMPLES = [
     // A → a A | ε  ⟹  A ::= {"a"}
     // B → b B c | ε  ⟹  cannot be simplified further with EBNF constructs
     text: 'S ::= A B A\nA ::= {"a"}\nB ::= "b" B "c" | epsilon',
+  },
+  {
+    labelKey: "testForLL1",
+    tab: "llAnalysis",
+    // [...] (optional) expands to a non-left-recursive auxiliary rule, so this
+    // stays LL(1) after expansion — unlike {...} (Kleene), which is deliberately
+    // expanded left-recursively by convertEBNFToBNF.js
+    text: 'E ::= T ["+" E]\nT ::= F ["*" T]\nF ::= num | "(" E ")"',
   },
 ];
 

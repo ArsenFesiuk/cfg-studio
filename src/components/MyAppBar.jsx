@@ -10,6 +10,7 @@ const TABS = [
   { key: "removeUselessSymbols", labelKey: "removeUselessSymbols" },
   { key: "removeLeftRecursion", labelKey: "removeLeftRecursion" },
   { key: "convertToCNF", labelKey: "convertToCNF" },
+  { key: "llAnalysis", labelKey: "llAnalysis" },
 ];
 
 const MyAppBar = ({ activeTab, onTabChange, tabsDisabled }) => {
