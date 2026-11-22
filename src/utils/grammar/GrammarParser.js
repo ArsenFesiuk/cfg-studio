@@ -256,3 +256,24 @@ export function getPlainRules(input, t) {
   // bnf or unknown → let parseBNF try
   return parseBNF(input, t);
 }
+
+// ─── analyzeGrammar ───────────────────────────────────────────────────────────
+// One call for everything the UI needs per input:
+//   rules       – plain CFG rules for the algorithms (same as getPlainRules)
+//   plainErrors – errors of that parse
+//   errors      – errors to show the user (same as parseGrammar)
+// For BNF input the two parses are identical, so ANTLR runs only once; other
+// formats keep their own, differently worded, diagnostics.
+export function analyzeGrammar(input, t) {
+  const plain = getPlainRules(input, t);
+  const errors = detectGrammarType(input) === 'bnf' ? plain.errors : validationErrors(input, t);
+  return { rules: plain.rules, plainErrors: plain.errors, errors };
+}
+
+function validationErrors(input, t) {
+  try {
+    return parseGrammar(input, t).errors;
+  } catch (error) {
+    return [error.message];
+  }
+}
