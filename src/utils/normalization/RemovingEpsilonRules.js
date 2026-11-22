@@ -3,16 +3,19 @@
 //   Algoritmus 8.4  rewrite the rules based on N_ε
 // Pure logic + step emission; pseudocode lives in the locale files.
 
+import { formatRules, createSnapshotter } from '../common/formatRules.js';
+
 const setStr = (set) => [...set].join(', ');
 const fmtSet = (set) => (set.size ? `{${[...set].join(', ')}}` : '∅');
 const isEps = (alt) => alt.length === 1 && alt[0] === 'ε';
 const key = (alt) => JSON.stringify(alt);
 
-function formatRules(rules) {
-  return rules
-    .map((r) => `${r.leftSide} → ${r.rightSide.map((a) => a.join(' ')).join(' | ')}`)
-    .join('\n');
-}
+// An alternative with k nullable symbols expands into 2^k combinations, each of
+// them a separate step that stores the whole (growing) grammar twice: as the
+// snapshot and inside the explanation. Memory is ~45 MB at 10, ~170 MB at 11 and
+// grows 4x per extra symbol, so beyond this the run is refused with a readable
+// message instead of freezing the page.
+export const MAX_NULLABLE_PER_ALTERNATIVE = 10;
 
 export class RemovingEpsilonRules {
   constructor(rules, t) {
@@ -22,6 +25,7 @@ export class RemovingEpsilonRules {
       rightSide: r.rightSide.map((alt) => [...alt]),
     }));
     this.steps = [];
+    this.snapshotOf = createSnapshotter();
     this.blocks = [
       { titleKey: 'algoTitle_8_3', linesKey: 'pseudo_8_3', tables: [] },
       { titleKey: 'algoTitle_8_4', linesKey: 'pseudo_8_4' },
@@ -32,7 +36,7 @@ export class RemovingEpsilonRules {
   // `change` (optional) describes the one alternative/rule added or removed here,
   // so the output panel can highlight it: { kind: 'add'|'remove', leftSide, alt }.
   emit(block, line, message, table = null, iter = null, change = null) {
-    this.steps.push({ block, line, message, table, iter, snapshot: formatRules(this.rules), change });
+    this.steps.push({ block, line, message, table, iter, snapshot: this.snapshotOf(this.rules), change });
   }
 
   // an alternative is "nullable" if it is ε, or every symbol is in `known`
@@ -87,6 +91,15 @@ export class RemovingEpsilonRules {
     beta.forEach((s, i) => {
       if (this.nullable.has(s)) positions.push(i);
     });
+    if (positions.length > MAX_NULLABLE_PER_ALTERNATIVE) {
+      throw new Error(
+        this.t('eps_too_many_nullable', {
+          alt: beta.join(' '),
+          count: positions.length,
+          max: MAX_NULLABLE_PER_ALTERNATIVE,
+        })
+      );
+    }
     const out = [];
     const total = 1 << positions.length;
     for (let mask = 0; mask < total; mask++) {
@@ -134,6 +147,8 @@ export class RemovingEpsilonRules {
         this.emit(1, 6, this.t('eps_8_4_remove_start_eps', { S: startSymbol, rules: formatRules(this.rules) }),
           null, null, { kind: 'remove', leftSide: startSymbol, alt: 'ε' }); // line 7
         newStart = `${startSymbol}_0`;
+        const usedSymbols = new Set(this.rules.flatMap((r) => [r.leftSide, ...r.rightSide.flat()]));
+        while (usedSymbols.has(newStart)) newStart += '_0';
         this.rules.unshift({ leftSide: newStart, rightSide: [[startSymbol], ['ε']] });
         this.emit(1, 7, this.t('eps_8_4_add_start', { S: startSymbol, Snew: newStart, rules: formatRules(this.rules) }),
           null, null, { kind: 'add', leftSide: newStart }); // line 8

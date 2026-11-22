@@ -5,14 +5,10 @@
 // pseudocode block (8.1 / 8.2) and which line is active, so the viewer can
 // highlight it. Visualisation can be changed by editing only the locale lines.
 
+import { formatRules, createSnapshotter } from '../common/formatRules.js';
+
 const setStr = (set) => [...set].join(', ');
 const fmtSet = (set) => (set.size ? `{${[...set].join(', ')}}` : '∅');
-
-function formatRules(rules) {
-  return rules
-    .map((r) => `${r.leftSide} → ${r.rightSide.map((a) => a.join(' ')).join(' | ')}`)
-    .join('\n');
-}
 
 export class RemovingUselessSymbols {
   constructor(rules, t) {
@@ -23,6 +19,10 @@ export class RemovingUselessSymbols {
       rightSide: r.rightSide.map((alt) => [...alt]),
     }));
     this.steps = [];
+    this.snapshotOf = createSnapshotter();
+    // computed once: isTerminal() runs for every symbol of every alternative while
+    // N_T is built, and the rules are not modified before that phase ends
+    this.originalNonTerminals = new Set(this.rules.map((r) => r.leftSide));
     this.blocks = [
       { titleKey: 'algoTitle_8_1', linesKey: 'pseudo_8_1', tables: [] },
       { titleKey: 'algoTitle_8_2', linesKey: 'pseudo_8_2', tables: [] },
@@ -34,7 +34,7 @@ export class RemovingUselessSymbols {
   // a `change` marker { kind: 'remove', leftSide, alt? } so the output panel can
   // highlight it amber, exactly like the ε-rule removals.
   emit(block, line, message, table = null, iter = null, change = null) {
-    this.steps.push({ block, line, message, table, iter, snapshot: formatRules(this.rules), change });
+    this.steps.push({ block, line, message, table, iter, snapshot: this.snapshotOf(this.rules), change });
   }
 
   nonTerminals() {
@@ -42,7 +42,7 @@ export class RemovingUselessSymbols {
   }
 
   isTerminal(symbol) {
-    return symbol !== 'ε' && !this.nonTerminals().has(symbol);
+    return symbol !== 'ε' && !this.originalNonTerminals.has(symbol);
   }
 
   // every symbol of the alternative is a terminal, ε, or already in `known`

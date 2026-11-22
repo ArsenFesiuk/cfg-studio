@@ -1,8 +1,13 @@
 export class RemovingLeftRecursion {
   constructor(rules,t) {
-    this.rules = rules;
+    // own copy: rules are rewritten in place and new ones appended
+    this.rules = rules.map((r) => ({
+      leftSide: r.leftSide,
+      rightSide: r.rightSide.map((alt) => [...alt]),
+    }));
     this.t = t;
     this.explanations = [];
+    this.steps = [];
   }
 
   execute() {
@@ -101,6 +106,7 @@ export class RemovingLeftRecursion {
 
   addExplanation(line, message) {
     this.explanations.push({ line, message });
+    this.steps.push({ block: 0, line, message, snapshot: this.toString(), change: null });
   }
 
   toString() {

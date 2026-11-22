@@ -3,15 +3,11 @@
 //   Algoritmus 8.6  rewrite the rules using the sets N_A
 // Pure logic + step emission; pseudocode lives in the locale files.
 
+import { formatRules, createSnapshotter } from '../common/formatRules.js';
+
 const setStr = (set) => [...set].join(', ');
 const fmtSet = (set) => (set.size ? `{${[...set].join(', ')}}` : '∅');
 const key = (alt) => JSON.stringify(alt);
-
-function formatRules(rules) {
-  return rules
-    .map((r) => `${r.leftSide} → ${r.rightSide.map((a) => a.join(' ')).join(' | ')}`)
-    .join('\n');
-}
 
 export class RemovingUnitRules {
   constructor(rules, t) {
@@ -21,7 +17,13 @@ export class RemovingUnitRules {
       rightSide: r.rightSide.map((alt) => [...alt]),
     }));
     this.NT = new Set(this.rules.map((r) => r.leftSide));
+    // first rule per left-hand side, same as the former linear `find`
+    this.productionIndex = new Map();
+    for (const r of this.rules) {
+      if (!this.productionIndex.has(r.leftSide)) this.productionIndex.set(r.leftSide, r.rightSide);
+    }
     this.steps = [];
+    this.snapshotOf = createSnapshotter();
     this.blocks = [
       { titleKey: 'algoTitle_8_5', linesKey: 'pseudo_8_5', tables: [] },
       { titleKey: 'algoTitle_8_6', linesKey: 'pseudo_8_6' },
@@ -37,7 +39,7 @@ export class RemovingUnitRules {
   }
 
   currentGrammar() {
-    return this._draw ? this._draw() : formatRules(this.rules);
+    return this.snapshotOf(this._currentRules ? this._currentRules() : this.rules);
   }
 
   isUnit(alt) {
@@ -46,8 +48,7 @@ export class RemovingUnitRules {
 
   // productions of a non-terminal in the original grammar
   productionsOf(symbol) {
-    const r = this.rules.find((x) => x.leftSide === symbol);
-    return r ? r.rightSide : [];
+    return this.productionIndex.get(symbol) ?? [];
   }
 
   // ── Algoritmus 8.5: N_A ─────────────────────────────────────────────────────
@@ -99,9 +100,10 @@ export class RemovingUnitRules {
       result.set(rule.leftSide, [...rule.rightSide]);
       seen.set(rule.leftSide, new Set(rule.rightSide.map(key)));
     }
-    const drawRules = () =>
-      formatRules(this.rules.map((r) => ({ leftSide: r.leftSide, rightSide: result.get(r.leftSide) })));
-    this._draw = drawRules; // from here on, snapshots reflect the evolving P'
+    const currentRules = () =>
+      this.rules.map((r) => ({ leftSide: r.leftSide, rightSide: result.get(r.leftSide) }));
+    const drawRules = () => formatRules(currentRules());
+    this._currentRules = currentRules; // from here on, snapshots reflect the evolving P'
 
     // line 2: remove all unit rules from P', one at a time (amber removal steps)
     for (const rule of this.rules) {
