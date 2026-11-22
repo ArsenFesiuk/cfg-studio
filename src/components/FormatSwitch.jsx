@@ -2,6 +2,7 @@ import { Box, Tooltip } from "@mui/material";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import { convertBNFToEBNF } from "../utils/grammar/convertBNFToEBNF.js";
 import { convertEBNFToBNF } from "../utils/grammar/convertEBNFToBNF.js";
+import { cv } from "../theme/theme.js";
 
 // ε ↔ epsilon: the formal converters work with the word "epsilon"
 const epsilonToWord = (s) => s.replace(/ε/g, "epsilon");
@@ -33,7 +34,7 @@ export default function FormatSwitch({ format, value, onSwitch }) {
       component="span"
       sx={{
         fontWeight: active ? 800 : 500,
-        color: active ? "#1565C0" : "#9AA7B4",
+        color: active ? cv.primaryText : cv.textFaint,
         fontSize: "0.7rem",
         letterSpacing: "0.04em",
       }}
@@ -45,23 +46,29 @@ export default function FormatSwitch({ format, value, onSwitch }) {
   return (
     <Tooltip title={`${format.toUpperCase()} → ${target.toUpperCase()}`} arrow>
       <Box
+        component="button"
+        type="button"
         onClick={handleClick}
+        aria-label={`${format.toUpperCase()} → ${target.toUpperCase()}`}
         sx={{
           display: "inline-flex",
           alignItems: "center",
           gap: "5px",
           cursor: "pointer",
-          border: "1px solid #DDE3EA",
+          font: "inherit",
+          color: "inherit",
+          border: `1px solid ${cv.border}`,
           borderRadius: "16px",
           px: "10px",
           py: "2px",
-          backgroundColor: "#FFFFFF",
+          backgroundColor: cv.surface,
           userSelect: "none",
-          "&:hover": { backgroundColor: "#F5F7FA", borderColor: "#B0BEC5" },
+          "&:hover": { backgroundColor: cv.surfaceAlt, borderColor: cv.borderHover },
+          "&:focus-visible": { outline: `2px solid ${cv.primaryText}`, outlineOffset: "2px" },
         }}
       >
         <Label name="BNF" active={format === "bnf"} />
-        <SwapHorizIcon sx={{ fontSize: "16px", color: "#1565C0" }} />
+        <SwapHorizIcon sx={{ fontSize: "16px", color: cv.primaryText }} />
         <Label name="EBNF" active={format === "ebnf"} />
       </Box>
     </Tooltip>

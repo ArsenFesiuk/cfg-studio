@@ -2,11 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.js';
 import './i18n.js'; // Імпортуємо конфігурацію i18n
+import { ThemeModeProvider } from './theme/ThemeModeProvider.jsx';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <ThemeModeProvider>
+      <App />
+    </ThemeModeProvider>
   </React.StrictMode>
 );
 

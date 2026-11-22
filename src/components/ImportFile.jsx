@@ -1,6 +1,7 @@
 import { Button } from "@mui/material";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { actionButtonSx } from "../theme/theme.js";
 
 const ImportFile = ({ onFileImport }) => {
   const fileInputRef = useRef(null);
@@ -24,7 +25,7 @@ const ImportFile = ({ onFileImport }) => {
       };
 
       reader.onerror = () => {
-        alert("Помилка при читанні файлу");
+        alert(t("fileReadError"));
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
@@ -47,15 +48,7 @@ const ImportFile = ({ onFileImport }) => {
       <Button
         variant="contained"
         onClick={() => document.getElementById("file-input").click()}
-        sx={{
-          backgroundColor: "#1565C0",
-          color: "white",
-          height: "36px",
-          fontSize: "0.78rem",
-          textTransform: "none",
-          px: 2,
-          "&:hover": { backgroundColor: "#0D47A1" },
-        }}
+        sx={actionButtonSx}
       >
         {t("ImportGrammar")}
       </Button>

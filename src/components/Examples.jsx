@@ -1,6 +1,7 @@
 import { Button, Menu, MenuItem, ListSubheader, Divider } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { actionButtonSx, cv } from "../theme/theme.js";
 
 // ── Formal BNF notation (<NonTerm> ::= ...) ─────────────────────────────────
 // Same grammars rewritten with <> non-terminals, ::= separator, `epsilon` keyword
@@ -97,8 +98,8 @@ const SUBHEADER_SX = {
   lineHeight: "28px",
   fontSize: "0.7rem",
   fontWeight: 700,
-  color: "#1565C0",
-  backgroundColor: "#EEF2F7",
+  color: cv.primaryText,
+  backgroundColor: cv.hover,
   letterSpacing: "0.08em",
   textTransform: "uppercase",
 };
@@ -118,15 +119,7 @@ const Examples = ({ onExampleSelect }) => {
       <Button
         variant="contained"
         onClick={(e) => setAnchorEl(e.currentTarget)}
-        sx={{
-          backgroundColor: "#1565C0",
-          color: "white",
-          height: "36px",
-          fontSize: "0.78rem",
-          textTransform: "none",
-          px: 2,
-          "&:hover": { backgroundColor: "#0D47A1" },
-        }}
+        sx={actionButtonSx}
       >
         {t("examples")}
       </Button>

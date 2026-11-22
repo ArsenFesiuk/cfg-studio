@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Menu, MenuItem } from "@mui/material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useTranslation } from "react-i18next";
+import { actionButtonSx } from "../theme/theme.js";
 
 const ExportMenu = ({ inputText, outputText, isValidGrammar }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -18,10 +19,12 @@ const ExportMenu = ({ inputText, outputText, isValidGrammar }) => {
 
   const downloadFile = (text, filename) => {
     const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
+    link.href = url;
     link.download = filename;
     link.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -30,15 +33,7 @@ const ExportMenu = ({ inputText, outputText, isValidGrammar }) => {
         variant="contained"
         onClick={handleMenuOpen}
         startIcon={<FileDownloadIcon />}
-        sx={{
-          backgroundColor: "#1565C0",
-          color: "white",
-          height: "36px",
-          fontSize: "0.78rem",
-          textTransform: "none",
-          px: 2,
-          "&:hover": { backgroundColor: "#0D47A1" },
-        }}
+        sx={actionButtonSx}
       >
         {t("ExportGrammar")}
       </Button>
