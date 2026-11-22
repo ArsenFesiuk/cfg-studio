@@ -1,6 +1,8 @@
-import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import { useState, useEffect, useMemo, useRef, forwardRef, useImperativeHandle } from "react";
 import { MathJax } from "better-react-mathjax";
 import { useTranslation } from "react-i18next";
+import { cv } from "../theme/theme.js";
+import DataTable from "./DataTable.jsx";
 
 // Renders an algorithm's pseudocode as one or more "blocks" (e.g. Algoritmus 8.1
 // and 8.2) and walks through its steps. Each step says which block + line is
@@ -8,7 +10,7 @@ import { useTranslation } from "react-i18next";
 //   processor.blocks = [{ titleKey, linesKey }]   (optional; legacy fallback used otherwise)
 //   processor.steps  = [{ block, line, message }] (or legacy processor.explanations = [{line, message}])
 export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
-  { rules, ProcessingClass, legacyLinesKey, onStepChange },
+  { rules, ProcessingClass, legacyLinesKey, processor: finishedProcessor, onStepChange },
   ref
 ) {
   const { t } = useTranslation();
@@ -24,23 +26,29 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
   useImperativeHandle(ref, () => ({
     goNext: handleNext,
     goPrev: handlePrev,
+    goTo: (index) => setCurrent(Math.max(0, Math.min(Math.floor(index), steps.length - 1))),
   }));
 
-  // Build steps + blocks whenever the input grammar or algorithm changes
+  // Build steps + blocks whenever the input grammar or algorithm changes.
+  // Callers that already ran the algorithm pass the finished `processor`, so it
+  // is not executed a second time; otherwise it is built here from `rules`.
   useEffect(() => {
-    if (!rules || rules.length === 0) {
-      setSteps([]);
-      setBlocks([]);
-      return;
-    }
-    // deep copy so the algorithm never mutates the caller's rules
-    const rulesCopy = rules.map((r) => ({
-      leftSide: r.leftSide,
-      rightSide: r.rightSide.map((alt) => [...alt]),
-    }));
+    let processor = finishedProcessor;
+    if (!processor) {
+      if (!rules || rules.length === 0) {
+        setSteps([]);
+        setBlocks([]);
+        return;
+      }
+      // deep copy so the algorithm never mutates the caller's rules
+      const rulesCopy = rules.map((r) => ({
+        leftSide: r.leftSide,
+        rightSide: r.rightSide.map((alt) => [...alt]),
+      }));
 
-    const processor = new ProcessingClass(rulesCopy, t);
-    processor.execute();
+      processor = new ProcessingClass(rulesCopy, t);
+      processor.execute();
+    }
 
     const builtBlocks = processor.blocks ?? [{ titleKey: null, linesKey: legacyLinesKey }];
     const builtSteps =
@@ -50,7 +58,7 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
     setBlocks(builtBlocks);
     setSteps(builtSteps);
     setCurrent(0);
-  }, [rules, ProcessingClass, legacyLinesKey, t]);
+  }, [finishedProcessor, rules, ProcessingClass, legacyLinesKey, t]);
 
   const activeStep = steps[current] || null;
 
@@ -79,6 +87,7 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
       total: steps.length,
       message: steps[current]?.message || "",
       grammar,
+      data: steps[current]?.data ?? null,
       change: steps[current]?.change || null,
       canGoNext: current < steps.length - 1,
       canGoPrev: current > 0,
@@ -98,28 +107,23 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
   }, [activeStep]);
 
   // Progressive reveal of an iteration table (block bi, table tj): how many rows
-  // are visible so far, computed from the steps walked up to `current`.
-  const tableProgress = (bi, tj) => {
-    let maxIter = -1;
-    let referenced = false;
+  // are visible so far, computed from the steps walked up to `current`. One pass
+  // over the steps serves every table (unit rules can have one table per symbol).
+  const progressByTable = useMemo(() => {
+    const progress = new Map();
     for (let i = 0; i <= current && i < steps.length; i++) {
       const s = steps[i];
-      if (s.block === bi && s.table === tj) {
-        referenced = true;
-        if (typeof s.iter === "number" && s.iter > maxIter) maxIter = s.iter;
-      }
+      if (typeof s.table !== "number") continue;
+      const key = `${s.block}:${s.table}`;
+      const entry = progress.get(key) ?? { referenced: true, maxIter: -1 };
+      if (typeof s.iter === "number" && s.iter > entry.maxIter) entry.maxIter = s.iter;
+      progress.set(key, entry);
     }
-    return { referenced, maxIter };
-  };
+    return progress;
+  }, [steps, current]);
 
-  const cellStyle = {
-    border: "1px solid #DDE3EA",
-    padding: "4px 10px",
-    fontSize: "0.82rem",
-    textAlign: "left",
-    whiteSpace: "nowrap",
-  };
-  const headStyle = { ...cellStyle, fontWeight: 700, color: "#1E3A5F", backgroundColor: "#F5F7FA" };
+  const tableProgress = (bi, tj) =>
+    progressByTable.get(`${bi}:${tj}`) ?? { referenced: false, maxIter: -1 };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "12px", height: "100%" }}>
@@ -127,16 +131,18 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
       <div
         style={{
           flex: 1,
+          minHeight: 160,
           padding: "16px",
           fontFamily: "Arial, sans-serif",
-          border: "1px solid #DDE3EA",
-          backgroundColor: "#FFFFFF",
+          border: `1px solid ${cv.border}`,
+          backgroundColor: cv.surface,
+          color: cv.text,
           overflowY: "auto",
           overflowX: "auto",
           borderRadius: "8px",
         }}
       >
-        <h3 style={{ marginTop: "0px", color: "#1565C0", fontSize: "0.95rem" }}>
+        <h3 style={{ marginTop: "0px", color: cv.primaryText, fontSize: "0.95rem" }}>
           {t("pseudocode")}:
         </h3>
         <MathJax dynamic>
@@ -145,7 +151,7 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
             return (
               <div key={bi} style={{ marginBottom: "14px" }}>
                 {block.titleKey && (
-                  <div style={{ fontWeight: 700, color: "#1E3A5F", fontSize: "0.82rem", margin: "6px 0" }}>
+                  <div style={{ fontWeight: 700, color: cv.heading, fontSize: "0.82rem", margin: "6px 0" }}>
                     {t(block.titleKey)}
                   </div>
                 )}
@@ -159,8 +165,8 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
                         style={{
                           padding: "4px 8px",
                           fontWeight: isActive ? "bold" : "normal",
-                          backgroundColor: isActive ? "#FFF3CD" : "transparent",
-                          border: isActive ? "1px solid #FFD700" : "1px solid transparent",
+                          backgroundColor: isActive ? cv.activeLine : "transparent",
+                          border: isActive ? `1px solid ${cv.activeLineBorder}` : "1px solid transparent",
                           transition: "background-color 0.3s ease-in-out",
                           whiteSpace: "pre-wrap",
                           wordBreak: "break-word",
@@ -185,111 +191,63 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
                   // numbers — conflicting cells (more than one rule) are highlighted.
                   if (tbl.kind === "grid") {
                     return (
-                      <table
+                      <DataTable
                         key={`tbl-${tj}`}
-                        style={{ borderCollapse: "collapse", margin: "8px 0 4px", fontFamily: "Arial, sans-serif" }}
-                      >
-                        <thead>
-                          <tr>
-                            <th style={headStyle}>RT</th>
-                            {tbl.columns.map((col) => (
-                              <th key={col} style={headStyle}>{col}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {tbl.rows.map((row) => (
-                            <tr key={row.label}>
-                              <td style={{ ...cellStyle, fontWeight: 700 }}>{row.label}</td>
-                              {row.cells.map((cell, ci) => (
-                                <td
-                                  key={ci}
-                                  style={{
-                                    ...cellStyle,
-                                    color: cell.conflict ? "#C62828" : "#2E7D32",
-                                    fontWeight: cell.conflict ? 700 : 400,
-                                  }}
-                                >
-                                  {cell.numbers.join(", ")}
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                        firstColumnStrong
+                        head={["RT", ...tbl.columns]}
+                        rows={tbl.rows.map((row) => [
+                          row.label,
+                          ...row.cells.map((cell) => ({
+                            content: cell.numbers.join(", "),
+                            sx: {
+                              color: cell.conflict ? cv.errorText : cv.okText,
+                              fontWeight: cell.conflict ? 700 : 400,
+                              backgroundColor: cell.conflict ? cv.errorBg : undefined,
+                            },
+                          })),
+                        ])}
+                      />
                     );
                   }
 
                   const visibleRows = tbl.rows.slice(0, maxIter + 1);
+                  // the row being filled in by the current step, if it is in this table
+                  const activeRow =
+                    activeStep && activeStep.block === bi && activeStep.table === tj ? activeStep.iter : -1;
 
                   // "multi" tables track several sets at once (one column per
                   // non-terminal), e.g. FST_A / FLW_A — one row per outer iteration.
                   if (tbl.kind === "multi") {
                     return (
-                      <table
+                      <DataTable
                         key={`tbl-${tj}`}
-                        style={{ borderCollapse: "collapse", margin: "8px 0 4px", fontFamily: "Arial, sans-serif" }}
-                      >
-                        <thead>
-                          <tr>
-                            <th style={headStyle}>{t("tableIter")}</th>
-                            {tbl.columns.map((col) => (
-                              <th key={col} style={headStyle}>{col}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {visibleRows.map((row, r) => {
-                            const active =
-                              activeStep &&
-                              activeStep.block === bi &&
-                              activeStep.table === tj &&
-                              activeStep.iter === r;
-                            return (
-                              <tr key={r} style={{ backgroundColor: active ? "#FFF3CD" : "transparent" }}>
-                                <td style={cellStyle}>{r + 1}.</td>
-                                {tbl.columns.map((col) => (
-                                  <td key={col} style={cellStyle}>{row.values[col]}</td>
-                                ))}
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+                        activeRow={activeRow}
+                        head={[t("tableIter"), ...tbl.columns]}
+                        rows={visibleRows.map((row, r) => [`${r + 1}.`, ...tbl.columns.map((col) => row.values[col])])}
+                      />
                     );
                   }
 
                   return (
-                    <table
+                    <DataTable
                       key={`tbl-${tj}`}
-                      style={{ borderCollapse: "collapse", margin: "8px 0 4px", fontFamily: "Arial, sans-serif" }}
-                    >
-                      <thead>
-                        <tr>
-                          <th style={headStyle}>{t("tableIter")}</th>
-                          <th style={headStyle}>{`${t("tableSet")} \\(${tbl.setLabel}\\)`}</th>
-                          <th style={headStyle}>{`${t("tableSet")} \\(${tbl.prevLabel}\\)`}</th>
-                          <th style={headStyle}>{`${t("tableCond")} \\(${tbl.setLabel} \\neq ${tbl.prevLabel}\\)`}</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {visibleRows.map((row, r) => {
-                          const active =
-                            activeStep &&
-                            activeStep.block === bi &&
-                            activeStep.table === tj &&
-                            activeStep.iter === r;
-                          return (
-                            <tr key={r} style={{ backgroundColor: active ? "#FFF3CD" : "transparent" }}>
-                              <td style={cellStyle}>{r + 1}.</td>
-                              <td style={cellStyle}>{row.set}</td>
-                              <td style={cellStyle}>{row.prev}</td>
-                              <td style={{ ...cellStyle, fontStyle: "italic" }}>{String(row.condition)}</td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                      activeRow={activeRow}
+                      head={[
+                        t("tableIter"),
+                        `${t("tableSet")} \\(${tbl.setLabel}\\)`,
+                        `${t("tableSet")} \\(${tbl.prevLabel}\\)`,
+                        `${t("tableCond")} \\(${tbl.setLabel} \\neq ${tbl.prevLabel}\\)`,
+                      ]}
+                      rows={visibleRows.map((row, r) => [
+                        `${r + 1}.`,
+                        row.set,
+                        row.prev,
+                        {
+                          content: String(row.condition),
+                          sx: { fontStyle: "italic", color: row.condition ? cv.primaryText : cv.okText },
+                        },
+                      ])}
+                    />
                   );
                 })}
               </div>
@@ -302,16 +260,19 @@ export const PseudoCodeViewer = forwardRef(function PseudoCodeViewer(
       <div
         style={{
           flex: 1,
+          minHeight: 160,
           padding: "16px",
           fontFamily: "Arial, sans-serif",
-          border: "1px solid #DDE3EA",
-          backgroundColor: "#FFFFFF",
+          border: `1px solid ${cv.border}`,
+          borderLeft: `4px solid ${cv.primary}`,
+          backgroundColor: cv.surface,
+          color: cv.text,
           overflowY: "auto",
           borderRadius: "8px",
         }}
       >
         <MathJax dynamic>
-          <h3 style={{ marginTop: "0px", color: "#1565C0", fontSize: "0.95rem" }}>
+          <h3 style={{ marginTop: "0px", color: cv.primaryText, fontSize: "0.95rem" }}>
             {t("explanation")}:
           </h3>
           <p

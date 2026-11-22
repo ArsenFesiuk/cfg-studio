@@ -35,6 +35,42 @@ beforeAll(() => {
   window.HTMLElement.prototype.scrollIntoView = () => {};
 });
 
+test('uses a finished processor without constructing or running another one', () => {
+  const finished = new FakeAlgo();
+  const execute = jest.fn();
+  finished.execute = execute;
+  const created = jest.fn();
+  class ShouldNotRun extends FakeAlgo {
+    constructor() {
+      super();
+      created();
+    }
+  }
+  const infos = [];
+
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  act(() => {
+    root.render(
+      <PseudoCodeViewer
+        processor={finished}
+        ProcessingClass={ShouldNotRun}
+        onStepChange={(info) => infos.push(info)}
+      />
+    );
+  });
+
+  expect(created).not.toHaveBeenCalled();
+  expect(execute).not.toHaveBeenCalled();
+  expect(infos[infos.length - 1]).toMatchObject({ current: 1, total: 2, canGoNext: true });
+
+  act(() => {
+    root.unmount();
+  });
+  container.remove();
+});
+
 test('does not loop when the parent passes a fresh onStepChange every render', () => {
   let calls = 0;
 
