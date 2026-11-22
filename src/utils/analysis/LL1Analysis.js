@@ -17,12 +17,13 @@ export class LL1Analysis {
     this.t = t;
     this.rules = rules; // never mutated — this class only analyses the grammar
     this.nonTerminals = [...new Set(rules.map((r) => r.leftSide))];
+    this.nonTerminalSet = new Set(this.nonTerminals);
     this.startSymbol = rules.length ? rules[0].leftSide : null;
     this.terminals = [
       ...new Set(
         rules
           .flatMap((r) => r.rightSide.flat())
-          .filter((s) => s !== 'ε' && !this.nonTerminals.includes(s))
+          .filter((s) => s !== 'ε' && !this.nonTerminalSet.has(s))
       ),
     ];
     this.steps = [];
@@ -37,7 +38,23 @@ export class LL1Analysis {
   }
 
   emit(block, line, message, table = null, iter = null) {
-    this.steps.push({ block, line, message, table, iter, snapshot: this.currentSummary() });
+    this.steps.push({ block, line, message, table, iter, snapshot: this.currentSummary(), data: this.currentData() });
+  }
+
+  // The same information as currentSummary(), but structured, so the output
+  // panel can draw tables instead of parsing text.
+  currentData() {
+    const entries = (map) => this.nonTerminals.map((A) => ({ symbol: A, set: [...map.get(A)] }));
+    return {
+      nullable: this.nullable ? [...this.nullable] : null,
+      first: this.FST ? entries(this.FST) : null,
+      follow: this.FLW ? entries(this.FLW) : null,
+      predict: this.predictList
+        ? this.predictList.map((p) => ({ number: p.ruleNumber, rule: p.rule, set: [...p.set] }))
+        : null,
+      isLL1: this.isLL1,
+      conflicts: this.conflicts ?? null,
+    };
   }
 
   currentSummary() {
@@ -62,7 +79,7 @@ export class LL1Analysis {
   }
 
   isTerminal(sym) {
-    return sym !== 'ε' && !this.nonTerminals.includes(sym);
+    return sym !== 'ε' && !this.nonTerminalSet.has(sym);
   }
 
   // ── prerequisite: nullable set N_ε (same construction as the previous exercise) ──
@@ -259,6 +276,7 @@ export class LL1Analysis {
     this.buildPredict();
     this.buildParseTable();
     this.summary = this.currentSummary();
+    this.resultData = this.currentData();
     return this.rules;
   }
 
